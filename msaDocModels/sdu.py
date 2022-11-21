@@ -7,7 +7,7 @@ import html
 import os
 from typing import Dict, List, Optional, Tuple
 
-from msaUtils.htmlutils import sanitize
+from utils.htmlutils import sanitize
 from pydantic import BaseModel
 
 
