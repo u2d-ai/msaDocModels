@@ -79,6 +79,18 @@ class SDUEmail(BaseModel):
         orm_mode = False
 
 
+class SDUDetailLanguage(BaseModel):
+    """Detailed Language Pydantic Model."""
+    multiple: bool = False
+    reliable: bool = False
+    bytes: int = -1
+    details: Optional[Tuple] = tuple()
+    vectors: Optional[Tuple] = tuple()
+
+    class Config:
+        orm_mode = False
+
+
 class SDULanguage(BaseModel):
     """Detected Language Pydantic Model."""
 
