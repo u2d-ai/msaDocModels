@@ -101,7 +101,7 @@ class SDULanguage(BaseModel):
     bytes: int = -1  # Bytes of the text in this language.
     confidence: float = -1  # Confidence from 0.01 to 1.0.
     winner: Optional[str] = None  # Selected overall Winner
-    details: Optional[List] = List()  # Details of the top 3 detected languages.
+    details: Optional[List] = list()  # Details of the top 3 detected languages.
 
     class Config:
         orm_mode = False
