@@ -209,7 +209,7 @@ class SDUText(BaseModel):
 
 
 class SDUPage(BaseModel):
-    page: int = -1
+    id: int = -1
     npar: int = 0
     input: str = ""
     has_en: bool = False
