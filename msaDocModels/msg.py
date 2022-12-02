@@ -1,12 +1,12 @@
 import dataclasses
 import datetime
 from dataclasses import dataclass
+from typing import Generic, Type, TypeVar
 
 from genson import SchemaBuilder
 from pydantic.types import UUID
-from typing import Generic, TypeVar, Type
 
-_T = TypeVar('_T')
+_T = TypeVar("_T")
 
 try:
     import orjson as json
@@ -16,11 +16,12 @@ except:
 
     except:
         import json
+
         json.__version__ = ""
 
 
 import uuid
-from typing import Union, List, Optional
+from typing import List, Optional, Union
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
@@ -32,7 +33,7 @@ class titem(BaseModel):
 
 class test(BaseModel):
     info: str = "some information"
-    test_list: List[str] = ['a', 'list']
+    test_list: List[str] = ["a", "list"]
     test_item: titem = titem()
     test_item_list: List[titem] = [titem()]
     test_optional_item: Optional[titem] = None
@@ -50,7 +51,6 @@ class Metadata(BaseModel):
 
 
 class MSAAPIMessage:
-
     def __init__(self, metaClass: _T = Metadata, **kwargs):
         self.__dict__ = kwargs
         self.metadata: metaClass = metaClass()
@@ -63,12 +63,16 @@ class MSAAPIMessage:
         self.__dict__ = msg
 
     def toMsg(self) -> str:
-        classes={}
+        classes = {}
         for k, v in self.__dict__.items():
             classes[k] = v.__class__.__name__
-            #print("TOMSG:",k,v, type(v), v.__class__.__name__)
+            # print("TOMSG:",k,v, type(v), v.__class__.__name__)
         self.__dict__["classes"] = classes
-        return json.dumps(self, default=lambda x: jsonable_encoder(x.__dict__)).decode('utf8').replace("'", '"')
+        return (
+            json.dumps(self, default=lambda x: jsonable_encoder(x.__dict__))
+            .decode("utf8")
+            .replace("'", '"')
+        )
 
     def fromMsg(self, message: str):
         self.__dict__ = json.loads(message)
@@ -98,7 +102,11 @@ class MSAAPIMessage:
 
 
 if __name__ == "__main__":
-    m = MSAAPIMessage(info="some information", mylist=['a', 'list'], test=test(), )
+    m = MSAAPIMessage(
+        info="some information",
+        mylist=["a", "list"],
+        test=test(),
+    )
 
     print("m todict:", m.toDict())
     print("m tomsg:", m.toMsg())

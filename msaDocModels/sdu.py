@@ -7,8 +7,9 @@ import html
 import os
 from typing import Dict, List, Optional, Tuple
 
-from msaDocModels.utils.htmlutils import sanitize
 from pydantic import BaseModel
+
+from msaDocModels.utils.htmlutils import sanitize
 
 
 def getCRLF() -> str:
@@ -81,6 +82,7 @@ class SDUEmail(BaseModel):
 
 class SDUDetailLanguage(BaseModel):
     """Detailed Language Pydantic Model."""
+
     multiple: bool = False
     reliable: bool = False
     bytes: int = -1
@@ -101,10 +103,13 @@ class SDULanguage(BaseModel):
     bytes: int = -1  # Bytes of the text in this language.
     confidence: float = -1  # Confidence from 0.01 to 1.0.
     winner: Optional[str] = None  # Selected overall Winner
-    details: Optional[List] = list()  # Details of the top 3 detected languages.
 
     class Config:
         orm_mode = False
+
+
+class SDULanguageDetails(SDULanguage):
+    details: Optional[List] = list()  # Details of the top 3 detected languages.
 
 
 class SDUStatistic(BaseModel):

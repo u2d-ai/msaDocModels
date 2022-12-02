@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Any, Optional
+
 from lxml.html.clean import Cleaner
 
 
