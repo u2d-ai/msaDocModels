@@ -48,6 +48,10 @@ class SPKLanguageInput(DocumentInput):
     is_short_text: bool = False
 
 
+class SPKLanguageDTO(sdu.SDULanguageDetails):
+    """DTO, representing the result of service language."""
+
+
 class TextWithParagraphsGet(BaseModel):
     """Schema representing the result of paragraph segmentation."""
 
