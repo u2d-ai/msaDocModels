@@ -26,6 +26,7 @@
 - **Schema/Models for Document Understanding Result Data**: sdu.
 - **Schema/Models for General Document Handling Data**: wdc.
 - **Schema/Models for Workflow Definition and Processing Data**: wfl.
+- **Schema/Models for Work With Text**: spk.
 - **API Message class**: msg, allows generic API JSON message creation with capabilities to re-create original datatypes and class instances.
 
 
