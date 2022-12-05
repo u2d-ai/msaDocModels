@@ -70,8 +70,11 @@ class TextWithPagesGet(BaseModel):
     pages: List[sdu.SDUPage]
 
 
-class SPKSegmentationInput(DocumentLangInput):
+class SPKSegmentationInput(BaseModel):
     """Input model to detect Segmentation"""
+    document_id: UUID4
+    input_text: Union[str, List[str], Dict[int, str]]
+    language: SDULanguage = SDULanguage(code="en", lang="ENGLISH")
 
 
 class SPKSegmentationDTO(BaseModel):
@@ -94,10 +97,6 @@ class SPKTextCleanDTO(BaseModel):
 
 class SPKSentimentInput(DocumentInput):
     """Data input model for Sentiment."""
-
-    document_id: UUID4
-    input_text: Union[str, List[str], Dict[int, str]]
-    language: SDULanguage = SDULanguage(code="en", lang="ENGLISH")
 
 
 class SPKSentimentDTO(BaseModel):
