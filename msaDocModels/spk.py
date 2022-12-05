@@ -95,6 +95,10 @@ class SPKTextCleanDTO(BaseModel):
 class SPKSentimentInput(DocumentInput):
     """Data input model for Sentiment."""
 
+    document_id: UUID4
+    input_text: Union[str, List[str], Dict[int, str]]
+    language: SDULanguage = SDULanguage(code="en", lang="ENGLISH")
+
 
 class SPKSentimentDTO(BaseModel):
     """DTO, representing the result of service Sentiment."""
