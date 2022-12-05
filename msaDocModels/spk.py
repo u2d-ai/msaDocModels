@@ -70,7 +70,7 @@ class TextWithPagesGet(BaseModel):
     pages: List[sdu.SDUPage]
 
 
-class SPKSegmentationInput(BaseModel):
+class SPKSegmentationInput(DocumentLangInput):
     """Input model to detect Segmentation"""
 
 
