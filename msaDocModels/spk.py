@@ -109,14 +109,16 @@ class SPKSentimentDTO(BaseModel):
     error: Optional[str]
 
 
-class SPKPhraseMiningInput(SentencesInput):
-    """Data input model for Phrases."""
+class SPKPhraseMiningInput(SPKSentimentInput):
+    """Data input model for Phrase mining."""
 
+class SPKPhraseMiningDTO(BaseModel):
+    """DTO, representing the result of Phrase mining."""
+    phrases: List[Union[List, List[Union[str, int]]]]
 
-class SPKPhraseMiningDTO(SentencesInput):
-    """DTO, representing the result of service Sentiment."""
-
-    phrases: List[List[Union[str, int]]]
+class SPKWeightedKeywordsDTO(BaseModel):
+    """DTO, representing the result of service Keywords."""
+    keywords: List[Union[List, List[Union[str, int]]]]
 
 
 class SPKSummaryInput(DocumentLangInput):
