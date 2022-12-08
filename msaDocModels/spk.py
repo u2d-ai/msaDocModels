@@ -109,7 +109,7 @@ class SPKSentimentDTO(BaseModel):
     error: Optional[str]
 
 
-class SPKPhraseMiningInput(SPKSentimentInput):
+class SPKPhraseMiningInput(DocumentLangInput):
     """Data input model for Phrase mining."""
 
 class SPKPhraseMiningDTO(BaseModel):
