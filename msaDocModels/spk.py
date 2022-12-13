@@ -72,6 +72,7 @@ class TextWithPagesGet(BaseModel):
 
 class SPKSegmentationInput(BaseModel):
     """Input model to detect Segmentation"""
+
     document_id: UUID4
     input_text: Union[str, List[str], Dict[int, str]]
     language: SDULanguage = SDULanguage(code="en", lang="ENGLISH")
@@ -112,12 +113,16 @@ class SPKSentimentDTO(BaseModel):
 class SPKPhraseMiningInput(DocumentLangInput):
     """Data input model for Phrase mining."""
 
+
 class SPKPhraseMiningDTO(BaseModel):
     """DTO, representing the result of Phrase mining."""
+
     phrases: List[Union[List, List[Union[str, int]]]]
+
 
 class SPKWeightedKeywordsDTO(BaseModel):
     """DTO, representing the result of service Keywords."""
+
     keywords: List[Union[List, List[Union[str, int]]]]
 
 
@@ -142,3 +147,103 @@ class SPKStatisticsDTO(sdu.SDUStatistic):
 
 class SPKSummaryDTO(wdc.WDCItem):
     """DTO, representing the result of service Summary."""
+
+
+class SPKNotaryInput(DocumentInput):
+    """Data input model for Notary."""
+
+    city: str = "Bremen"
+
+
+class SPKNotary(BaseModel):
+    """Detected Notary Pydantic Model."""
+
+    sid: Optional[str]
+    last_name: Optional[str]
+    first_name: Optional[str]
+    zip_code: Optional[str]
+    city: Optional[str]
+    office_city: Optional[str]
+    official_location: Optional[str]
+    address: Optional[str]
+    additional_address: Optional[str]
+    title: Optional[str]
+    phone: Optional[str]
+    complete_name_with_official_location: Optional[str]
+    local_city: str = "Bremen"
+    is_local_city: bool
+
+
+class SPKNotaryWinnerDTO(SPKNotary):
+    """DTO, representing the result of service Notary."""
+
+
+class SPKCountry(BaseModel):
+    """Detected Country Pydantic Model."""
+
+    name: str
+    official: str
+    currencies: Dict[str, Dict[str, str]]
+    capital: List[str]
+    region: str
+    subregion: str
+    languages: Dict[str, str]
+    latlng: List[int]
+    flag: str
+    calling_codes: List[str]
+
+
+class SPKCompany(BaseModel):
+    """Detected Company Pydantic Model."""
+
+    rank: int
+    company: str
+    employees: str
+    change_in_rank: str
+    industry: str
+    description: str
+    revenue: str
+    revenue_change: str
+    profits: str
+    profit_change: str
+    assets: str
+    market_value: str
+
+
+class SPKCity(BaseModel):
+    """Detected City Pydantic Model."""
+
+    name: str
+    country: str
+    latlng: List[float]
+
+
+class SPKTaxonomyCitiesDTO(BaseModel):
+    """DTO, representing the result of service Taxonomy Cities."""
+
+    cities: List[SPKCity]
+    cities_winner: Optional[SPKCity]
+
+
+class SPKTaxonomyCountriesDTO(BaseModel):
+    """DTO, representing the result of service Taxonomy Countries."""
+
+    countries: List[SPKCountry]
+    countries_winner: Optional[SPKCountry]
+
+
+class SPKTaxonomyCompaniesDTO(BaseModel):
+    """DTO, representing the result of service Taxonomy Companies."""
+
+    companies: List[SPKCompany]
+    companies_winner: Optional[SPKCompany]
+
+
+class SPKTaxonomyDTO(
+    SPKTaxonomyCountriesDTO, SPKTaxonomyCompaniesDTO, SPKTaxonomyCitiesDTO
+):
+    """DTO, representing the result of service Taxonomy."""
+
+
+class SPKTaxonomyInput(DocumentInput):
+    """Data input model for Taxonomy."""
