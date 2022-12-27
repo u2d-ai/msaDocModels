@@ -1,3 +1,4 @@
+import uuid
 from typing import Dict, List, Optional, Union
 
 from pydantic import UUID4, BaseModel
@@ -247,3 +248,111 @@ class SPKTaxonomyDTO(
 
 class SPKTaxonomyInput(DocumentInput):
     """Data input model for Taxonomy."""
+
+
+class AutoMLStatus(BaseModel):
+    """
+    Pydantic model to receive/send service status for pub/sub.
+
+    Attributes:
+
+        info: Service status.
+        id: UUID model identifier.
+        path: The path where model is located
+    """
+
+    info: str
+    id: Optional[uuid.UUID]
+    path: Optional[str]
+
+
+class ProfileInput(BaseModel):
+    """
+    Pydantic model to generate a profile report based on data
+
+    Attributes:
+        title: Title of HTML representation.
+        data: List of data.
+        missing_diagrams: Settings related with the missing data section and the visualizations it can include.
+        correlations: Settings regarding correlation metrics and thresholds.
+        progress_bar: If True will display a progress bar.
+        minimal: Minimal mode is a default configuration with minimal computation.
+        explorative: Explorative mode.
+        sensitive: Sensitive mode.
+        dark_mode: Select a dar theme.
+        orange_mode: Select a orange theme.
+
+    """
+
+    title: str
+    html: Dict = {}
+    missing_diagrams: Dict = {}
+    correlations: Dict = {}
+    data: List[Dict]
+    progress_bar: bool = False
+    minimal: bool = False
+    explorative: bool = False
+    sensitive: bool = False
+    dark_mode: bool = False
+    orange_mode: bool = False
+
+
+class ProfileDTO(BaseModel):
+    """
+    Pydantic model of Profile HTML representation
+
+    Attributes:
+
+        data: Profile html representation.
+    """
+
+    data: str
+
+
+class LearnsetInput(BaseModel):
+    """
+    Pydantic model of Profile HTML representation AI Prediction input
+
+    Attributes:
+        name: Name of model.
+        data: List of data.
+        target_fields: Name of the target column in data.
+        train_fields: List of column names that contain a text corpus.
+        ml_n_models: Number of training models.
+        optimize: Metric to use for model selection.
+        algorithm: ID of an estimator available in model library.
+    """
+
+    name: str
+    data: List[Dict]
+    target_fields: str
+    train_fields: List[str]
+    ml_n_models: int = 3
+    optimize: str = "Recall"
+    algorithm: str = "svm"
+
+
+class InferenceInput(BaseModel):
+    """
+     Pydantic model for get inference data.
+
+    Attributes:
+
+        path: The path where model is located.
+        data: Profile html representation.
+    """
+
+    path: str
+    data: List[Dict]
+
+
+class InferenceDTO(BaseModel):
+    """
+    Pydantic model, provided inference data.
+
+    Attributes:
+
+        inference: Inference data.
+    """
+
+    inference: Dict
