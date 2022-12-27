@@ -266,7 +266,7 @@ class AutoMLStatus(BaseModel):
     path: Optional[str]
 
 
-class ProfileInput(BaseModel):
+class SPKProfileInput(BaseModel):
     """
     Pydantic model to generate a profile report based on data
 
@@ -297,7 +297,7 @@ class ProfileInput(BaseModel):
     orange_mode: bool = False
 
 
-class ProfileDTO(BaseModel):
+class SPKProfileDTO(BaseModel):
     """
     Pydantic model of Profile HTML representation
 
@@ -309,7 +309,7 @@ class ProfileDTO(BaseModel):
     data: str
 
 
-class LearnsetInput(BaseModel):
+class SPKLearnsetInput(BaseModel):
     """
     Pydantic model of Profile HTML representation AI Prediction input
 
@@ -332,7 +332,7 @@ class LearnsetInput(BaseModel):
     algorithm: str = "svm"
 
 
-class InferenceInput(BaseModel):
+class SPKInferenceInput(BaseModel):
     """
      Pydantic model for get inference data.
 
@@ -346,7 +346,7 @@ class InferenceInput(BaseModel):
     data: List[Dict]
 
 
-class InferenceDTO(BaseModel):
+class SPKInferenceDTO(BaseModel):
     """
     Pydantic model, provided inference data.
 
