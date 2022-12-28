@@ -1,5 +1,5 @@
 import uuid
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 
 from pydantic import UUID4, BaseModel
 
@@ -288,7 +288,7 @@ class SPKProfileInput(BaseModel):
     html: Dict = {}
     missing_diagrams: Dict = {}
     correlations: Dict = {}
-    data: List[Dict]
+    data: List[Dict[str, Any]]
     progress_bar: bool = False
     minimal: bool = False
     explorative: bool = False
@@ -324,7 +324,7 @@ class SPKLearnsetInput(BaseModel):
     """
 
     name: str
-    data: List[Dict]
+    data: List[Dict[str, Any]]
     target_fields: str
     train_fields: List[str]
     ml_n_models: int = 3
@@ -343,7 +343,7 @@ class SPKInferenceInput(BaseModel):
     """
 
     path: str
-    data: List[Dict]
+    data: List[Dict[str, Any]]
 
 
 class SPKInferenceDTO(BaseModel):
@@ -355,4 +355,4 @@ class SPKInferenceDTO(BaseModel):
         inference: Inference data.
     """
 
-    inference: Dict
+    inference: Dict[str, Any]
