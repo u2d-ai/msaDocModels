@@ -348,11 +348,11 @@ class SPKInferenceInput(BaseModel):
 
 class SPKInferenceDTO(BaseModel):
     """
-    Pydantic model, provided inference data.
+    Pydantic model, provided merged inference data.
 
     Attributes:
 
-        inference: Inference data.
+        inference: Raw data with inference data.
     """
 
-    inference: Dict[str, Any]
+    inference: List[Dict[str, Any]]
