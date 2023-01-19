@@ -1,10 +1,11 @@
+from datetime import datetime
 import uuid
 from typing import Dict, List, Optional, Union, Any
-
-from pydantic import UUID4, BaseModel
-
+from bson.objectid import ObjectId
+from pydantic import UUID4, BaseModel, Field
+from enum import Enum
 from msaDocModels import sdu, wdc
-from msaDocModels.sdu import SDULanguage
+from msaDocModels.sdu import SDUAttachment, SDUContent, SDUData, SDUEmail, SDULanguage, SDUText
 
 
 class TenantIdInput(BaseModel):
@@ -240,9 +241,7 @@ class SPKTaxonomyCompaniesDTO(BaseModel):
     companies_winner: Optional[SPKCompany]
 
 
-class SPKTaxonomyDTO(
-    SPKTaxonomyCountriesDTO, SPKTaxonomyCompaniesDTO, SPKTaxonomyCitiesDTO
-):
+class SPKTaxonomyDTO(SPKTaxonomyCountriesDTO, SPKTaxonomyCompaniesDTO, SPKTaxonomyCitiesDTO):
     """DTO, representing the result of service Taxonomy."""
 
 
@@ -356,3 +355,277 @@ class SPKInferenceDTO(BaseModel):
     """
 
     inference: List[Dict[str, Any]]
+
+
+class ProcessStatus(BaseModel):
+    """
+    Workflow status
+
+        Attributes:
+
+        number: number of status
+        timestamp: time when number was changes
+    """
+
+    number: int = 0
+    timestamp: str = str(datetime.utcnow())
+
+
+class SPKDBBaseDocumentInput(BaseModel):
+    """
+    Document fields for input.
+
+    Attributes:
+
+        uid: document uid
+        name: document name.
+        mimetype: mimetype.
+        path: path to file.
+        layout_file_path: path to layout file.
+        debug_file_path: path to debug file.
+        readorder_file_path: path to rearorder file.
+        folder: folder name.
+        group_uuid: group identifier.
+        size_bytes: size in bytes.
+        is_file: file or not.
+        wfl_status: wfl status.
+        import_status: import status.
+        user: user name.
+        date: date.
+        runtime_s: runtime in sec.
+        tags: list of tags.
+        language: language.
+        needs_update: need update or not.
+        data: data.
+        project_code: project code.
+        npages: count of pages.
+        content: content.
+        metadata: metadata.
+        description: discription.
+        text: text.
+        file: file.
+        sdu: Dict of sdu objects.
+    """
+
+    uid: str
+    name: str
+    mimetype: str = "text/plain"
+    path: str = ""
+    layout_file_path: str = ""
+    debug_file_path: str = ""
+    readorder_file_path: str = ""
+    folder: str = ""
+    group_uuid: str = ""
+    size_bytes: int = 0
+    is_file: bool = False
+    wfl_status: List = []
+    import_status: str = "new"
+    user: str = ""
+    date: str = ""
+    runtime_s: float = 0.0
+    tags: Optional[Dict] = {}
+    language: Optional[SDULanguage] = None
+    needs_update: bool = False
+    data: Optional[SDUData] = None
+    project_code: str = ""
+    npages: int = 0
+    content: Optional[SDUContent] = None
+    metadata: Dict = {}
+    description: str = ""
+    text: str = ""
+    file: Dict = {}
+    sdu: Dict = {}
+    status: ProcessStatus = ProcessStatus()
+    status_history: List[ProcessStatus] = [ProcessStatus()]
+
+
+class PyObjectId(ObjectId):
+    """
+    Converts ObjectId to string.
+    """
+
+    @classmethod
+    def __get_validators__(cls):
+        """
+        Generator to return validate method.
+        """
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        """
+        Validates Object ID.
+
+        Parameters:
+
+             v: value to validate.
+
+        Returns:
+
+            Object ID with specified value.
+
+        Raises:
+
+            ValueError if Object ID does not pass validation.
+        """
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid objectid")
+        return ObjectId(v)
+
+    @classmethod
+    def __modify_schema__(cls, field_schema):
+        field_schema.update(type="string")
+
+
+class MongoId(BaseModel):
+    """
+    MongoDB _id field.
+    """
+
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {ObjectId: str}
+
+
+class SPKDBBaseDocumentDTO(SPKDBBaseDocumentInput, MongoId):
+    """
+    Document fields for output.
+    """
+
+
+class BaseInfo(BaseModel):
+    """
+    Base info for AI stuff.
+
+    Attributes:
+
+        version: version identifier.
+        description: description.
+        datetime: datetime.
+        inherited: inherited or not.
+        active: active or not.
+        name: object name.
+    """
+
+    version: str
+    description: str
+    datetime: datetime
+    inherited: bool
+    active: bool
+    name: str
+
+
+class SPKUpdateAI(BaseModel):
+    """
+    Update ai fields.
+
+    Attributes:
+
+        version: version identifier.
+        description: description.
+        datetime: datetime.
+        inherited: inherited or not.
+        active: active or not.
+        name: object name.
+    """
+
+    version: Optional[str]
+    description: Optional[str]
+    datetime: Optional[datetime]
+    inherited: Optional[bool]
+    active: Optional[bool]
+    name: Optional[str]
+
+
+class SPKLearnsetDataInput(BaseInfo):
+    """
+    AI learnset input.
+
+    Attributes:
+
+        learnsets: list of learnset objects.
+    """
+
+    learnsets: List[Dict]
+
+
+class SPKTestsetDataInput(BaseInfo):
+    """
+    AI testset input.
+
+    Attributes:
+
+        testsets: list of testsets objects.
+    """
+
+    testsets: List[Dict]
+
+
+class SPKTaxonomyDataInput(BaseInfo):
+    """
+    AI taxonomy input.
+
+    Attributes:
+
+        taxonomies: list of taxonomies objects.
+    """
+
+    taxonomies: List[Dict]
+
+
+class SPKModelDataInput(BaseInfo):
+    """
+    AI model input.
+
+    Attributes:
+
+        model: model object.
+    """
+
+    model: Dict
+
+
+class SPKTestsetDataDTO(SPKTestsetDataInput, MongoId):
+    """
+    AI testset output.
+    """
+
+
+class SPKLearnsetDataDTO(SPKLearnsetDataInput, MongoId):
+    """
+    AI learnset output.
+    """
+
+
+class SPKModelDataDTO(SPKModelDataInput, MongoId):
+    """
+    AI model output.
+    """
+
+
+class SPKTaxonomyDataDTO(SPKTaxonomyDataInput, MongoId):
+    """
+    AI taxonomy output.
+    """
+
+
+class SPKEmailConverterResponse(BaseModel):
+    content_attachments: List[SDUAttachment]
+    txt_content: SDUText
+    msg: SDUEmail
+
+
+class SPKHTMLConverterResponse(BaseModel):
+    """
+    Response from converter
+
+    Attributes:
+
+        metadata: metadata from file
+        txt_content: SDUText object
+    """
+
+    metadata: Dict
+    txt_content: SDUText

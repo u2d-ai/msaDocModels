@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.23
+
+Added spk models to working with DBLayer, HTMLconverter, EmailConverter
+
+
 ## 0.0.12
 
 Added spk models to working with Text, Language/Statistics/Segmentation/Phrases/Summary/Sentiment
