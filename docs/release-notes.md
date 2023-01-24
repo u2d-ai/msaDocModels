@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.24
+
+Change document_id to optional, add process to document status
+
 ## 0.0.23
 
 Added spk models to working with DBLayer, HTMLconverter, EmailConverter

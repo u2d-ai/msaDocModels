@@ -3,7 +3,6 @@ import uuid
 from typing import Dict, List, Optional, Union, Any
 from bson.objectid import ObjectId
 from pydantic import UUID4, BaseModel, Field
-from enum import Enum
 from msaDocModels import sdu, wdc
 from msaDocModels.sdu import SDUAttachment, SDUContent, SDUData, SDUEmail, SDULanguage, SDUText
 
@@ -23,7 +22,7 @@ class TextInput(BaseModel):
 class DocumentInput(TextInput):
     """Input document model"""
 
-    document_id: UUID4
+    document_id: Optional[UUID4]
 
 
 class SentencesInput(BaseModel):
@@ -367,6 +366,7 @@ class ProcessStatus(BaseModel):
         timestamp: time when number was changes
     """
 
+    process: str = ""
     number: int = 0
     timestamp: str = str(datetime.utcnow())
 
@@ -402,6 +402,7 @@ class SPKDBBaseDocumentInput(BaseModel):
         content: content.
         metadata: metadata.
         description: discription.
+        status: document status
         text: text.
         file: file.
         sdu: Dict of sdu objects.
