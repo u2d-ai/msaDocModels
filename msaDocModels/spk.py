@@ -1,10 +1,20 @@
-from datetime import datetime
 import uuid
-from typing import Dict, List, Optional, Union, Any
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Union
+
 from bson.objectid import ObjectId
 from pydantic import UUID4, BaseModel, Field
+
 from msaDocModels import sdu, wdc
-from msaDocModels.sdu import SDUAttachment, SDUContent, SDUData, SDUEmail, SDULanguage, SDUText
+from msaDocModels.sdu import (
+    SDUAttachment,
+    SDUContent,
+    SDUData,
+    SDUEmail,
+    SDULanguage,
+    SDUText,
+)
 
 
 class TenantIdInput(BaseModel):
@@ -28,8 +38,14 @@ class DocumentInput(TextInput):
 class SentencesInput(BaseModel):
     """Input model with sentences"""
 
-    document_id: UUID4
+    document_id: Optional[UUID4]
     sentences: List[str]
+
+
+class DocumentIds(BaseModel):
+    """Ids of documents from mail model"""
+
+    document_ids: List[str]
 
 
 class DocumentLangInput(DocumentInput):
@@ -74,7 +90,7 @@ class TextWithPagesGet(BaseModel):
 class SPKSegmentationInput(BaseModel):
     """Input model to detect Segmentation"""
 
-    document_id: UUID4
+    document_id: Optional[UUID4]
     input_text: Union[str, List[str], Dict[int, str]]
     language: SDULanguage = SDULanguage(code="en", lang="ENGLISH")
 
@@ -240,7 +256,9 @@ class SPKTaxonomyCompaniesDTO(BaseModel):
     companies_winner: Optional[SPKCompany]
 
 
-class SPKTaxonomyDTO(SPKTaxonomyCountriesDTO, SPKTaxonomyCompaniesDTO, SPKTaxonomyCitiesDTO):
+class SPKTaxonomyDTO(
+    SPKTaxonomyCountriesDTO, SPKTaxonomyCompaniesDTO, SPKTaxonomyCitiesDTO
+):
     """DTO, representing the result of service Taxonomy."""
 
 
@@ -366,7 +384,6 @@ class ProcessStatus(BaseModel):
         timestamp: time when number was changes
     """
 
-    process: str = ""
     number: int = 0
     timestamp: str = str(datetime.utcnow())
 
@@ -630,3 +647,18 @@ class SPKHTMLConverterResponse(BaseModel):
 
     metadata: Dict
     txt_content: SDUText
+
+
+class FieldName(str, Enum):
+    """Matching pydantic models with fields in the db.
+    Attributes:
+        TestsetDataInput: name of testset input model.
+        LearnsetDataInput: name of learnset input model.
+        ModelDataInput: name of model input model.
+        TaxonomyDataInput: name of taxonomy input model.
+    """
+
+    TestsetDataInput = "testset"
+    LearnsetDataInput = "learnset"
+    ModelDataInput = "model"
+    TaxonomyDataInput = "taxonomy"

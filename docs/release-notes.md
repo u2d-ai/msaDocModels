@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.25
+
+Add model of documents ids, change all document_id to optional
+
 ## 0.0.24
 
 Change document_id to optional, add process to document status
