@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.26
+
+Add field content_unzipped_files to SPKEmailConverterResponse
+
 ## 0.0.25
 
 Add model of documents ids, change all document_id to optional
