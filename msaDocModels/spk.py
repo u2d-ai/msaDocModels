@@ -629,12 +629,6 @@ class SPKTaxonomyDataDTO(SPKTaxonomyDataInput, MongoId):
     """
 
 
-class SPKEmailConverterResponse(BaseModel):
-    content_attachments: List[SDUAttachment]
-    txt_content: SDUText
-    msg: SDUEmail
-
-
 class SPKHTMLConverterResponse(BaseModel):
     """
     Response from converter
@@ -647,6 +641,13 @@ class SPKHTMLConverterResponse(BaseModel):
 
     metadata: Dict
     txt_content: SDUText
+
+
+class SPKEmailConverterResponse(BaseModel):
+    content_attachments: List[SDUAttachment]
+    txt_content: SDUText
+    msg: SDUEmail
+    content_unzipped_files: Optional[List[SPKHTMLConverterResponse]]
 
 
 class FieldName(str, Enum):
