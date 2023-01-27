@@ -629,6 +629,20 @@ class SPKTaxonomyDataDTO(SPKTaxonomyDataInput, MongoId):
     """
 
 
+class SPKConversionInput(BaseModel):
+    """
+    Model that contains inference data along with filenames to use for XLSX conversion.
+
+    Attributes:
+
+        filenames: list of filenames that files should be saved as
+        inference: inference data
+    """
+
+    filenames: List[str]
+    inference: List[Dict[str, Any]]
+
+
 class SPKHTMLConverterResponse(BaseModel):
     """
     Response from converter

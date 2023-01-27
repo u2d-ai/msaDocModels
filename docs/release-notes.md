@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+
+## 0.0.27
+
+Add model SPKConversionInput
+
 ## 0.0.26
 
 Add field content_unzipped_files to SPKEmailConverterResponse
