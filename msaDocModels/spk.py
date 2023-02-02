@@ -290,7 +290,9 @@ class SPKProfileInput(BaseModel):
         title: Title of HTML representation.
         data: List of data.
         missing_diagrams: Settings related with the missing data section and the visualizations it can include.
+        vars: Vars to provide another settings.
         correlations: Settings regarding correlation metrics and thresholds.
+        sort: Default sorting.
         progress_bar: If True will display a progress bar.
         minimal: Minimal mode is a default configuration with minimal computation.
         explorative: Explorative mode.
@@ -304,7 +306,9 @@ class SPKProfileInput(BaseModel):
     html: Dict = {}
     missing_diagrams: Dict = {}
     correlations: Dict = {}
+    vars: Dict = {}
     data: List[Dict[str, Any]]
+    sort: str = "ascending"
     progress_bar: bool = False
     minimal: bool = False
     explorative: bool = False
@@ -316,13 +320,7 @@ class SPKProfileInput(BaseModel):
 class SPKProfileDTO(BaseModel):
     """
     Pydantic model of Profile HTML representation
-
-    Attributes:
-
-        data: Profile html representation.
     """
-
-    data: str
 
 
 class SPKLearnsetInput(BaseModel):
@@ -677,3 +675,12 @@ class FieldName(str, Enum):
     LearnsetDataInput = "learnset"
     ModelDataInput = "model"
     TaxonomyDataInput = "taxonomy"
+
+def change_value(mydict: dict ):
+    mydict["hello"] = 5
+
+if __name__ == "__main__":
+    a = {"hello": 3}
+    print(a)
+    change_value(a)
+    print(a)
