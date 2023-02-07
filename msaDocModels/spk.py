@@ -634,11 +634,11 @@ class SPKConversionInput(BaseModel):
     Attributes:
 
         filenames: list of filenames that files should be saved as
-        inference: inference data
+        inference: inference data, first key means sheet name for XLSX file
     """
 
     filenames: List[str]
-    inference: List[Dict[str, Any]]
+    inference: List[Dict[str, Dict[str, Any]]]
 
 
 class SPKHTMLConverterResponse(BaseModel):
