@@ -1,7 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
-## 0.0.28
+## 0.0.30
+
+Change model for inference, can allow list of target columns
+
+## 0.0.29
 
 Change model for convert xlsx file
 
