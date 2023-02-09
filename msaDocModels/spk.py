@@ -339,7 +339,7 @@ class SPKLearnsetInput(BaseModel):
 
     name: str
     data: List[Dict[str, Any]]
-    target_fields: str
+    target_fields: Union[List[str], str]
     train_fields: List[str]
     ml_n_models: int = 3
     optimize: str = "Recall"
