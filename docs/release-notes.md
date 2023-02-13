@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.31
+
+Pinned package versions
+
 ## 0.0.30
 
 Change model for inference, can allow list of target columns

@@ -1,7 +1,7 @@
 # General Dependencies
-loguru~=0.6.0 # Python logging made (stupidly) simple
-multidict~=6.0.2 # Multidict is dict-like collection of key-value pairs where key might be occurred more than once in the container.
-pydantic~=1.9.2 # Data validation and settings management using python type hints
-genson~=1.2.2 # Powerful, user-friendly JSON Schema generator.
-lxml~=4.9.1 # Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API.
-bson==0.5.10
+loguru==0.6.0 # Python logging made (stupidly) simple
+multidict==6.0.4 # Multidict is dict-like collection of key-value pairs where key might be occurred more than once in the container.
+pydantic==1.9.2 # Data validation and settings management using python type hints
+genson==1.2.2 # Powerful, user-friendly JSON Schema generator.
+lxml==4.9.2 # Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API.
+bson==0.5.10 # Independent BSON codec for Python that doesn't depend on MongoDB.
