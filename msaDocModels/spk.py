@@ -113,6 +113,18 @@ class SPKTextCleanDTO(BaseModel):
     text: str
 
 
+class SPKTextCleanAIInput(BaseModel):
+    """Data input model for Text AI Clean."""
+
+    text: List[str]
+
+
+class SPKTextCleanAIDTO(BaseModel):
+    """DTO, representing the result of service ai text clean."""
+
+    text: List[str]
+
+
 class SPKSentimentInput(DocumentInput):
     """Data input model for Sentiment."""
 
@@ -323,27 +335,51 @@ class SPKProfileDTO(BaseModel):
     """
 
 
-class SPKLearnsetInput(BaseModel):
+class SPKBuildModelInput(BaseModel):
     """
-    Pydantic model of Profile HTML representation AI Prediction input
+    Model that contains input data for building a machine learning model.
 
     Attributes:
-        name: Name of model.
-        data: List of data.
-        target_fields: Name of the target column in data.
-        train_fields: List of column names that contain a text corpus.
-        ml_n_models: Number of training models.
-        optimize: Metric to use for model selection.
-        algorithm: ID of an estimator available in model library.
-    """
 
-    name: str
+        model_name: The name of the model.
+        data: The input data to be used for model training.
+        target_columns: Column names representing the target variable(s) to be predicted.
+        train_columns: Column names to be used for model training.
+        text_features: Column names representing text features to be used for text processing.
+        ignore_features: Column names representing features to be ignored during model training.
+        categorical_features: Column names representing categorical features.
+        date_features: Column names representing date features.
+        numeric_features: Column names representing numeric features.
+        ordinal_features: Dictionary of column names representing ordinal features and their categories.
+        multiplier: Multiplier used for increasing the size of the training data using synthetic samples.
+        session_id: Seed value used for reproducibility.
+        remove_outliers: Flag indicating whether to remove outliers from the data.
+        budget_time_minutes: Maximum time in minutes allowed for model training.
+        included_engines: List of machine learning models to be used for model training.
+        use_gpu: Flag indicating whether to use GPU for model training.
+        fold: Number of folds for cross-validation.
+        tuning_iterations: Number of iterations for hyperparameter tuning.
+        create_metadata: Flag indicating whether to create model metadata
+    """
+    model_name: str = "kim_pipeline"
     data: List[Dict[str, Any]]
-    target_fields: Union[List[str], str]
-    train_fields: List[str]
-    ml_n_models: int = 3
-    optimize: str = "Recall"
-    algorithm: str = "svm"
+    target_columns: List[str] = []
+    train_columns: List[str] = []
+    text_features: List[str] = []
+    ignore_features: List[str] = []
+    categorical_features: List[str] = []
+    date_features: List[str] = []
+    numeric_features: List[str] = []
+    ordinal_features: dict[str, list] = {}
+    multiplier: int = 5
+    session_id: int = 123
+    remove_outliers: bool = False
+    budget_time_minutes: float = 3.0
+    included_engines: List[str] = ["svm", "nb", "ridge", "rf", "dt"]
+    use_gpu = False
+    fold: int = 7
+    tuning_iterations: int = 7
+    create_metadata = False
 
 
 class SPKInferenceInput(BaseModel):
