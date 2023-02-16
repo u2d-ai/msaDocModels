@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.32
+
+Change model for build ai model
+Add models for clean text for model
+
 ## 0.0.31
 
 Pinned package versions
