@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.34
+
+Change structure for clean text for model
+
 ## 0.0.33
 
 Change structure for clean text for model
