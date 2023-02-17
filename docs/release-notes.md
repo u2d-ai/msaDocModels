@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.36
+
+add language for SPKExtractKeywordsInput
+
 ## 0.0.35
 
 Change variables for SPKDataCleanAIDTO
