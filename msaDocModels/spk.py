@@ -18,44 +18,86 @@ from msaDocModels.sdu import (
 
 
 class TenantIdInput(BaseModel):
-    """Input model with tenant_id"""
+    """
+    Input model with tenant_id
+
+    Attributes:
+        tenant_id: tenant's uuid.
+    """
 
     tenant_id: UUID4
 
 
 class TextInput(BaseModel):
-    """Input model with input_text"""
+    """
+    Input model with input_text
+
+    Attributes:
+        input_text: input text.
+    """
 
     input_text: Union[str, List, Dict]
 
 
 class DocumentInput(TextInput):
-    """Input document model"""
+    """
+    Input document model
+
+    Attributes:
+        document_id: optional uuid for document.
+    """
 
     document_id: Optional[UUID4]
 
 
 class SentencesInput(BaseModel):
-    """Input model with sentences"""
+    """
+    Input model with sentences
+
+    Attributes:
+        document_id: optional uuid for document.
+        sentences: list of sentences
+    """
 
     document_id: Optional[UUID4]
     sentences: List[str]
 
 
 class DocumentIds(BaseModel):
-    """Ids of documents from mail model"""
+    """
+    Ids of documents from mail model
+
+    Attributes:
+        document_ids: list of uuids.
+    """
 
     document_ids: List[str]
 
 
 class DocumentLangInput(DocumentInput):
-    """Input document model made over SDULanguage. Default language ENGLISH"""
+    """
+    Input document model made over SDULanguage. Default language ENGLISH
+
+    Attributes:
+        language: object SDULanguage.
+    """
 
     language: SDULanguage = SDULanguage(code="en", lang="ENGLISH")
 
 
 class SPKLanguageInput(DocumentInput):
-    """Input model to detect language."""
+    """
+    Input model to detect language.
+
+    Attributes:
+        hint_languages: language hint for analyzer. 'ITALIAN' or 'it' boosts Italian;see LANGUAGES for known languages.
+        hint_encoding: encoding hint for analyzer. 'SJS' boosts Japanese; see ENCODINGS for all known encodings.
+        sentence_detection: turn on/off language detection by sentence.
+        get_vectors: turn on/off return of sentence vectors.
+        is_plain_text: if turned off, and HTML is provided as input, detection will skip HTML tags,
+            expand HTML entities and detect HTML <lang ...> tags.
+        is_short_text: turn on to get the best effort results (instead of unknown) for short text.
+    """
 
     hint_languages: str = ""
     hint_encoding: str = ""
@@ -70,25 +112,48 @@ class SPKLanguageDTO(sdu.SDULanguageDetails):
 
 
 class TextWithParagraphsGet(BaseModel):
-    """Schema representing the result of paragraph segmentation."""
+    """
+    Schema representing the result of paragraph segmentation.
+
+    Attributes:
+        paragraphs: list of SDUParagraph.
+    """
 
     paragraphs: List[sdu.SDUParagraph]
 
 
 class TextWithSentencesGet(BaseModel):
-    """Schema representing the result of sentences segmentation."""
+    """
+    Schema representing the result of sentences segmentation.
+
+    Attributes:
+        sentences: list of SDUSentence.
+    """
 
     sentences: List[sdu.SDUSentence]
 
 
 class TextWithPagesGet(BaseModel):
-    """Schema representing the result of pages segmentation."""
+    """
+    Schema representing the result of pages segmentation.
+
+    Attributes:
+        pages: list of SDUPage.
+    """
 
     pages: List[sdu.SDUPage]
 
 
 class SPKSegmentationInput(BaseModel):
-    """Input model to detect Segmentation"""
+    """
+    Input model to detect Segmentation
+
+    Attributes:
+        document_id: optional uuid for document.
+        input_text: input_text.
+        language: SDULanguage object for this text.
+
+    """
 
     document_id: Optional[UUID4]
     input_text: Union[str, List[str], Dict[int, str]]
@@ -96,7 +161,14 @@ class SPKSegmentationInput(BaseModel):
 
 
 class SPKSegmentationDTO(BaseModel):
-    """DTO, representing the result of service segmentation. Only one attribute will be non-empty."""
+    """
+    DTO, representing the result of service segmentation. Only one attribute will be non-empty.
+
+    Attributes:
+        pages: list of SDUPage.
+        paragraphs: list of SDUParagraph.
+        sentences: list of SDUSentence.
+    """
 
     pages: List[sdu.SDUPage] = []
     paragraphs: List[sdu.SDUParagraph] = []
@@ -108,21 +180,40 @@ class SPKTextCleanInput(DocumentInput):
 
 
 class SPKTextCleanDTO(BaseModel):
-    """DTO, representing the result of service text clean."""
+    """
+    DTO, representing the result of service text clean.
+
+    Attributes:
+        text: cleaned text.
+    """
 
     text: str
 
 
-class SPKTextCleanAIInput(BaseModel):
-    """Data input model for Text AI Clean."""
+class SPKDataCleanAIInput(BaseModel):
+    """
+    Data input model for Text AI Clean.
 
-    text: List[str]
+    Attributes:
+
+        text: List of dictionaries
+        keys: The keys  which need to clean
+    """
+
+    text: List[Dict[str, Dict[str, Any]]]
+    keys: List[str] = []
 
 
-class SPKTextCleanAIDTO(BaseModel):
-    """DTO, representing the result of service ai text clean."""
+class SPKDataCleanAIDTO(BaseModel):
+    """
+    DTO, representing the result of service ai text clean.
 
-    text: List[str]
+    Attributes:
+
+        text: List of dictionaries
+    """
+
+    data: List[Dict[str, Dict[str, Any]]]
 
 
 class SPKSentimentInput(DocumentInput):
@@ -130,7 +221,16 @@ class SPKSentimentInput(DocumentInput):
 
 
 class SPKSentimentDTO(BaseModel):
-    """DTO, representing the result of service Sentiment."""
+    """
+    DTO, representing the result of service Sentiment.
+
+    Attributes:
+        neg:Negativity score of the text.
+        neu: Neutrality score of the text.
+        pos: Positivity score of the text.
+        compound: Compound score of the text.
+        error: None if there is no errors, otherwise contains description of the error.
+    """
 
     neg: Optional[float]
     neu: Optional[float]
@@ -144,19 +244,65 @@ class SPKPhraseMiningInput(DocumentLangInput):
 
 
 class SPKPhraseMiningDTO(BaseModel):
-    """DTO, representing the result of Phrase mining."""
+    """
+    DTO, representing the result of Phrase mining.
+
+    Attributes:
+        phrases: Nested list of most common phrases in the provided sentence(s)
+    """
 
     phrases: List[Union[List, List[Union[str, int]]]]
 
 
 class SPKWeightedKeywordsDTO(BaseModel):
-    """DTO, representing the result of service Keywords."""
+    """
+    DTO, representing the result of service Keywords.
+
+    Attributes:
+        keywords:  List of keywords and/or keyphrases.
+    """
 
     keywords: List[Union[List, List[Union[str, int]]]]
 
 
+class SPKExtractKeywordsInput(BaseModel):
+    """
+    Data input model for ExtractKeywords.
+
+    Attributes:
+        data: extended input text by InputKeyKeys, have the len as input.
+        algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf]
+        keys: which keys need to extract
+    """
+
+    data: List[Dict[str, Dict[str, Any]]]
+    algorithms: List[str] = List["yake", "bert"]
+    keys: List[str] = []
+
+
+class SPKExtractKeywordsDTO(BaseModel):
+    """
+    DTO, representing the result of service Keywords.
+
+    Attributes:
+        data: extended input text by InputKeyKeys, have the len as input.
+    """
+
+    data: List[Dict[str, Dict[str, Any]]]
+
+
 class SPKSummaryInput(DocumentLangInput):
-    """Data input model for Summary."""
+    """
+    Data input model for Summary.
+
+    Attributes:
+        sum_ratio: Coefficient.
+        sentences_count: Amount of sentences.
+        lsa: Algorithm
+        corpus_size: Coefficient
+        community_size: Coefficient
+        cluster_threshold: Coefficient
+    """
 
     sum_ratio: float = 0.2
     sentences_count: int = 15
@@ -179,7 +325,12 @@ class SPKSummaryDTO(wdc.WDCItem):
 
 
 class SPKNotaryInput(DocumentInput):
-    """Data input model for Notary."""
+    """
+    Data input model for Notary.
+
+    Attributes:
+        city: default city to check.
+    """
 
     city: str = "Bremen"
 
@@ -248,21 +399,41 @@ class SPKCity(BaseModel):
 
 
 class SPKTaxonomyCitiesDTO(BaseModel):
-    """DTO, representing the result of service Taxonomy Cities."""
+    """
+    DTO, representing the result of service Taxonomy Cities.
+
+    Attributes:
+
+        cities: List of SPKCities.
+        cities_winner: winner object SPKCity.
+    """
 
     cities: List[SPKCity]
     cities_winner: Optional[SPKCity]
 
 
 class SPKTaxonomyCountriesDTO(BaseModel):
-    """DTO, representing the result of service Taxonomy Countries."""
+    """
+    DTO, representing the result of service Taxonomy Countries.
 
+    Attributes:
+
+        countries: List of SPKCountries.
+        countries_winner: winner object SPKCountry.
+    """
     countries: List[SPKCountry]
     countries_winner: Optional[SPKCountry]
 
 
 class SPKTaxonomyCompaniesDTO(BaseModel):
-    """DTO, representing the result of service Taxonomy Companies."""
+    """
+    DTO, representing the result of service Taxonomy Companies.
+
+    Attributes:
+
+        companies: List of SPKCompanies.
+        companies_winner: winner object SPKCompany.
+    """
 
     companies: List[SPKCompany]
     companies_winner: Optional[SPKCompany]
@@ -532,6 +703,10 @@ class PyObjectId(ObjectId):
 class MongoId(BaseModel):
     """
     MongoDB _id field.
+
+    Attributes:
+
+        id: The id of element in mongo.
     """
 
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
@@ -692,6 +867,16 @@ class SPKHTMLConverterResponse(BaseModel):
 
 
 class SPKEmailConverterResponse(BaseModel):
+    """
+    Matching pydantic models with fields in the db.
+
+    Attributes:
+        content_attachments: list of SDUAttachments.
+        txt_content: SDUText.
+        msg: SDUEmail.
+        content_unzipped_files: object of
+    """
+
     content_attachments: List[SDUAttachment]
     txt_content: SDUText
     msg: SDUEmail
@@ -699,7 +884,9 @@ class SPKEmailConverterResponse(BaseModel):
 
 
 class FieldName(str, Enum):
-    """Matching pydantic models with fields in the db.
+    """
+    Matching pydantic models with fields in the db.
+
     Attributes:
         TestsetDataInput: name of testset input model.
         LearnsetDataInput: name of learnset input model.
@@ -711,12 +898,3 @@ class FieldName(str, Enum):
     LearnsetDataInput = "learnset"
     ModelDataInput = "model"
     TaxonomyDataInput = "taxonomy"
-
-def change_value(mydict: dict ):
-    mydict["hello"] = 5
-
-if __name__ == "__main__":
-    a = {"hello": 3}
-    print(a)
-    change_value(a)
-    print(a)
