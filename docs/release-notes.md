@@ -1,6 +1,12 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.33
+
+Change structure for clean text for model
+Add more documentation
+Add models for extract keywords
+
 ## 0.0.32
 
 Change model for build ai model
