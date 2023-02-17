@@ -276,7 +276,7 @@ class SPKExtractKeywordsInput(BaseModel):
     """
 
     data: List[Dict[str, Dict[str, Any]]]
-    algorithms: List[str] = List["yake", "bert"]
+    algorithms: List[str] = ["yake", "bert"]
     keys: List[str] = []
 
 
