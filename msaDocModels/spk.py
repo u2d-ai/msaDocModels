@@ -196,11 +196,11 @@ class SPKDataCleanAIInput(BaseModel):
 
     Attributes:
 
-        text: List of dictionaries
+        data: List of nested dictionaries
         keys: The keys  which need to clean
     """
 
-    text: List[Dict[str, Dict[str, Any]]]
+    data: List[Dict[str, Dict[str, Any]]]
     keys: List[str] = []
 
 
@@ -210,7 +210,7 @@ class SPKDataCleanAIDTO(BaseModel):
 
     Attributes:
 
-        text: List of dictionaries
+        data: LList of nested dictionaries
     """
 
     data: List[Dict[str, Dict[str, Any]]]
@@ -273,11 +273,13 @@ class SPKExtractKeywordsInput(BaseModel):
         data: extended input text by InputKeyKeys, have the len as input.
         algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf]
         keys: which keys need to extract
+        language: default is GERMAN
     """
 
     data: List[Dict[str, Dict[str, Any]]]
     algorithms: List[str] = ["yake", "bert"]
     keys: List[str] = []
+    language: SDULanguage = SDULanguage(code="de", lang="GERMAN")
 
 
 class SPKExtractKeywordsDTO(BaseModel):
