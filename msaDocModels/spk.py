@@ -196,11 +196,11 @@ class SPKDataCleanAIInput(BaseModel):
 
     Attributes:
 
-        text: List of dictionaries
+        data: List of nested dictionaries
         keys: The keys  which need to clean
     """
 
-    text: List[Dict[str, Dict[str, Any]]]
+    data: List[Dict[str, Dict[str, Any]]]
     keys: List[str] = []
 
 
@@ -210,7 +210,7 @@ class SPKDataCleanAIDTO(BaseModel):
 
     Attributes:
 
-        text: List of dictionaries
+        data: LList of nested dictionaries
     """
 
     data: List[Dict[str, Dict[str, Any]]]

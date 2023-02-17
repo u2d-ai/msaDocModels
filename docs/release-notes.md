@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.35
+
+Change variables for SPKDataCleanAIDTO
+
 ## 0.0.34
 
 Change structure for clean text for model
