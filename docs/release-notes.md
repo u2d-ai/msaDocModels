@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.37
+
+change case for default Language
+
 ## 0.0.36
 
 add language for SPKExtractKeywordsInput
