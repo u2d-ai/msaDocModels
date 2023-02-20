@@ -76,13 +76,13 @@ class DocumentIds(BaseModel):
 
 class DocumentLangInput(DocumentInput):
     """
-    Input document model made over SDULanguage. Default language ENGLISH
+    Input document model made over SDULanguage. Default language english
 
     Attributes:
         language: object SDULanguage.
     """
 
-    language: SDULanguage = SDULanguage(code="en", lang="ENGLISH")
+    language: SDULanguage = SDULanguage(code="en", lang="english")
 
 
 class SPKLanguageInput(DocumentInput):
@@ -157,7 +157,7 @@ class SPKSegmentationInput(BaseModel):
 
     document_id: Optional[UUID4]
     input_text: Union[str, List[str], Dict[int, str]]
-    language: SDULanguage = SDULanguage(code="en", lang="ENGLISH")
+    language: SDULanguage = SDULanguage(code="en", lang="english")
 
 
 class SPKSegmentationDTO(BaseModel):
@@ -273,13 +273,13 @@ class SPKExtractKeywordsInput(BaseModel):
         data: extended input text by InputKeyKeys, have the len as input.
         algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf]
         keys: which keys need to extract
-        language: default is GERMAN
+        language: default is german
     """
 
     data: List[Dict[str, Dict[str, Any]]]
     algorithms: List[str] = ["yake", "bert"]
     keys: List[str] = []
-    language: SDULanguage = SDULanguage(code="de", lang="GERMAN")
+    language: SDULanguage = SDULanguage(code="de", lang="german")
 
 
 class SPKExtractKeywordsDTO(BaseModel):
