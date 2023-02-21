@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.38
+
+add language for SPKDataCleanAIInput
+
 ## 0.0.37
 
 change case for default Language

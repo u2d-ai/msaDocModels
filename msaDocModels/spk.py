@@ -198,10 +198,12 @@ class SPKDataCleanAIInput(BaseModel):
 
         data: List of nested dictionaries
         keys: The keys  which need to clean
+        language: default is german
     """
 
     data: List[Dict[str, Dict[str, Any]]]
     keys: List[str] = []
+    language: SDULanguage = SDULanguage(code="de", lang="german")
 
 
 class SPKDataCleanAIDTO(BaseModel):
