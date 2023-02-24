@@ -535,7 +535,7 @@ class SPKBuildModelInput(BaseModel):
         fold: Number of folds for cross-validation.
         tuning_iterations: Number of iterations for hyperparameter tuning.
         create_metadata: Flag indicating whether to create model metadata
-        weebhook_url: url to custom HTTP back requests.
+        webhook_url: url to custom HTTP back requests.
     """
     model_name: str = "kim_pipeline"
     data: List[Dict[str, Any]]
@@ -556,7 +556,7 @@ class SPKBuildModelInput(BaseModel):
     fold: int = 7
     tuning_iterations: int = 7
     create_metadata = False
-    weebhook_url: Optional[str]
+    webhook_url: Optional[str]
 
 
 class SPKInferenceInput(BaseModel):
