@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.40
+
+fix typo in webhook url
+
 ## 0.0.39
 
 add webhook url and constant to train model
