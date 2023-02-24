@@ -462,11 +462,13 @@ class AutoMLStatus(BaseModel):
         info: Service status.
         id: UUID model identifier.
         path: The path where model is located
+        model_data: train columns, features, etc
     """
 
     info: str
     id: Optional[uuid.UUID]
     path: Optional[str]
+    model_data: Optional[Dict]
 
 
 class SPKProfileInput(BaseModel):
