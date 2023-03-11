@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.42
+
+change structure for SPKDBBaseDocumentInput
+
 ## 0.0.41
 
 add model_data to AutoMLStatus model
