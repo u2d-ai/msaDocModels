@@ -1430,11 +1430,13 @@ class ExtractionDefaultResult(BaseModel):
     Model for representing an extracted entity.
 
     Attributes:
+        id: id of founded entity.
         text: The text of the extracted entity.
         start: The start index of the extracted entity in the input text.
         end: The end index of the extracted entity in the input text.
     """
 
+    id: int
     text: str
     start: int
     end: int
