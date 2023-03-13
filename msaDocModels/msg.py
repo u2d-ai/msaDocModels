@@ -68,11 +68,7 @@ class MSAAPIMessage:
             classes[k] = v.__class__.__name__
             # print("TOMSG:",k,v, type(v), v.__class__.__name__)
         self.__dict__["classes"] = classes
-        return (
-            json.dumps(self, default=lambda x: jsonable_encoder(x.__dict__))
-            .decode("utf8")
-            .replace("'", '"')
-        )
+        return json.dumps(self, default=lambda x: jsonable_encoder(x.__dict__)).decode("utf8").replace("'", '"')
 
     def fromMsg(self, message: str):
         self.__dict__ = json.loads(message)
