@@ -1462,7 +1462,6 @@ class SPKEntityExtractorDocumentInput(BaseModel):
     Attributes:
         pages_text: The document data.
         language: language.
-
     """
     pages_text: List[SDUPage] = []
     language: SDULanguage = SDULanguage(code="de", lang="german")
@@ -1474,8 +1473,11 @@ class SPKEntityExtractorDocumentDTO(BaseModel):
 
     Attributes:
         pages_text: The document data with extractions with the same structure.
+        document_id: optional uuid for document.
 
     """
+
+    document_id: Optional[UUID4]
     pages_text: List[SDUPage] = []
 
 
