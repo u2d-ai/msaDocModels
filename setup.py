@@ -47,8 +47,7 @@ setup_info = dict(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     # Package info
-    packages=["msaDocModels"]
-    + ["msaDocModels." + pkg for pkg in find_packages("msaDocModels")],
+    packages=["msaDocModels"] + ["msaDocModels." + pkg for pkg in find_packages("msaDocModels")],
     # Add _ prefix to the names of temporary build dirs
     options={
         "build": {"build_base": "_build"},

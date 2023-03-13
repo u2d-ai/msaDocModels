@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.43
+
+add models for spkTextExtractionDefaults, spkTextExtractionNLP
+
 ## 0.0.42
 
 change structure for SPKDBBaseDocumentInput
