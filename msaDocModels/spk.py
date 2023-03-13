@@ -88,6 +88,105 @@ class SDUPageImage(BaseModel):
         orm_mode = False
 
 
+class ExtractionDefaultResult(BaseModel):
+    """
+    Model for representing an extracted entity.
+
+    Attributes:
+        id: id of founded entity.
+        text: The text of the extracted entity.
+        start: The start index of the extracted entity in the input text.
+        end: The end index of the extracted entity in the input text.
+    """
+
+    id: int
+    text: str
+    start: int
+    end: int
+
+
+class RecognizerDefaultResult(ExtractionDefaultResult):
+    """
+    Model for representing a recognized entity.
+
+    Attributes:
+        type: The type of the recognized entity.
+    """
+
+    type: str
+
+
+class SPKTextExtractionDefaults(BaseModel):
+    """
+    Data transfer object for SPK entity extractor.
+
+    Attributes:
+        recognizer: List of recognizer results.
+        zipcode: List of extracted zipcodes.
+        phone_number: List of extracted phone numbers.
+        url: List of extracted URLs.
+        credit_card: List of extracted credit card numbers.
+        credit_cards_strict: List of strictly extracted credit card numbers.
+        ipv4: List of extracted IPv4 addresses.
+        ipv6: List of extracted IPv6 addresses.
+        mac_address: List of extracted MAC addresses.
+        hex_value: List of extracted hexadecimal values.
+        slug: List of extracted slugs.
+        bitcoin_address: List of extracted Bitcoin addresses.
+        yandex_money_address: List of extracted Yandex Money addresses.
+        latitude: List of extracted latitudes.
+        longitude:  List of extracted longitudes.
+        irc :  list  IRCs
+        license_plate : list License plates
+        time : list Time
+        iso_datetime : list ISO datetime
+        isbn : list ISBNs
+        roman_numeral : list Roman numerals
+        ethereum_address : list Ethereum addresses
+        ethereum_hash : list Ethereum hashes
+        uuid : list UUIDs
+        float_number : list Float numbers
+        pgp_fingerprint : list PGP fingerprints
+        pesel :list PESELs
+    """
+
+    recognizer: List[RecognizerDefaultResult] = []
+    zipcode: List[ExtractionDefaultResult] = []
+    phone_number: List[ExtractionDefaultResult] = []
+    url: List[ExtractionDefaultResult] = []
+    credit_card: List[ExtractionDefaultResult] = []
+    credit_cards_strict: List[ExtractionDefaultResult] = []
+    ipv4: List[ExtractionDefaultResult] = []
+    ipv6: List[ExtractionDefaultResult] = []
+    mac_address: List[ExtractionDefaultResult] = []
+    hex_value: List[ExtractionDefaultResult] = []
+    slug: List[ExtractionDefaultResult] = []
+    bitcoin_address: List[ExtractionDefaultResult] = []
+    yandex_money_address: List[ExtractionDefaultResult] = []
+    latitude: List[ExtractionDefaultResult] = []
+    longitude: List[ExtractionDefaultResult] = []
+    irc: List[ExtractionDefaultResult] = []
+    license_plate: List[ExtractionDefaultResult] = []
+    time: List[ExtractionDefaultResult] = []
+    iso_datetime: List[ExtractionDefaultResult] = []
+    isbn: List[ExtractionDefaultResult] = []
+    roman_numeral: List[ExtractionDefaultResult] = []
+    ethereum_address: List[ExtractionDefaultResult] = []
+    ethereum_hash: List[ExtractionDefaultResult] = []
+    uuid: List[ExtractionDefaultResult] = []
+    float_number: List[ExtractionDefaultResult] = []
+    pgp_fingerprint: List[ExtractionDefaultResult] = []
+    pesel: List[ExtractionDefaultResult] = []
+
+
+class SPKTextExtractionDefaultsDTO(BaseModel):
+    """DTO, representing the result of extraction defaults"""
+
+    extractions: Union[
+        SPKTextExtractionDefaults, List[SPKTextExtractionDefaults], Dict[Any, SPKTextExtractionDefaults]
+    ]
+
+
 class SDUEmail(BaseModel):
     """Parsed EMail Pydantic Model."""
 
@@ -182,7 +281,7 @@ class SDUSentence(BaseModel):
     xpos: List[str] = []
     upos: List[str] = []
     tokens: List[str] = []
-    text_defaults: List = []
+    text_defaults: SPKTextExtractionDefaults = SPKTextExtractionDefaults()
     text_ner: List = []
     text_nlp: List = []
     text_ml: List = []
@@ -1425,34 +1524,6 @@ class FieldName(str, Enum):
     TaxonomyDataInput = "taxonomy"
 
 
-class ExtractionDefaultResult(BaseModel):
-    """
-    Model for representing an extracted entity.
-
-    Attributes:
-        id: id of founded entity.
-        text: The text of the extracted entity.
-        start: The start index of the extracted entity in the input text.
-        end: The end index of the extracted entity in the input text.
-    """
-
-    id: int
-    text: str
-    start: int
-    end: int
-
-
-class RecognizerDefaultResult(ExtractionDefaultResult):
-    """
-    Model for representing a recognized entity.
-
-    Attributes:
-        type: The type of the recognized entity.
-    """
-
-    type: str
-
-
 class SPKEntityExtractorInput(DocumentLangInput):
     """Model that contains input data for extract defaults."""
 
@@ -1480,77 +1551,6 @@ class SPKEntityExtractorDocumentDTO(BaseModel):
     """
 
     pages_text: List[SDUPage] = []
-
-
-class SPKTextExtractionDefaults(BaseModel):
-    """
-    Data transfer object for SPK entity extractor.
-
-    Attributes:
-        recognizer: List of recognizer results.
-        zipcode: List of extracted zipcodes.
-        phone_number: List of extracted phone numbers.
-        url: List of extracted URLs.
-        credit_card: List of extracted credit card numbers.
-        credit_cards_strict: List of strictly extracted credit card numbers.
-        ipv4: List of extracted IPv4 addresses.
-        ipv6: List of extracted IPv6 addresses.
-        mac_address: List of extracted MAC addresses.
-        hex_value: List of extracted hexadecimal values.
-        slug: List of extracted slugs.
-        bitcoin_address: List of extracted Bitcoin addresses.
-        yandex_money_address: List of extracted Yandex Money addresses.
-        latitude: List of extracted latitudes.
-        longitude:  List of extracted longitudes.
-        irc :  list  IRCs
-        license_plate : list License plates
-        time : list Time
-        iso_datetime : list ISO datetime
-        isbn : list ISBNs
-        roman_numeral : list Roman numerals
-        ethereum_address : list Ethereum addresses
-        ethereum_hash : list Ethereum hashes
-        uuid : list UUIDs
-        float_number : list Float numbers
-        pgp_fingerprint : list PGP fingerprints
-        pesel :list PESELs
-    """
-
-    recognizer: List[RecognizerDefaultResult]
-    zipcode: List[ExtractionDefaultResult]
-    phone_number: List[ExtractionDefaultResult]
-    url: List[ExtractionDefaultResult]
-    credit_card: List[ExtractionDefaultResult]
-    credit_cards_strict: List[ExtractionDefaultResult]
-    ipv4: List[ExtractionDefaultResult]
-    ipv6: List[ExtractionDefaultResult]
-    mac_address: List[ExtractionDefaultResult]
-    hex_value: List[ExtractionDefaultResult]
-    slug: List[ExtractionDefaultResult]
-    bitcoin_address: List[ExtractionDefaultResult]
-    yandex_money_address: List[ExtractionDefaultResult]
-    latitude: List[ExtractionDefaultResult]
-    longitude: List[ExtractionDefaultResult]
-    irc: List[ExtractionDefaultResult]
-    license_plate: List[ExtractionDefaultResult]
-    time: List[ExtractionDefaultResult]
-    iso_datetime: List[ExtractionDefaultResult]
-    isbn: List[ExtractionDefaultResult]
-    roman_numeral: List[ExtractionDefaultResult]
-    ethereum_address: List[ExtractionDefaultResult]
-    ethereum_hash: List[ExtractionDefaultResult]
-    uuid: List[ExtractionDefaultResult]
-    float_number: List[ExtractionDefaultResult]
-    pgp_fingerprint: List[ExtractionDefaultResult]
-    pesel: List[ExtractionDefaultResult]
-
-
-class SPKTextExtractionDefaultsDTO(BaseModel):
-    """DTO, representing the result of extraction defaults"""
-
-    extractions: Union[
-        SPKTextExtractionDefaults, List[SPKTextExtractionDefaults], Dict[Any, SPKTextExtractionDefaults]
-    ]
 
 
 class SPKTextExtractionNLPInput(DocumentLangInput):
