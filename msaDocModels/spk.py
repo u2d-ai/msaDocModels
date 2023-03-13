@@ -1451,12 +1451,11 @@ class RecognizerDefaultResult(ExtractionDefaultResult):
     type: str
 
 
-class SPKEntityExtractorInput(TextInput):
+class SPKEntityExtractorInput(DocumentLangInput):
     """Model that contains input data for extract defaults."""
-    language: SDULanguage = SDULanguage(code="de", lang="german")
 
 
-class SPKEntityExtractorDocumentInput(DocumentLangInput):
+class SPKEntityExtractorDocumentInput(BaseModel):
     """
     Model that contains input data for extract defaults.
 
