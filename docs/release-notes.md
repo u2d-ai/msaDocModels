@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.45
+
+add document_id models for SPKEntityExtractorDocumentDTO
+
 ## 0.0.44
 
 fix models for spkTextExtractionDefaults
