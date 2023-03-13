@@ -1574,12 +1574,14 @@ class SPKTextExtractionDocumentNLPInput(DocumentLangInput):
     Attributes:
 
         pages_text: The document data.
+        document_id: optional uuid for document.
         language: language.
         entities: Use this processor, recognizes mention spans of a particular entity type.
         sentiment: Use this processor, pre-trained word vectors for sentence-level classification tasks.
         dependencies: Use this processor, builds a tree structure of words.
     """
     pages_text: List[SDUPage] = []
+    document_id: Optional[UUID4]
     language: SDULanguage = SDULanguage(code="de", lang="german")
     entities: bool = True
     sentiment: bool = False
@@ -1591,10 +1593,10 @@ class SPKTextExtractionDocumentNLPDTO(BaseModel):
     Model that contains extraction data implemented in page data.
 
     Attributes:
-        document_data: The document data with extractions with the same structure.
+        pages_text: The document data with extractions with the same structure.
 
     """
-    document_data: List[SDUPage] = []
+    pages_text: List[SDUPage] = []
 
 
 class SPKExtractionNLP(BaseModel):
