@@ -1569,7 +1569,7 @@ class SPKTextExtractionNLPInput(DocumentLangInput):
     dependencies: bool = True
 
 
-class SPKTextExtractionDocumentNLPInput(DocumentLangInput):
+class SPKTextExtractionDocumentNLPInput(BaseModel):
     """
     Data input model for extraction NLP from document.
 
