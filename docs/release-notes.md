@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+
+## 0.0.54
+
+add input and output  models for Notary
+
 ## 0.0.53
 
 fix NER results model
