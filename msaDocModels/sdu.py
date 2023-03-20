@@ -1877,7 +1877,7 @@ class SentenceDefaultsDTO(NestingId):
         result: list of sentences with nlp found in the page.
     """
 
-    result: TextExtractionDefaults = TextExtractionDefaults()
+    result: TextExtractionDefaults
 
 
 class ParagraphDefaultsDTO(NestingId):
