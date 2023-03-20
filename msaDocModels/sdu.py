@@ -1862,7 +1862,7 @@ class TextExtractionNERDocumentDTO(BaseModel):
     Attributes:
 
         text_extraction_ner: result of named entity recognition text extraction on a document
-                            using the SPKTextExtractionService.
+                            using the TextExtractionService.
     """
 
     text_extraction_ner: TextExtractionDocumentNERDTO

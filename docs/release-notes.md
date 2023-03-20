@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.53
+
+fix NER results model
+
 ## 0.0.52
 
 fix Defaults results model
