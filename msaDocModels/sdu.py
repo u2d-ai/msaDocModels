@@ -1,4 +1,3 @@
-import html
 import os
 import uuid
 from datetime import datetime
@@ -7,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from bson.objectid import ObjectId
 from msaDocModels import wdc
-from msaDocModels.utils.htmlutils import sanitize
 from pydantic import UUID4, BaseModel, Field
 
 
@@ -116,9 +114,9 @@ class RecognizerDefaultResult(ExtractionDefaultResult):
     type: str
 
 
-class SPKTextExtractionDefaults(BaseModel):
+class TextExtractionDefaults(BaseModel):
     """
-    Data transfer object for SPK entity extractor.
+    Data transfer object for  entity extractor.
 
     Attributes:
         recognizer: List of recognizer results.
@@ -179,11 +177,13 @@ class SPKTextExtractionDefaults(BaseModel):
     pesel: List[ExtractionDefaultResult] = []
 
 
-class SPKTextExtractionDefaultsDTO(BaseModel):
+class TextExtractionDefaultsDTO(BaseModel):
     """DTO, representing the result of extraction defaults"""
 
     extractions: Union[
-        SPKTextExtractionDefaults, List[SPKTextExtractionDefaults], Dict[Any, SPKTextExtractionDefaults]
+        TextExtractionDefaults,
+        List[TextExtractionDefaults],
+        Dict[Any, TextExtractionDefaults],
     ]
 
 
@@ -225,22 +225,40 @@ class SDUDetailLanguage(BaseModel):
 
 
 class SDULanguage(BaseModel):
-    """Detected Language Pydantic Model."""
+    """
+    Detected Language Pydantic Model.
 
-    code: str = "unknown"  # Short de, en etc.
-    lang: str = "unknown"  # Language name like german.
-    reliable: bool = False  # is the detected result reliable.
-    proportion: int = -1  # Proportion of the text in this language.
-    bytes: int = -1  # Bytes of the text in this language.
-    confidence: float = -1  # Confidence from 0.01 to 1.0.
-    winner: Optional[str] = None  # Selected overall Winner
+    Attributes:
+        code: Short de, en etc.
+        lang: Language name like german.
+        reliable: is the detected result reliable.
+        proportion:  Proportion of the text in this language.
+        bytes:  Bytes of the text in this language.
+        confidence: Confidence from 0.01 to 1.0.
+        winner: Selected overall Winner
+    """
+
+    code: str = "unknown"
+    lang: str = "unknown"
+    reliable: bool = False
+    proportion: int = -1
+    bytes: int = -1
+    confidence: float = -1
+    winner: Optional[str] = None
 
     class Config:
         orm_mode = False
 
 
 class SDULanguageDetails(SDULanguage):
-    details: Optional[List] = list()  # Details of the top 3 detected languages.
+    """
+    Detected Detail Language Pydantic Model.
+
+    Attributes:
+        details: Details of the top 3 detected language
+    """
+
+    details: Optional[List] = []
 
 
 class SDUStatistic(BaseModel):
@@ -276,22 +294,19 @@ class SDUStatistic(BaseModel):
 
 
 class SDUSentence(BaseModel):
+    """Sentence Pydantic Model."""
+
     id: int = -1
     text: str = ""
-    xpos: List[str] = []
-    upos: List[str] = []
-    tokens: List[str] = []
-    text_defaults: SPKTextExtractionDefaults = SPKTextExtractionDefaults()
-    text_ner: List = []
-    text_nlp: List = []
-    text_ml: List = []
-    text_wsd: List = []
+    lang: SDULanguage = SDULanguage()
 
     class Config:
         orm_mode = False
 
 
 class SDUPDFElement(BaseModel):
+    """PDF Element Pydantic Model."""
+
     line_id: int = -1
     span_id: int = -1
     flags: int = 0
@@ -303,6 +318,8 @@ class SDUPDFElement(BaseModel):
 
 
 class SDUParagraph(BaseModel):
+    """Paragraph Pydantic Model."""
+
     id: int = -1
     sort: int = -1
     nsen: int = 0
@@ -310,10 +327,7 @@ class SDUParagraph(BaseModel):
     section: str = "body"
     size_type: str = "body"
     sentences: List[SDUSentence] = []
-    sentences_en: List[SDUSentence] = []
-    clean: str = ""
     lang: SDULanguage = SDULanguage()
-    elements: List[SDUPDFElement] = []
 
     class Config:
         orm_mode = False
@@ -338,9 +352,14 @@ class SDUParagraph(BaseModel):
 
 
 class SDUText(BaseModel):
+    """Text Pydantic Model."""
+
     raw: str = ""
     clean: str = ""
     html_content: str = ""
+    raw_path: str = ""
+    clean_path: str = ""
+    html_path: str = ""
     structured_content: Dict = {}
     lang: SDULanguage = SDULanguage()
     paragraphs: List[SDUParagraph] = []
@@ -358,7 +377,8 @@ class SDUVersion(BaseModel):
 
 
 class SDULearnset(BaseModel):
-    # dict entry is the class, list are the train entrys for this class
+    """Learnset Pydantic Model."""
+
     version: str = ""
     text: Dict = {}
     nlu: Dict = {}
@@ -382,7 +402,7 @@ class SDULearnset(BaseModel):
         orm_mode = False
 
 
-class SPKNotaryInput(DocumentInput):
+class NotaryInput(DocumentInput):
     """
     Data input model for Notary.
 
@@ -393,7 +413,7 @@ class SPKNotaryInput(DocumentInput):
     city: str = "Bremen"
 
 
-class SPKNotary(BaseModel):
+class Notary(BaseModel):
     """Detected Notary Pydantic Model."""
 
     sid: Optional[str]
@@ -412,17 +432,17 @@ class SPKNotary(BaseModel):
     is_local_city: bool
 
 
-class SPKNotaryWinnerDTO(SPKNotary):
+class NotaryWinnerDTO(Notary):
     """DTO, representing the result of service Notary."""
 
 
 class SDUPage(BaseModel):
+    """Page Pydantic Model."""
+
     id: int = -1
     npar: int = 0
     input: str = ""
-    has_en: bool = False
     text: SDUText = SDUText()
-    notary: SPKNotary = None
 
     class Config:
         orm_mode = False
@@ -437,13 +457,6 @@ class SDUPage(BaseModel):
         ret = ""
         for par in self.text.paragraphs:
             for sen in par.sentences:
-                ret += sen.text + " "
-        return ret
-
-    def get_text_no_lf_en(self):
-        ret = ""
-        for par in self.text.paragraphs:
-            for sen in par.sentences_en:
                 ret += sen.text + " "
         return ret
 
@@ -559,29 +572,19 @@ class SDUPage(BaseModel):
                 ret.append(txt)
         return ret
 
-    def get_all_sentences_text_list_en(self):
-        ret = []
-        for par in self.text.paragraphs:
-            for i, sen in enumerate(par.sentences_en):
-                txt = sen.text
-                if i == len(par.sentences_en) - 1:
-                    txt = txt + get_cr_paragraph()
-                else:
-                    txt = txt + get_sentence_seperator()
-                ret.append(txt)
-        return ret
-
     def set_input(self, input_text: str):
         self.input = input_text
 
 
 class SDUData(BaseModel):
+    """Data Pydantic Model."""
+
     npages: int = 0  #
     stats: SDUStatistic = SDUStatistic()  #
     pages: List[SDUPage] = []
     converter: List[str] = []
-    email: SDUEmail = SDUEmail()  # email header
-    text: SDUText = SDUText()  # parsed/body only
+    email: SDUEmail = SDUEmail()
+    text: SDUText = SDUText()
     images: List[SDUPageImage] = []
 
     class Config:
@@ -592,12 +595,6 @@ class SDUData(BaseModel):
             self.pages.append(page_pre)
             self.npages = len(self.pages)
             page_pre.page = self.npages
-
-    def escaped(self):
-        return html.escape(self.text.html_content)
-
-    async def sanitized(self):
-        return await sanitize(self.text.html_content)
 
 
 class SDUBBox(BaseModel):
@@ -667,11 +664,8 @@ class SDULayout(BaseModel):
     texttrace: List = []
     images: List = []
     drawings: List = []
-    blocks: List[tuple] = []
-    bjson: Dict = {}
+    blocks: Dict = {}
     columns: List[SDUBBox] = []
-    rows: List[SDUBBox] = []
-    layouts: List = []
     header: SDUBBox = SDUBBox()
     body: SDUBBox = SDUBBox()
     footer: SDUBBox = SDUBBox()
@@ -725,7 +719,7 @@ class DocumentLangInput(DocumentInput):
     language: SDULanguage = SDULanguage(code="en", lang="english")
 
 
-class SPKLanguageInput(DocumentInput):
+class LanguageInput(DocumentInput):
     """
     Input model to detect language.
 
@@ -747,7 +741,7 @@ class SPKLanguageInput(DocumentInput):
     is_short_text: bool = False
 
 
-class SPKLanguageDTO(SDULanguageDetails):
+class LanguageDTO(SDULanguageDetails):
     """DTO, representing the result of service language."""
 
 
@@ -784,7 +778,7 @@ class TextWithPagesGet(BaseModel):
     pages: List[SDUPage]
 
 
-class SPKSegmentationInput(BaseModel):
+class SegmentationInput(BaseModel):
     """
     Input model to detect Segmentation
 
@@ -800,7 +794,7 @@ class SPKSegmentationInput(BaseModel):
     language: SDULanguage = SDULanguage(code="en", lang="english")
 
 
-class SPKSegmentationDTO(BaseModel):
+class SegmentationDTO(BaseModel):
     """
     DTO, representing the result of service segmentation. Only one attribute will be non-empty.
 
@@ -815,11 +809,11 @@ class SPKSegmentationDTO(BaseModel):
     sentences: List[SDUSentence] = []
 
 
-class SPKTextCleanInput(DocumentInput):
+class TextCleanInput(DocumentInput):
     """Data input model for Text Clean."""
 
 
-class SPKTextCleanDTO(BaseModel):
+class TextCleanDTO(BaseModel):
     """
     DTO, representing the result of service text clean.
 
@@ -830,7 +824,7 @@ class SPKTextCleanDTO(BaseModel):
     text: str
 
 
-class SPKDataCleanAIInput(BaseModel):
+class DataCleanAIInput(BaseModel):
     """
     Data input model for Text AI Clean.
 
@@ -846,7 +840,7 @@ class SPKDataCleanAIInput(BaseModel):
     language: SDULanguage = SDULanguage(code="de", lang="german")
 
 
-class SPKDataCleanAIDTO(BaseModel):
+class DataCleanAIDTO(BaseModel):
     """
     DTO, representing the result of service ai text clean.
 
@@ -858,11 +852,11 @@ class SPKDataCleanAIDTO(BaseModel):
     data: List[Dict[str, Dict[str, Any]]]
 
 
-class SPKSentimentInput(DocumentInput):
+class SentimentInput(DocumentInput):
     """Data input model for Sentiment."""
 
 
-class SPKSentimentDTO(BaseModel):
+class SentimentDTO(BaseModel):
     """
     DTO, representing the result of service Sentiment.
 
@@ -881,11 +875,11 @@ class SPKSentimentDTO(BaseModel):
     error: Optional[str]
 
 
-class SPKPhraseMiningInput(DocumentLangInput):
+class PhraseMiningInput(DocumentLangInput):
     """Data input model for Phrase mining."""
 
 
-class SPKPhraseMiningDTO(BaseModel):
+class PhraseMiningDTO(BaseModel):
     """
     DTO, representing the result of Phrase mining.
 
@@ -896,7 +890,7 @@ class SPKPhraseMiningDTO(BaseModel):
     phrases: List[Union[List, List[Union[str, int]]]]
 
 
-class SPKWeightedKeywordsDTO(BaseModel):
+class WeightedKeywordsDTO(BaseModel):
     """
     DTO, representing the result of service Keywords.
 
@@ -907,7 +901,7 @@ class SPKWeightedKeywordsDTO(BaseModel):
     keywords: List[Union[List, List[Union[str, int]]]]
 
 
-class SPKExtractKeywordsInput(BaseModel):
+class ExtractKeywordsInput(BaseModel):
     """
     Data input model for ExtractKeywords.
 
@@ -924,7 +918,7 @@ class SPKExtractKeywordsInput(BaseModel):
     language: SDULanguage = SDULanguage(code="de", lang="german")
 
 
-class SPKExtractKeywordsDTO(BaseModel):
+class ExtractKeywordsDTO(BaseModel):
     """
     DTO, representing the result of service Keywords.
 
@@ -935,7 +929,7 @@ class SPKExtractKeywordsDTO(BaseModel):
     data: List[Dict[str, Dict[str, Any]]]
 
 
-class SPKSummaryInput(DocumentLangInput):
+class SummaryInput(DocumentLangInput):
     """
     Data input model for Summary.
 
@@ -956,20 +950,34 @@ class SPKSummaryInput(DocumentLangInput):
     cluster_threshold: float = 0.65
 
 
-class SPKStatisticsInput(DocumentLangInput):
+class StatisticsInput(DocumentLangInput):
     """Data input model for Statistics."""
 
 
-class SPKStatisticsDTO(SDUStatistic):
+class StatisticsDTO(SDUStatistic):
     """DTO, representing the result of service Statistics."""
 
 
-class SPKSummaryDTO(wdc.WDCItem):
+class SummaryDTO(wdc.WDCItem):
     """DTO, representing the result of service Summary."""
 
 
-class SPKCountry(BaseModel):
-    """Detected Country Pydantic Model."""
+class Country(BaseModel):
+    """
+    Detected Country Pydantic Model.
+
+    Attributes:
+        name: name
+        official: official
+        currencies: currencies
+        capital:capital
+        region: region
+        subregion: subregion
+        languages: languages
+        latlng: latlng
+        flag: flag
+        calling_codes: calling_codes
+    """
 
     name: str
     official: str
@@ -983,8 +991,25 @@ class SPKCountry(BaseModel):
     calling_codes: List[str]
 
 
-class SPKCompany(BaseModel):
-    """Detected Company Pydantic Model."""
+class Company(BaseModel):
+    """
+    Detected Company Pydantic Model.
+
+    Attributes:
+        rank: rank
+        company: name
+        employees: employees
+        change_in_rank: change_in_rank
+        industry: industry
+        description: description
+        revenue: revenue
+        revenue_change: revenue_change
+        profits: profits
+        profit_change: profit_change
+        assets: assets
+        market_value: market_value
+
+    """
 
     rank: int
     company: str
@@ -1000,7 +1025,7 @@ class SPKCompany(BaseModel):
     market_value: str
 
 
-class SPKCity(BaseModel):
+class City(BaseModel):
     """Detected City Pydantic Model."""
 
     name: str
@@ -1008,53 +1033,53 @@ class SPKCity(BaseModel):
     latlng: List[float]
 
 
-class SPKTaxonomyCitiesDTO(BaseModel):
+class TaxonomyCitiesDTO(BaseModel):
     """
     DTO, representing the result of service Taxonomy Cities.
 
     Attributes:
 
-        cities: List of SPKCities.
-        cities_winner: winner object SPKCity.
+        cities: List of Cities.
+        cities_winner: winner object City.
     """
 
-    cities: List[SPKCity]
-    cities_winner: Optional[SPKCity]
+    cities: List[City]
+    cities_winner: Optional[City]
 
 
-class SPKTaxonomyCountriesDTO(BaseModel):
+class TaxonomyCountriesDTO(BaseModel):
     """
     DTO, representing the result of service Taxonomy Countries.
 
     Attributes:
 
-        countries: List of SPKCountries.
-        countries_winner: winner object SPKCountry.
+        countries: List of Countries.
+        countries_winner: winner object Country.
     """
 
-    countries: List[SPKCountry]
-    countries_winner: Optional[SPKCountry]
+    countries: List[Country]
+    countries_winner: Optional[Country]
 
 
-class SPKTaxonomyCompaniesDTO(BaseModel):
+class TaxonomyCompaniesDTO(BaseModel):
     """
     DTO, representing the result of service Taxonomy Companies.
 
     Attributes:
 
-        companies: List of SPKCompanies.
-        companies_winner: winner object SPKCompany.
+        companies: List of Companies.
+        companies_winner: winner object Company.
     """
 
-    companies: List[SPKCompany]
-    companies_winner: Optional[SPKCompany]
+    companies: List[Company]
+    companies_winner: Optional[Company]
 
 
-class SPKTaxonomyDTO(SPKTaxonomyCountriesDTO, SPKTaxonomyCompaniesDTO, SPKTaxonomyCitiesDTO):
+class TaxonomyDTO(TaxonomyCountriesDTO, TaxonomyCompaniesDTO, TaxonomyCitiesDTO):
     """DTO, representing the result of service Taxonomy."""
 
 
-class SPKTaxonomyInput(DocumentInput):
+class TaxonomyInput(DocumentInput):
     """Data input model for Taxonomy."""
 
 
@@ -1076,7 +1101,7 @@ class AutoMLStatus(BaseModel):
     model_data: Optional[Dict]
 
 
-class SPKProfileInput(BaseModel):
+class ProfileInput(BaseModel):
     """
     Pydantic model to generate a profile report based on data
 
@@ -1111,13 +1136,13 @@ class SPKProfileInput(BaseModel):
     orange_mode: bool = False
 
 
-class SPKProfileDTO(BaseModel):
+class ProfileDTO(BaseModel):
     """
     Pydantic model of Profile HTML representation
     """
 
 
-class SPKBuildModelInput(BaseModel):
+class BuildModelInput(BaseModel):
     """
     Model that contains input data for building a machine learning model.
 
@@ -1167,7 +1192,7 @@ class SPKBuildModelInput(BaseModel):
     webhook_url: Optional[str]
 
 
-class SPKInferenceInput(BaseModel):
+class InferenceInput(BaseModel):
     """
      Pydantic model for get inference data.
 
@@ -1181,7 +1206,7 @@ class SPKInferenceInput(BaseModel):
     data: List[Dict[str, Any]]
 
 
-class SPKInferenceDTO(BaseModel):
+class InferenceDTO(BaseModel):
     """
     Pydantic model, provided merged inference data.
 
@@ -1207,7 +1232,7 @@ class ProcessStatus(BaseModel):
     timestamp: str = str(datetime.utcnow())
 
 
-class SPKDBBaseDocumentInput(BaseModel):
+class DBBaseDocumentInput(BaseModel):
     """
     Document fields for input.
 
@@ -1225,23 +1250,13 @@ class SPKDBBaseDocumentInput(BaseModel):
         html_path: path to txt file with html.
         folder: folder name.
         group_uuid: group identifier.
-        size_bytes: size in bytes.
-        is_file: file or not.
-        wfl_status: wfl status.
-        import_status: import status.
-        user: user name.
-        date: date.
-        runtime_s: runtime in sec.
         tags: list of tags.
         language: language.
         needs_update: need update or not.
         data: data.
-        project_code: project code.
-        npages: count of pages.
         images: images.
         pages_layout: layouts.
         pages_text: pages.
-        content: content.
         metadata: metadata.
         description: discription.
         status: document status
@@ -1261,23 +1276,13 @@ class SPKDBBaseDocumentInput(BaseModel):
     html_path: str = ""
     folder: str = ""
     group_uuid: str = ""
-    size_bytes: int = 0
-    is_file: bool = False
-    wfl_status: List = []
-    import_status: str = "new"
-    user: str = ""
-    date: str = ""
-    runtime_s: float = 0.0
     tags: Optional[Dict] = {}
     language: Optional[SDULanguage] = None
     needs_update: bool = False
     data: Optional[SDUData] = None
-    project_code: str = ""
-    npages: int = 0
     images: List[SDUPageImage] = []
     pages_layout: List[SDULayout] = []
     pages_text: List[SDUPage] = []
-    content: Optional[SDUContent] = None
     metadata: Dict = {}
     description: str = ""
     file: Dict = {}
@@ -1340,7 +1345,7 @@ class MongoId(BaseModel):
         json_encoders = {ObjectId: str}
 
 
-class SPKDBBaseDocumentDTO(SPKDBBaseDocumentInput, MongoId):
+class DBBaseDocumentDTO(DBBaseDocumentInput, MongoId):
     """
     Document fields for output.
     """
@@ -1368,7 +1373,7 @@ class BaseInfo(BaseModel):
     name: str
 
 
-class SPKUpdateAI(BaseModel):
+class UpdateAI(BaseModel):
     """
     Update ai fields.
 
@@ -1390,7 +1395,7 @@ class SPKUpdateAI(BaseModel):
     name: Optional[str]
 
 
-class SPKLearnsetDataInput(BaseInfo):
+class LearnsetDataInput(BaseInfo):
     """
     AI learnset input.
 
@@ -1402,7 +1407,7 @@ class SPKLearnsetDataInput(BaseInfo):
     learnsets: List[Dict]
 
 
-class SPKTestsetDataInput(BaseInfo):
+class TestsetDataInput(BaseInfo):
     """
     AI testset input.
 
@@ -1414,7 +1419,7 @@ class SPKTestsetDataInput(BaseInfo):
     testsets: List[Dict]
 
 
-class SPKTaxonomyDataInput(BaseInfo):
+class TaxonomyDataInput(BaseInfo):
     """
     AI taxonomy input.
 
@@ -1426,7 +1431,7 @@ class SPKTaxonomyDataInput(BaseInfo):
     taxonomies: List[Dict]
 
 
-class SPKModelDataInput(BaseInfo):
+class ModelDataInput(BaseInfo):
     """
     AI model input.
 
@@ -1438,31 +1443,31 @@ class SPKModelDataInput(BaseInfo):
     model: Dict
 
 
-class SPKTestsetDataDTO(SPKTestsetDataInput, MongoId):
+class TestsetDataDTO(TestsetDataInput, MongoId):
     """
     AI testset output.
     """
 
 
-class SPKLearnsetDataDTO(SPKLearnsetDataInput, MongoId):
+class LearnsetDataDTO(LearnsetDataInput, MongoId):
     """
     AI learnset output.
     """
 
 
-class SPKModelDataDTO(SPKModelDataInput, MongoId):
+class ModelDataDTO(ModelDataInput, MongoId):
     """
     AI model output.
     """
 
 
-class SPKTaxonomyDataDTO(SPKTaxonomyDataInput, MongoId):
+class TaxonomyDataDTO(TaxonomyDataInput, MongoId):
     """
     AI taxonomy output.
     """
 
 
-class SPKConversionInput(BaseModel):
+class ConversionInput(BaseModel):
     """
     Model that contains inference data along with filenames to use for XLSX conversion.
 
@@ -1476,7 +1481,7 @@ class SPKConversionInput(BaseModel):
     inference: List[Dict[str, Dict[str, Any]]]
 
 
-class SPKHTMLConverterResponse(BaseModel):
+class HTMLConverterResponse(BaseModel):
     """
     Response from converter
 
@@ -1490,11 +1495,12 @@ class SPKHTMLConverterResponse(BaseModel):
     txt_content: SDUText
 
 
-class SPKEmailConverterResponse(BaseModel):
+class EmailConverterResponse(BaseModel):
     """
     Matching pydantic models with fields in the db.
 
     Attributes:
+
         content_attachments: list of SDUAttachments.
         txt_content: SDUText.
         msg: SDUEmail.
@@ -1504,7 +1510,7 @@ class SPKEmailConverterResponse(BaseModel):
     content_attachments: List[SDUAttachment]
     txt_content: SDUText
     msg: SDUEmail
-    content_unzipped_files: Optional[List[SPKHTMLConverterResponse]]
+    content_unzipped_files: Optional[List[HTMLConverterResponse]]
 
 
 class FieldName(str, Enum):
@@ -1512,6 +1518,7 @@ class FieldName(str, Enum):
     Matching pydantic models with fields in the db.
 
     Attributes:
+
         TestsetDataInput: name of testset input model.
         LearnsetDataInput: name of learnset input model.
         ModelDataInput: name of model input model.
@@ -1524,36 +1531,25 @@ class FieldName(str, Enum):
     TaxonomyDataInput = "taxonomy"
 
 
-class SPKEntityExtractorInput(DocumentLangInput):
+class EntityExtractorInput(DocumentLangInput):
     """Model that contains input data for extract defaults."""
 
 
-class SPKEntityExtractorDocumentInput(BaseModel):
+class EntityExtractorDocumentInput(BaseModel):
     """
     Model that contains input data for extract defaults.
 
     Attributes:
+
         pages_text: The document data.
         document_id: optional uuid for document.
-        language: language.
     """
+
     pages_text: List[SDUPage] = []
     document_id: Optional[UUID4]
-    language: SDULanguage = SDULanguage(code="de", lang="german")
 
 
-class SPKEntityExtractorDocumentDTO(BaseModel):
-    """
-    Model that contains extraction data implemented in page data.
-
-    Attributes:
-        pages_text: The document data with extractions with the same structure.
-    """
-
-    pages_text: List[SDUPage] = []
-
-
-class SPKTextExtractionNLPInput(DocumentLangInput):
+class TextExtractionNLPInput(DocumentLangInput):
     """
     Data input model for extraction NLP from text.
 
@@ -1569,7 +1565,7 @@ class SPKTextExtractionNLPInput(DocumentLangInput):
     dependencies: bool = True
 
 
-class SPKTextExtractionDocumentNLPInput(BaseModel):
+class TextExtractionDocumentNLPInput(BaseModel):
     """
     Data input model for extraction NLP from document.
 
@@ -1577,31 +1573,19 @@ class SPKTextExtractionDocumentNLPInput(BaseModel):
 
         pages_text: The document data.
         document_id: optional uuid for document.
-        language: language.
         entities: Use this processor, recognizes mention spans of a particular entity type.
         sentiment: Use this processor, pre-trained word vectors for sentence-level classification tasks.
         dependencies: Use this processor, builds a tree structure of words.
     """
+
     pages_text: List[SDUPage] = []
     document_id: Optional[UUID4]
-    language: SDULanguage = SDULanguage(code="de", lang="german")
     entities: bool = True
     sentiment: bool = False
     dependencies: bool = True
 
 
-class SPKTextExtractionDocumentNLPDTO(BaseModel):
-    """
-    Model that contains extraction data implemented in page data.
-
-    Attributes:
-        pages_text: The document data with extractions with the same structure.
-
-    """
-    pages_text: List[SDUPage] = []
-
-
-class SPKExtractionNLP(BaseModel):
+class ExtractionNLP(BaseModel):
     """
     Model which represent find NLP in text.
 
@@ -1612,8 +1596,8 @@ class SPKExtractionNLP(BaseModel):
         upos: upos in text.
         xpos: xpos in text.
         feats: features of entity.
-        start: start char in text.
-        end: end char in text.
+        s: start char in text.
+        e: end char in text.
     """
 
     id: int
@@ -1621,23 +1605,27 @@ class SPKExtractionNLP(BaseModel):
     upos: str
     xpos: str
     feats: Optional[str]
-    start: int
-    end: int
+    s: int
+    e: int
 
 
-class SPKTextExtractionNLPDTO(BaseModel):
+class TextExtractionNLPDTO(BaseModel):
     """
     Data input model for Text Clean.
 
     Attributes:
 
-        extractions: List of SPKExtractionNLP.
+        extractions: List of ExtractionNLP.
     """
 
-    extractions: Union[List[SPKExtractionNLP], List[List[SPKExtractionNLP]], Dict[Any, List[List[SPKExtractionNLP]]]]
+    extractions: Union[
+        List[ExtractionNLP],
+        List[List[ExtractionNLP]],
+        Dict[Any, List[List[ExtractionNLP]]],
+    ]
 
 
-class SPKTextExtractionInstallLanguage(BaseModel):
+class TextExtractionInstallLanguage(BaseModel):
     """
     Install stanza module for transfer language.
 
@@ -1649,7 +1637,7 @@ class SPKTextExtractionInstallLanguage(BaseModel):
     language: SDULanguage = SDULanguage()
 
 
-class SPKTextExtractionInstallLanguageDTO(BaseModel):
+class TextExtractionInstallLanguageDTO(BaseModel):
     """
     Message of progress install language.
 
@@ -1661,7 +1649,7 @@ class SPKTextExtractionInstallLanguageDTO(BaseModel):
     install: str
 
 
-class SPKTextExtractionCapabilitiesInput(BaseModel):
+class TextExtractionCapabilitiesInput(BaseModel):
     """
     Model to get Capabilities by language.
 
@@ -1673,7 +1661,7 @@ class SPKTextExtractionCapabilitiesInput(BaseModel):
     language: SDULanguage = SDULanguage()
 
 
-class SPKTextExtractionCapabilitiesDTO(BaseModel):
+class TextExtractionCapabilitiesDTO(BaseModel):
     """
     Represent Capabilities by language.
 
@@ -1683,3 +1671,261 @@ class SPKTextExtractionCapabilitiesDTO(BaseModel):
     """
 
     capabilities: Any
+
+
+class TextExtractionDocumentDefaultsDTO(BaseModel):
+    """
+    Model that contains extraction data implemented in page data.
+
+    Attributes:
+
+        pages_text: The document data with extractions with the same structure.
+    """
+
+    pages_text: List[SDUPage] = []
+
+
+class NestingId(BaseModel):
+    """
+    Model that represents id of nesting structure (page, paragraph, sentence..)
+
+    Attributes:
+
+        id: id of found entity.
+    """
+
+    id: int = -1
+
+
+class SentenceNLPDTO(NestingId):
+    """
+    Model that represents a sentences with NLP extractions.
+
+    Attributes:
+
+        result: list of sentences with nlp found in the page.
+    """
+
+    result: List[ExtractionNLP] = []
+
+
+class ParagraphNLPDTO(NestingId):
+    """
+    Model that represents a paragraph with NLP extractions.
+
+    Attributes:
+
+        sentences: list of sentences.
+    """
+
+    sentences: List[SentenceNLPDTO] = []
+
+
+class PageNLPDTO(NestingId):
+    """
+    Model that represents a page with named entity recognition extractions.
+
+    Attributes:
+
+        paragraphs: list of paragraphs.
+    """
+
+    paragraphs: List[ParagraphNLPDTO] = []
+
+
+class TextExtractionDocumentNLPPage(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with NLP extractions.
+    """
+
+    version: str
+    pages_text: List[PageNLPDTO] = []
+
+
+class TextExtractionNLPDocumentDTO(BaseModel):
+    """
+    Model that contains nlp data implemented in sentence data.
+
+    Attributes:
+
+        text_extraction_nlp: The same structure with document.
+
+    """
+
+    text_extraction_nlp: TextExtractionDocumentNLPPage
+
+
+class Position(BaseModel):
+    """
+    Model that represents a position.
+
+    Attributes:
+        s: The start index of a position.
+        e: The end index of a position.
+    """
+
+    s: int
+    e: int
+
+
+class ExtractionNER(NestingId):
+    """
+    Model that represents named entity found in text.
+
+    Attributes:
+
+        text: found entity
+        type: recognition of text.
+    """
+
+    text: str
+    type: str
+    positions: List[Position]
+
+
+class PageNERDTO(NestingId):
+    """
+    Model that represents a page with named entity recognition extractions.
+
+    Attributes:
+
+        result: list of named entity recognition extractions found in the page.
+    """
+
+    result: List[ExtractionNER] = []
+
+
+class TextExtractionNERInput(BaseModel):
+    """
+    Model that represents an input for named entity recognition text extraction.
+
+    Attributes:
+
+        input_text: input text.
+        language: object SDULanguage.
+    """
+
+    input_text: Union[str, List[str], Dict[Any, str]]
+    language: SDULanguage = SDULanguage(code="de", lang="geman")
+
+
+class TextExtractionDocumentNERInput(BaseModel):
+    """
+    Model that represents an input for named entity recognition text extraction on a document.
+
+    Attributes:
+
+        pages_text: list of pages to perform named entity recognition on.
+    """
+
+    pages_text: List[SDUPage] = []
+    document_id: Optional[UUID4]
+
+
+class TextExtractionNERDTO(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction.
+
+    Attributes:
+
+        result: list of named entity recognition extractions found in the text. Can be a list of extractions,
+                    a list of lists of extractions (for multiple documents), or a dictionary with keys
+                    representing document ids and values representing lists of extractions.
+    """
+
+    result: Union[List[ExtractionNER], List[List[ExtractionNER]], Dict[Any, List[ExtractionNER]]]
+
+
+class TextExtractionDocumentNERDTO(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with named entity recognition extractions.
+    """
+
+    version: str
+    pages_text: List[PageNERDTO] = []
+
+
+class TextExtractionNERDocumentDTO(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document.
+
+    Attributes:
+
+        text_extraction_ner: result of named entity recognition text extraction on a document
+                            using the SPKTextExtractionService.
+    """
+
+    text_extraction_ner: TextExtractionDocumentNERDTO
+
+
+class SentenceDefaultsDTO(NestingId):
+    """
+    Model that represents a sentences with NLP extractions.
+
+    Attributes:
+
+        result: list of sentences with nlp found in the page.
+    """
+
+    result: TextExtractionDefaults = TextExtractionDefaults()
+
+
+class ParagraphDefaultsDTO(NestingId):
+    """
+    Model that represents a paragraph with NLP extractions.
+
+    Attributes:
+
+        sentences: list of sentences.
+    """
+
+    sentences: List[SentenceDefaultsDTO] = []
+
+
+class PageDefaultsDTO(NestingId):
+    """
+    Model that represents a page with named entity recognition extractions.
+
+    Attributes:
+
+        paragraphs: list of paragraphs.
+    """
+
+    paragraphs: List[ParagraphDefaultsDTO] = []
+
+
+class TextExtractionDocumentDefaultsPage(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with NLP extractions.
+    """
+
+    version: str
+    pages_text: List[PageDefaultsDTO] = []
+
+
+class TextExtractionDefaultsDocumentDTO(BaseModel):
+    """
+    Model that contains nlp data implemented in sentence data.
+
+    Attributes:
+
+        text_extraction_nlp: The same structure with document.
+
+    """
+
+    text_extraction_nlp: TextExtractionDocumentDefaultsPage
