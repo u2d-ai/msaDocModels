@@ -328,7 +328,6 @@ class SDUParagraph(BaseModel):
     size_type: str = "body"
     sentences: List[SDUSentence] = []
     lang: SDULanguage = SDULanguage()
-    elements: List[SDUPDFElement] = []
 
     class Config:
         orm_mode = False
@@ -1758,7 +1757,7 @@ class TextExtractionNLPDocumentDTO(BaseModel):
 
     """
 
-    text_extraction_nlp: TextExtractionDocumentNLPPage = TextExtractionDocumentNLPPage()
+    text_extraction_nlp: TextExtractionDocumentNLPPage
 
 
 class Position(BaseModel):
@@ -1929,4 +1928,4 @@ class TextExtractionDefaultsDocumentDTO(BaseModel):
 
     """
 
-    text_extraction_nlp: TextExtractionDocumentDefaultsPage = TextExtractionDocumentDefaultsPage()
+    text_extraction_nlp: TextExtractionDocumentDefaultsPage

@@ -1,13 +1,18 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+
+## 0.0.51
+
+clean document structure, add models for NLP, NER, Defaults results
+
 ## 0.0.50
 
-fix fields for SPKTextExtractionDocumentNLPInput
+fix fields for TextExtractionDocumentNLPInput
 
 ## 0.0.49
 
-add defaults for SPKTextExtractionDefaults model
+add defaults for TextExtractionDefaults model
 
 ## 0.0.48
 
@@ -15,27 +20,27 @@ add id to ExtractionDefaultResult, RecognizerDefaultResult
 
 ## 0.0.47
 
-add document_id models for SPKTextExtractionDocumentNLPInput
+add document_id models for TextExtractionDocumentNLPInput
 
 ## 0.0.46
 
-fix document_id models for SPKEntityExtractorDocumentDTO
+fix document_id models for EntityExtractorDocumentDTO
 
 ## 0.0.45
 
-add document_id models for SPKEntityExtractorDocumentDTO
+add document_id models for EntityExtractorDocumentDTO
 
 ## 0.0.44
 
-fix models for spkTextExtractionDefaults
+fix models for TextExtractionDefaults
 
 ## 0.0.43
 
-add models for spkTextExtractionDefaults, spkTextExtractionNLP
+add models for TextExtractionDefaults, TextExtractionNLP
 
 ## 0.0.42
 
-change structure for SPKDBBaseDocumentInput
+change structure for DBBaseDocumentInput
 
 ## 0.0.41
 
@@ -51,7 +56,7 @@ add webhook url and constant to train model
 
 ## 0.0.38
 
-add language for SPKDataCleanAIInput
+add language for DataCleanAIInput
 
 ## 0.0.37
 
@@ -59,11 +64,11 @@ change case for default Language
 
 ## 0.0.36
 
-add language for SPKExtractKeywordsInput
+add language for ExtractKeywordsInput
 
 ## 0.0.35
 
-Change variables for SPKDataCleanAIDTO
+Change variables for DataCleanAIDTO
 
 ## 0.0.34
 
@@ -98,11 +103,11 @@ Change input/output models to Profiling
 
 ## 0.0.27
 
-Add model SPKConversionInput
+Add model ConversionInput
 
 ## 0.0.26
 
-Add field content_unzipped_files to SPKEmailConverterResponse
+Add field content_unzipped_files to EmailConverterResponse
 
 ## 0.0.25
 
@@ -114,12 +119,12 @@ Change document_id to optional, add process to document status
 
 ## 0.0.23
 
-Added spk models to working with DBLayer, HTMLconverter, EmailConverter
+Added  models to working with DBLayer, HTMLconverter, EmailConverter
 
 
 ## 0.0.12
 
-Added spk models to working with Text, Language/Statistics/Segmentation/Phrases/Summary/Sentiment
+Added  models to working with Text, Language/Statistics/Segmentation/Phrases/Summary/Sentiment
 
 ## 0.0.2
 
