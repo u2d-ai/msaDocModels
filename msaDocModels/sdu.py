@@ -2115,14 +2115,14 @@ class TextExtractionDefaultsDocumentDTO(BaseModel):
 
 class PageNotaryDTO(NestingId):
     """
-    Model that represents a page with named entity recognition extractions.
+    Model that represents a page with notary extractions.
 
     Attributes:
 
-        result: list of named entity recognition extractions found in the page.
+        result: Notary object if found notary or empty dict.
     """
 
-    result: List[Notary] = []
+    result: Union[Notary, Dict] = {}
 
 
 class TextExtractionNotaryDocumentPage(BaseModel):
