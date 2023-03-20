@@ -9,6 +9,22 @@ from msaDocModels import wdc
 from pydantic import UUID4, BaseModel, Field
 
 
+def to_camel(string: str) -> str:
+    """
+    Converts snake_case string to camelCase
+
+    Parameters:
+
+        string: text to convert
+
+    Returns:
+
+        string in camelCase
+    """
+    split_string = string.split("_")
+
+    return "".join([split_string[0]] + [word.capitalize() for word in split_string[1:]])
+
 def get_crlf() -> str:
     """get's the OS Environment Variable for ``CR_LF``.
     Default: ``\\n``
@@ -411,6 +427,172 @@ class NotaryInput(DocumentInput):
     """
 
     city: str = "Bremen"
+
+
+
+class NotaryRemovalValidity(BaseModel):
+    """
+    Notary removal validity field.
+
+    Attributes:
+
+        from_: start date
+        to: end date
+    """
+
+    from_: Any
+    to: Any
+
+
+class NotaryInterruptionValidity(BaseModel):
+    """
+    Notary interruption validity field.
+
+    Attributes:
+
+        from_: start date
+        to: end date
+    """
+
+    from_: Any
+    to: Any
+
+
+class NotaryValidity(BaseModel):
+    """
+    Notary validity field.
+
+    Attributes:
+
+        from_: start date
+        to: end date
+    """
+
+    from_: Any
+    to: Any
+
+class NotaryItem(BaseModel):
+    """
+    Class that represents record in notary.json file.
+
+    Attributes:
+
+        id: Notary identifier.
+        sid: Security identifier in format "str(ret.id) + "@" + str(ret.person_id)"
+        tmp_office_rm_from: Temporary office rm from.
+        tmp_office_rm_to: Temporary office rm to.
+        chamber_name: Chamber name
+        removal_validity: Notary removal validity.
+        tmp_office_rm_status: Temporary office rm status.
+        tmp_office_pause_from: Temporary office pause from.
+        tmp_office_pause_to: Temporary office pause to.
+        interruption_validity: Notary interruption validity.
+        tmp_office_pause_status: Temporary office pause status.
+        chamber_id: Chamber id.
+        last_name: Last name of the notary.
+        historical_names: Historical Names.
+        first_name: Fist anme of the notary.
+        office_title: Notary office title.
+        office_title_full: Notary full office title.
+        office_title_code: Notary Office title code.
+        zip_code: Zip code.
+        city: City in which notary os located.
+        office_city: City in which office os located.
+        official_location: Notary official location.
+        address: Notary address.
+        additional_address: Notary additional address.
+        title: Notary title.
+        title_appendix: Notary title appendix.
+        phone: Notary phone.
+        language1: Fist notary language.
+        language2: Secondary notary language.
+        complete_name_with_official_location: Complete Notary name with office location.
+        url: Notary website
+        valid_to: The license is valid to
+        valid_from: The license is valid from
+        notary_validity: Notary validity
+        office_hour_cities: Office hour cities.
+        historical_cities: Historical cities.
+        latitude: Office latitude.
+        longitude: Office langitude.
+        user_id: User identifier.
+        group_id: Group identifier.
+        person_id: Person identifier.
+        is_bremen: Is office located in bremen.
+    """
+
+    id: int = -1
+    sid: Optional[str] = ""
+    tmp_office_rm_from: Any
+    tmp_office_rm_to: Any
+    chamber_name: str = "na"
+    removal_validity: NotaryRemovalValidity
+    tmp_office_rm_status: Any
+    tmp_office_pause_from: Any
+    tmp_office_pause_to: Any
+    interruption_validity: NotaryInterruptionValidity
+    tmp_office_pause_status: Any
+    chamber_id: int = -1
+    last_name: Optional[str] = ""
+    historical_names: Any
+    first_name: Optional[str] = ""
+    office_title: Optional[str] = ""
+    office_title_full: Optional[str] = ""
+    office_title_code: Optional[str] = ""
+    zip_code: Optional[str] = ""
+    city: Optional[str] = ""
+    office_city: Optional[str] = ""
+    official_location: Optional[str] = ""
+    address: Optional[str] = ""
+    additional_address: Optional[str] = ""
+    title: Any
+    title_appendix: Any
+    phone: Optional[str] = ""
+    language1: Any
+    language2: Any
+    complete_name_with_official_location: Optional[str] = ""
+    url: Any
+    valid_to: Any
+    valid_from: Optional[str] = ""
+    notary_validity: NotaryValidity
+    office_hour_cities: Any
+    historical_cities: Optional[str] = ""
+    latitude: Any
+    longitude: Any
+    user_id: Optional[str] = ""
+    group_id: Optional[str] = ""
+    person_id: int = -1
+    is_bremen: Optional[bool] = False
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+    def get_train_data(self, chambers_only: bool = False) -> str:
+        """
+        The function generates a feature string based on the values of various properties of the object.
+
+        Parameters:
+
+            chambers_only: If True, includes only the zip code, city, address, historical cities, and office city.
+            If False, includes the city, address, first name, last name, and office title full. Defaults: False.
+
+        Returns:
+
+            string
+        """
+        xt_feature = ""
+
+        if chambers_only:
+            for item in (self.zip_code, self.city, self.address, self.historical_cities, self.office_city):
+                if item:
+                    xt_feature += " " + item
+        else:
+            for item in (self.city, self.address, self.first_name, self.last_name, self.office_title_full):
+                if item:
+                    xt_feature += " " + item
+
+        return xt_feature
 
 
 class Notary(BaseModel):
@@ -1924,8 +2106,47 @@ class TextExtractionDefaultsDocumentDTO(BaseModel):
 
     Attributes:
 
-        text_extraction_nlp: The same structure with document.
+            text_extraction_defaults: The same structure with document.
 
     """
 
-    text_extraction_nlp: TextExtractionDocumentDefaultsPage
+    text_extraction_defaults: TextExtractionDocumentDefaultsPage
+
+
+class PageNotaryDTO(NestingId):
+    """
+    Model that represents a page with named entity recognition extractions.
+
+    Attributes:
+
+        result: list of named entity recognition extractions found in the page.
+    """
+
+    result: List[Notary] = []
+
+
+class TextExtractionNotaryDocumentPage(BaseModel):
+    """
+    Model that represents the result of search notary in text.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with Notary extractions.
+    """
+
+    version: str
+    pages_text: List[PageNotaryDTO] = []
+
+
+class TextExtractionNotaryDocumentDTO(BaseModel):
+    """
+    Model that contains notary data implemented in page data.
+
+    Attributes:
+
+            text_extraction_notary: The same structure with document.
+
+    """
+
+    text_extraction_notary: TextExtractionNotaryDocumentPage
