@@ -180,7 +180,11 @@ class TextExtractionDefaults(BaseModel):
 class TextExtractionDefaultsDTO(BaseModel):
     """DTO, representing the result of extraction defaults"""
 
-    extractions: Union[TextExtractionDefaults, List[TextExtractionDefaults], Dict[Any, TextExtractionDefaults]]
+    extractions: Union[
+        TextExtractionDefaults,
+        List[TextExtractionDefaults],
+        Dict[Any, TextExtractionDefaults],
+    ]
 
 
 class SDUEmail(BaseModel):
@@ -305,6 +309,12 @@ class SDUPDFElement(BaseModel):
 
     line_id: int = -1
     span_id: int = -1
+    flags: int = 0
+    bold: bool = False
+    italic: bool = False
+    font: str = ""
+    fontsize: float = 0.0
+    color: int = 0
 
 
 class SDUParagraph(BaseModel):
@@ -1609,7 +1619,11 @@ class TextExtractionNLPDTO(BaseModel):
         extractions: List of ExtractionNLP.
     """
 
-    extractions: Union[List[ExtractionNLP], List[List[ExtractionNLP]], Dict[Any, List[List[ExtractionNLP]]]]
+    extractions: Union[
+        List[ExtractionNLP],
+        List[List[ExtractionNLP]],
+        Dict[Any, List[List[ExtractionNLP]]],
+    ]
 
 
 class TextExtractionInstallLanguage(BaseModel):
@@ -1853,3 +1867,66 @@ class TextExtractionNERDocumentDTO(BaseModel):
     """
 
     text_extraction_ner: TextExtractionDocumentNERDTO
+
+
+class SentenceDefaultsDTO(NestingId):
+    """
+    Model that represents a sentences with NLP extractions.
+
+    Attributes:
+
+        result: list of sentences with nlp found in the page.
+    """
+
+    result: TextExtractionDefaults = TextExtractionDefaults()
+
+
+class ParagraphDefaultsDTO(NestingId):
+    """
+    Model that represents a paragraph with NLP extractions.
+
+    Attributes:
+
+        sentences: list of sentences.
+    """
+
+    sentences: List[SentenceDefaultsDTO] = []
+
+
+class PageDefaultsDTO(NestingId):
+    """
+    Model that represents a page with named entity recognition extractions.
+
+    Attributes:
+
+        paragraphs: list of paragraphs.
+    """
+
+    paragraphs: List[ParagraphDefaultsDTO] = []
+
+
+class TextExtractionDocumentDefaultsPage(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with NLP extractions.
+    """
+
+    version: str
+    pages_text: List[PageDefaultsDTO] = []
+
+
+class TextExtractionDefaultsDocumentDTO(BaseModel):
+    """
+    Model that contains nlp data implemented in sentence data.
+
+    Attributes:
+
+        text_extraction_nlp: The same structure with document.
+
+    """
+
+    text_extraction_nlp: TextExtractionDocumentDefaultsPage = TextExtractionDocumentDefaultsPage()
