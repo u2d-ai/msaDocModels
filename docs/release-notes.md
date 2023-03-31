@@ -3,6 +3,10 @@
 
 ## 0.0.55
 
+remove language from extraction NLP
+
+## 0.0.55
+
 change model for NotaryDTO, when notary are not found
 
 ## 0.0.54

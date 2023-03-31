@@ -25,6 +25,7 @@ def to_camel(string: str) -> str:
 
     return "".join([split_string[0]] + [word.capitalize() for word in split_string[1:]])
 
+
 def get_crlf() -> str:
     """get's the OS Environment Variable for ``CR_LF``.
     Default: ``\\n``
@@ -429,7 +430,6 @@ class NotaryInput(DocumentInput):
     city: str = "Bremen"
 
 
-
 class NotaryRemovalValidity(BaseModel):
     """
     Notary removal validity field.
@@ -470,6 +470,7 @@ class NotaryValidity(BaseModel):
 
     from_: Any
     to: Any
+
 
 class NotaryItem(BaseModel):
     """
@@ -1731,20 +1732,10 @@ class EntityExtractorDocumentInput(BaseModel):
     document_id: Optional[UUID4]
 
 
-class TextExtractionNLPInput(DocumentLangInput):
+class TextExtractionNLPInput(DocumentInput):
     """
     Data input model for extraction NLP from text.
-
-    Attributes:
-
-        entities: Use this processor, recognizes mention spans of a particular entity type.
-        sentiment: Use this processor, pre-trained word vectors for sentence-level classification tasks.
-        dependencies: Use this processor, builds a tree structure of words.
     """
-
-    entities: bool = True
-    sentiment: bool = False
-    dependencies: bool = True
 
 
 class TextExtractionDocumentNLPInput(BaseModel):
@@ -1755,16 +1746,10 @@ class TextExtractionDocumentNLPInput(BaseModel):
 
         pages_text: The document data.
         document_id: optional uuid for document.
-        entities: Use this processor, recognizes mention spans of a particular entity type.
-        sentiment: Use this processor, pre-trained word vectors for sentence-level classification tasks.
-        dependencies: Use this processor, builds a tree structure of words.
     """
 
     pages_text: List[SDUPage] = []
     document_id: Optional[UUID4]
-    entities: bool = True
-    sentiment: bool = False
-    dependencies: bool = True
 
 
 class ExtractionNLP(BaseModel):
@@ -1800,59 +1785,7 @@ class TextExtractionNLPDTO(BaseModel):
         extractions: List of ExtractionNLP.
     """
 
-    extractions: Union[
-        List[ExtractionNLP],
-        List[List[ExtractionNLP]],
-        Dict[Any, List[List[ExtractionNLP]]],
-    ]
-
-
-class TextExtractionInstallLanguage(BaseModel):
-    """
-    Install stanza module for transfer language.
-
-    Attributes:
-
-        language: SDULanguage object for this text.
-    """
-
-    language: SDULanguage = SDULanguage()
-
-
-class TextExtractionInstallLanguageDTO(BaseModel):
-    """
-    Message of progress install language.
-
-    Attributes:
-
-        install: Message of progress install language.
-    """
-
-    install: str
-
-
-class TextExtractionCapabilitiesInput(BaseModel):
-    """
-    Model to get Capabilities by language.
-
-    Attributes:
-
-        language: SDULanguage object for this text.
-    """
-
-    language: SDULanguage = SDULanguage()
-
-
-class TextExtractionCapabilitiesDTO(BaseModel):
-    """
-    Represent Capabilities by language.
-
-    Attributes:
-
-        capabilities: Capabilities by language
-    """
-
-    capabilities: Any
+    extractions: Union[List[ExtractionNLP], List[List[ExtractionNLP]], Dict[Any, List[ExtractionNLP]]]
 
 
 class TextExtractionDocumentDefaultsDTO(BaseModel):
