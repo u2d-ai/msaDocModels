@@ -1,5 +1,6 @@
 /dist/
 /dist_docs/
+.idea/
 .lh/
 /msaDocModels.egg-info/
 

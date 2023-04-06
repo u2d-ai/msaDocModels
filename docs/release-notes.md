@@ -1,7 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
-## 0.0.55
+## 0.0.57
+
+Add possible to save learnset object and testset object.
+
+## 0.0.56
 
 remove language from extraction NLP
 

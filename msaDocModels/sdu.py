@@ -1584,10 +1584,10 @@ class LearnsetDataInput(BaseInfo):
 
     Attributes:
 
-        learnsets: list of learnset objects.
+        learnsets: list of learnset objects or learnset object.
     """
 
-    learnsets: List[Dict]
+    learnsets: Union[List[Dict], Dict]
 
 
 class TestsetDataInput(BaseInfo):
@@ -1596,10 +1596,10 @@ class TestsetDataInput(BaseInfo):
 
     Attributes:
 
-        testsets: list of testsets objects.
+        testsets: list of testsets objects or learnset object.
     """
 
-    testsets: List[Dict]
+    testsets: Union[List[Dict], Dict]
 
 
 class TaxonomyDataInput(BaseInfo):
