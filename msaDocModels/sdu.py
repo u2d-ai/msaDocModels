@@ -1058,13 +1058,13 @@ class SentimentDTO(BaseModel):
     error: Optional[str]
 
 
-class PhraseMiningInput(DocumentLangInput):
-    """Data input model for Phrase mining."""
+class PhrasesWordBagInput(DocumentLangInput):
+    """Data input model for word bag."""
 
 
-class PhraseMiningDTO(BaseModel):
+class PhrasesWordBagDTO(BaseModel):
     """
-    DTO, representing the result of Phrase mining.
+    DTO, representing the result of word bag.
 
     Attributes:
         phrases: Nested list of most common phrases in the provided sentence(s)

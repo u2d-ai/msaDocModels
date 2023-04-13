@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 from pydantic import BaseModel
 
@@ -14,5 +14,5 @@ class MSAOpenAPIInfo(BaseModel):
     """API Version."""
     url: str = "/openapi.json"
     """OpenAPI URL."""
-    tags: Optional[List[str]] = None
+    tags: Optional[List[Dict[str, Any]]] = None
     """OpenAPI Tags."""

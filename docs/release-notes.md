@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.58
+
+Changed names of models to Phrases word bag
+Fix MSAOpenAPIInfo model
+
 ## 0.0.57
 
 Add possible to save learnset object and testset object.
