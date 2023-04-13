@@ -1069,9 +1069,9 @@ class PhrasesMiningInput(DocumentInput):
         max_phrase_size: Maximum allowed phrase size.
         alpha: Threshold for the significance score.
     """
-    min_support: int
-    max_phrase_size: int
-    alpha: int
+    min_support: int = 10
+    max_phrase_size: int = 40
+    alpha: int = 4
 
 
 class PhraseMiningDTO(BaseModel):
