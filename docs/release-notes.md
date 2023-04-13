@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.59
+
+- Add models for Phrases mining
+
 ## 0.0.58
 
 - Changed names of models to Phrases word bag

@@ -968,13 +968,11 @@ class SegmentationInput(BaseModel):
     Attributes:
         document_id: optional uuid for document.
         input_text: input_text.
-        language: SDULanguage object for this text.
 
     """
 
     document_id: Optional[UUID4]
     input_text: Union[str, List[str], Dict[int, str]]
-    language: SDULanguage = SDULanguage(code="en", lang="english")
 
 
 class SegmentationDTO(BaseModel):
@@ -1060,6 +1058,32 @@ class SentimentDTO(BaseModel):
 
 class PhrasesWordBagInput(DocumentLangInput):
     """Data input model for word bag."""
+
+
+class PhrasesMiningInput(DocumentInput):
+    """
+    Frequent pattern mining followed by agglomerative clustering on the input corpus
+
+    Attributes:
+        min_support: Minimum support threshold which must be satisfied by each phrase during frequent pattern mining.
+        max_phrase_size: Maximum allowed phrase size.
+        alpha: Threshold for the significance score.
+    """
+    min_support: int
+    max_phrase_size: int
+    alpha: int
+
+
+class PhraseMiningDTO(BaseModel):
+    """
+    DTO, representing the result of phrases mining.
+
+    Attributes:
+        partitioned_docs: Document.
+        index_vocab: Vocabulary for text.
+    """
+    partitioned_docs: List[List[List[int]]]
+    index_vocab: List[Any]
 
 
 class PhrasesWordBagDTO(BaseModel):
