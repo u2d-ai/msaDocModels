@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.60
+
+- Add default variables for Phrases mining
+
 ## 0.0.59
 
 - Add models for Phrases mining
