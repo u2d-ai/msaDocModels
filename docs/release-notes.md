@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.61
+
+- Add models to extract keywords from text
+
 ## 0.0.60
 
 - Add default variables for Phrases mining
