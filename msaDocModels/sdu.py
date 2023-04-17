@@ -1114,7 +1114,7 @@ class ExtractKeywordsInput(BaseModel):
 
     Attributes:
         data: extended input text by InputKeyKeys, have the len as input.
-        algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf]
+        algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf"]
         keys: which keys need to extract
         language: default is german
     """
@@ -1123,6 +1123,28 @@ class ExtractKeywordsInput(BaseModel):
     algorithms: List[str] = ["yake", "bert"]
     keys: List[str] = []
     language: SDULanguage = SDULanguage(code="de", lang="german")
+
+
+class ExtractKeywordsTextInput(DocumentInput):
+    """
+    Data input model for ExtractKeywords.
+
+    Attributes:
+        algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf"]
+        language: default is german
+    """
+    algorithms: List[str] = ["yake", "bert"]
+    language: SDULanguage = SDULanguage(code="de", lang="german")
+
+
+class ExtractKeywordsTextDTO(BaseModel):
+    """
+    DTO, representing the result of service Keywords.
+
+    Attributes:
+        data: Extracted keywords for text.
+    """
+    data: Union[List[str], List[List[str]], Dict[Any, List[str]]]
 
 
 class ExtractKeywordsDTO(BaseModel):
