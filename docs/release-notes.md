@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+## 0.0.63
+
+- Add DTO models to extract phrases from text
+
 ## 0.0.62
 
 - Add models to extract phrases from text

@@ -1119,6 +1119,36 @@ class PhraseKeyword(BaseModel):
     distance: float
 
 
+class PhrasesKeyTermsDTO(BaseModel):
+    """
+    DTO, representing the result of key terms.
+
+    Attributes:
+        phrases: List of key terms
+    """
+    phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
+
+
+class PhrasesContribDTO(BaseModel):
+    """
+    DTO, representing the result of phrases contrib.
+
+    Attributes:
+        phrases: List of phrases contribution
+    """
+    phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
+
+
+class PhrasesRakeDTO(BaseModel):
+    """
+    DTO, representing the result of phrases rake.
+
+    Attributes:
+        phrases: List of most common words
+    """
+    phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
+
+
 class PhraseMiningDTO(BaseModel):
     """
     DTO, representing the result of phrases mining.
