@@ -1074,6 +1074,51 @@ class PhrasesMiningInput(DocumentInput):
     alpha: int = 4
 
 
+class KeywordsExtractionParams(DocumentLangInput):
+    """
+    Input model to extract keywords
+
+    Attributes:
+        keyphrase_ngram_range: Length, in words, of the extracted keywords/keyphrases.
+        top_n: Return the top n keywords/keyphrases
+        use_maxsum: Whether to use Max Sum Distance for the selection of keywords/keyphrases.
+        use_mmr: Whether to use Maximal Marginal Relevance (MMR) for the selection of keywords/keyphrases.
+        diversity: The diversity of the results between 0 and 1 if `use_mmr` is set to True.
+        nr_candidates: The number of candidates to consider if `use_maxsum` is set to True.
+    """
+
+    keyphrase_ngram_range: Tuple[int, int] = (1, 1)
+    top_n: int = 5
+    use_maxsum: bool = False
+    use_mmr: bool = False
+    diversity: float = 0.5
+    nr_candidates: int = 20
+
+
+class PhrasesKeyTermsInput(KeywordsExtractionParams):
+    """Data input model for key terms."""
+
+
+class PhrasesContribInput(KeywordsExtractionParams):
+    """Data input model for phrases contrib."""
+
+
+class PhrasesRakeInput(DocumentLangInput):
+    """Data input model for phrases rake."""
+
+
+class PhraseKeyword(BaseModel):
+    """
+    Model that contains keyword data.
+
+    Attributes:
+        entity: keyword of document.
+        distance: keyword distance to the input document.
+    """
+    entity: str
+    distance: float
+
+
 class PhraseMiningDTO(BaseModel):
     """
     DTO, representing the result of phrases mining.
