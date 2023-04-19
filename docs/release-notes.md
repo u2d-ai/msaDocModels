@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+
+## 0.0.64
+
+- Add models to extended endpoints in summary
+
 ## 0.0.63
 
 - Add DTO models to extract phrases from text

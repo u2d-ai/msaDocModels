@@ -1262,6 +1262,73 @@ class StatisticsDTO(SDUStatistic):
     """DTO, representing the result of service Statistics."""
 
 
+class SummaryEmbeddedInput(DocumentLangInput):
+    """Data input model for Summary Embedded."""
+
+
+class SentenceTopicsInput(DocumentLangInput):
+    """
+    Data input model for Sentence Topics.
+
+    Attributes:
+
+            multiplier: Multiplier used for increasing the size of the training data using synthetic samples.
+    """
+    multiplier: int = 20
+
+
+class TopicFrequency(BaseModel):
+    """Frequency for sentence in topic.
+
+    Attributes:
+        sentence: topic sentence.
+        frequency: sentence frequency in topic.
+    """
+
+    sentence: str
+    frequency: float
+
+
+class TopicInfo(BaseModel):
+    """
+    Information about topic including it frequency and name.
+
+    Attributes:
+        name: topic name.
+        sentences: topic sentences and their frequency.
+    """
+
+    name: str
+    sentences: List[TopicFrequency]
+
+
+class SentenceTopicsDTO(BaseModel):
+    """
+    DTO, representing the result of service Sentence Topics.
+
+    Attributes:
+        topics: list of information about each topic.
+        visuals: topics visuals.
+    """
+
+    topics: List[TopicInfo]
+    visuals: List[str]
+
+
+class SentenceSummary(BaseModel):
+    """Sentence along with its respective rate."""
+    sentence: str
+    rate: float
+
+
+class SummaryEmbeddedDTO(BaseModel):
+    """DTO, representing the result of service Summary Embedded.
+    Attributes:
+        sentences_summary: List of sentences along with their respective rates.
+    """
+    sentences_summary: List[SentenceSummary]
+
+
 class SummaryDTO(wdc.WDCItem):
     """DTO, representing the result of service Summary."""
 
