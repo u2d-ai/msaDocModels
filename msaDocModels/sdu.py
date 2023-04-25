@@ -1782,18 +1782,6 @@ class TestsetDataInput(BaseInfo):
     testsets: Union[List[Dict], Dict]
 
 
-class TaxonomyDataInput(BaseInfo):
-    """
-    AI taxonomy input.
-
-    Attributes:
-
-        taxonomies: list of taxonomies objects.
-    """
-
-    taxonomies: List[Dict]
-
-
 class ModelDataInput(BaseInfo):
     """
     AI model input.
@@ -1822,13 +1810,6 @@ class ModelDataDTO(ModelDataInput, MongoId):
     """
     AI model output.
     """
-
-
-class TaxonomyDataDTO(TaxonomyDataInput, MongoId):
-    """
-    AI taxonomy output.
-    """
-
 
 class TestsetsDataDTO(MongoId):
     """
@@ -1914,13 +1895,11 @@ class FieldName(str, Enum):
         TestsetDataInput: name of testset input model.
         LearnsetDataInput: name of learnset input model.
         ModelDataInput: name of model input model.
-        TaxonomyDataInput: name of taxonomy input model.
     """
 
     TestsetDataInput = "testset"
     LearnsetDataInput = "learnset"
     ModelDataInput = "model"
-    TaxonomyDataInput = "taxonomy"
 
 
 class EntityExtractorInput(DocumentLangInput):

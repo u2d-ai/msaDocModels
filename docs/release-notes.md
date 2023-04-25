@@ -2,10 +2,13 @@
 ## Possible future features:
 
 
+# 0.0.66
+
+- Remove taxonomy stuff 
+
 ## 0.0.65
 
 - Remove fields active and inherited for learnsets/testsets/models
-- Remove taxonomy stuff 
 - Add models to get list of learnsets/testsets/models 
 
 ## 0.0.64
