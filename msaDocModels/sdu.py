@@ -1727,20 +1727,16 @@ class BaseInfo(BaseModel):
     Base info for AI stuff.
 
     Attributes:
-
         version: version identifier.
         description: description.
         datetime: datetime.
-        inherited: inherited or not.
-        active: active or not.
+        process: process name.
         name: object name.
     """
-
     version: str
     description: str
     datetime: datetime
-    inherited: bool
-    active: bool
+    process: str
     name: str
 
 
@@ -1749,20 +1745,16 @@ class UpdateAI(BaseModel):
     Update ai fields.
 
     Attributes:
-
         version: version identifier.
         description: description.
         datetime: datetime.
-        inherited: inherited or not.
-        active: active or not.
+        process: process name.
         name: object name.
     """
-
     version: Optional[str]
     description: Optional[str]
     datetime: Optional[datetime]
-    inherited: Optional[bool]
-    active: Optional[bool]
+    process: Optional[str]
     name: Optional[str]
 
 
@@ -1836,6 +1828,35 @@ class TaxonomyDataDTO(TaxonomyDataInput, MongoId):
     """
     AI taxonomy output.
     """
+
+
+class TestsetsDataDTO(MongoId):
+    """
+    AI testsets output.
+
+    Attributes:
+        testsets: list of testsets object.
+    """
+    testsets: List[TestsetDataInput]
+
+
+class LearnsetsDataDTO(MongoId):
+    """
+    AI learns output.
+
+    Attributes:
+        learnsets: list of learnsets object.
+    """
+    learnsets: List[LearnsetDataInput]
+
+
+class ModelsDataDTO(MongoId):
+    """
+    AI models output.
+    Attributes:
+        models: list of models object.
+    """
+    models: List[ModelDataInput]
 
 
 class ConversionInput(BaseModel):
