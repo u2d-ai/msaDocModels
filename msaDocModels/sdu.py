@@ -2277,6 +2277,7 @@ class TextExtractionNotaryDocumentDTO(BaseModel):
 class InformationExtractionAnswerTextInput(DocumentInput):
     """
     Model that represents an input for extraction information from answers from text.
+
     Attributes:
         questions: questions about context.
         limit: max number of answers.
@@ -2288,6 +2289,7 @@ class InformationExtractionAnswerTextInput(DocumentInput):
 class InformationExtractionAnswerDocumentInput(BaseModel):
     """
     Model that represents an input for extraction information from answers from document.
+
     Attributes:
         pages_text: The document data.
         questions: questions about context.
@@ -2303,6 +2305,7 @@ class InformationExtractionAnswerDocumentInput(BaseModel):
 class AnswerExtraction(BaseModel):
     """
     Model that represents data of extraction information from answer
+
     Attributes:
         answer: answer about context.
         score: number of predict.
@@ -2318,15 +2321,17 @@ class AnswerExtraction(BaseModel):
 class InformationExtractionAnswerTextDTO(BaseModel):
     """
     Model that contains data extraction information from answers.
+
     Attributes:
-        answers: extracted answers.
+        result: extracted answers.
     """
-    answers: Union[List[AnswerExtraction], List[List[AnswerExtraction]], Dict[Any, List[AnswerExtraction]]]
+    result: Union[List[AnswerExtraction], List[List[AnswerExtraction]], Dict[Any, List[AnswerExtraction]]]
 
 
 class InformationExtractionQuestionTextInput(DocumentInput):
     """
     Model that represents an input for extraction information from questions from text.
+
     Attributes:
         answers: answers about context.
         max_length: max length of question.
@@ -2338,6 +2343,7 @@ class InformationExtractionQuestionTextInput(DocumentInput):
 class InformationExtractionQuestionDocumentInput(BaseModel):
     """
     Model that represents an input for extraction information from questions from document.
+
     Attributes:
         pages_text: The document data.
         answers: answers about context.
@@ -2353,20 +2359,21 @@ class InformationExtractionQuestionDocumentInput(BaseModel):
 class InformationExtractionQuestionTextDTO(BaseModel):
     """
     Model that contains data extraction information from questions.
+
     Attributes:
-        questions: extracted questions.
+        result: extracted questions.
     """
-    questions: Union[List[str], List[List[str]], Dict[Any, List[str]]]
+    result: Union[List[str], List[List[str]], Dict[Any, List[str]]]
 
 
 class SentenceAnswerInformationDTO(NestingId):
     """
     Model that represents a sentences with answer information extractions.
+
     Attributes:
         result: list of sentences with answers found in the sentence of page.
     """
     result: List[AnswerExtraction] = []
-
 
 class ParagraphAnswerInformationDTO(NestingId):
     """
@@ -2380,6 +2387,7 @@ class ParagraphAnswerInformationDTO(NestingId):
 class PageAnswerInformationDTO(NestingId):
     """
     Model that represents a page with named entity recognition extractions.
+
     Attributes:
         paragraphs: list of paragraphs.
     """
@@ -2389,6 +2397,7 @@ class PageAnswerInformationDTO(NestingId):
 class InformationExtractionAnswerDocumentPage(BaseModel):
     """
     Model that represents the result of search answer in context.
+
     Attributes:
         version: version of the text extraction service used.
         pages_text: list of pages with answer information extractions.
@@ -2400,6 +2409,7 @@ class InformationExtractionAnswerDocumentPage(BaseModel):
 class InformationExtractionAnswerDocumentDTO(BaseModel):
     """
     Model that contains answers data implemented in page data.
+
     Attributes:
         information_extraction_answer: The same structure with document.
     """
@@ -2409,6 +2419,7 @@ class InformationExtractionAnswerDocumentDTO(BaseModel):
 class InformationExtractionAnswerPageDocumentPage(BaseModel):
     """
     Model that represents the result of search answer in page.
+
     Attributes:
         version: version of the text extraction service used.
         pages_text: list of pages with answer information extractions.
@@ -2430,6 +2441,7 @@ class InformationExtractionAnswerPageDocumentDTO(BaseModel):
 class SentenceQuestionInformationDTO(NestingId):
     """
     Model that represents a sentences with question information extractions.
+
     Attributes:
         result: list of sentences with questions found in the sentence of page.
     """
@@ -2439,6 +2451,7 @@ class SentenceQuestionInformationDTO(NestingId):
 class ParagraphQuestionInformationDTO(NestingId):
     """
     Model that represents a paragraph with question information extractions.
+
     Attributes:
         sentences: list of sentences.
     """

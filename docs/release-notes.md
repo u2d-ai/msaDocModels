@@ -2,6 +2,10 @@
 ## Possible future features:
 
 
+# 0.0.68
+
+- Change keys from answers/questions to result
+
 # 0.0.67
 
 - Add models for information extraction
