@@ -2433,9 +2433,9 @@ class InformationExtractionAnswerPageDocumentDTO(BaseModel):
     Model that contains answers data implemented in page data.
 
     Attributes:
-        information_extraction: The same structure with document.
+        information_extraction_answer: The same structure with document.
     """
-    information_extraction: InformationExtractionAnswerPageDocumentPage
+    information_extraction_answer: InformationExtractionAnswerPageDocumentPage
 
 
 class SentenceQuestionInformationDTO(NestingId):
