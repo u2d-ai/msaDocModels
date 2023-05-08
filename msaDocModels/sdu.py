@@ -198,9 +198,9 @@ class TextExtractionDefaultsDTO(BaseModel):
     """DTO, representing the result of extraction defaults"""
 
     extractions: Union[
-        TextExtractionDefaults,
-        List[TextExtractionDefaults],
         Dict[Any, TextExtractionDefaults],
+        List[TextExtractionDefaults],
+        TextExtractionDefaults,
     ]
 
 
