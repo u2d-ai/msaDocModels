@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.70
+
+- fix model TextExtractionDefaultsDTO
+
 # 0.0.69
 
 - fix information_extraction_answer key
