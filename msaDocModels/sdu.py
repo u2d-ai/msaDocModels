@@ -1599,7 +1599,7 @@ class ProcessStatus(BaseModel):
         timestamp: time when number was changes
     """
 
-    number: int = 0
+    number: str = "000"
     timestamp: str = str(datetime.utcnow())
 
 
@@ -1615,7 +1615,7 @@ class DBBaseDocumentInput(BaseModel):
         full_file_path: path to file.
         layout_file_path: path to layout file.
         debug_file_path: path to debug file.
-        readorder_file_path: path to rearorder file.
+        readorder_file_path: path to readorder file.
         clean_text_path: path to txt file with clean text.
         raw_text_path: path to txt file with raw text.
         html_path: path to txt file with html.
@@ -1629,7 +1629,7 @@ class DBBaseDocumentInput(BaseModel):
         pages_layout: layouts.
         pages_text: pages.
         metadata: metadata.
-        description: discription.
+        description: description.
         status: document status
         file: file.
         sdu: Dict of sdu objects.
@@ -1638,6 +1638,7 @@ class DBBaseDocumentInput(BaseModel):
     uid: str
     name: str
     mimetype: str = "text/plain"
+    email_file_path: str = ""
     full_file_path: str = ""
     layout_file_path: str = ""
     debug_file_path: str = ""
@@ -1647,10 +1648,11 @@ class DBBaseDocumentInput(BaseModel):
     html_path: str = ""
     folder: str = ""
     group_uuid: str = ""
+    project: str = ""
     tags: Optional[Dict] = {}
     language: Optional[SDULanguage] = None
     needs_update: bool = False
-    data: Optional[SDUData] = None
+    data: Dict = {}
     images: List[SDUPageImage] = []
     pages_layout: List[SDULayout] = []
     pages_text: List[SDUPage] = []
