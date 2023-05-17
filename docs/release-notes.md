@@ -1,6 +1,12 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.71
+
+- add data field to store files data 
+- add project per document
+- change document status to string
+
 # 0.0.70
 
 - fix model TextExtractionDefaultsDTO
