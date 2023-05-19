@@ -51,6 +51,13 @@ def get_cr_paragraph() -> str:
     return ret
 
 
+class ResultType(str, Enum):
+    document = "document"
+    pages = "pages"
+    paragraphs = "paragraphs"
+    sentences = "sentences"
+
+
 class TenantIdInput(BaseModel):
     """
     Input model with tenant_id
@@ -131,7 +138,7 @@ class RecognizerDefaultResult(ExtractionDefaultResult):
     type: str
 
 
-class TextExtractionDefaults(BaseModel):
+class TextExtractionFormats(BaseModel):
     """
     Data transfer object for  entity extractor.
 
@@ -194,13 +201,13 @@ class TextExtractionDefaults(BaseModel):
     pesel: List[ExtractionDefaultResult] = []
 
 
-class TextExtractionDefaultsDTO(BaseModel):
-    """DTO, representing the result of extraction defaults"""
+class TextExtractionFormatsDTO(BaseModel):
+    """DTO, representing the result of extraction Formats"""
 
     extractions: Union[
-        Dict[Any, TextExtractionDefaults],
-        List[TextExtractionDefaults],
-        TextExtractionDefaults,
+        Dict[Any, TextExtractionFormats],
+        List[TextExtractionFormats],
+        TextExtractionFormats,
     ]
 
 
@@ -354,6 +361,12 @@ class SDUParagraph(BaseModel):
 
     def get_text(self) -> str:
         return self.get_text_no_lf()
+
+    def get_paragraph_text(self) -> str:
+        paragraph_text = ""
+        for sentence in self.sentences:
+            paragraph_text += sentence.text
+        return paragraph_text
 
     def get_text_no_lf(self) -> str:
         ret = ""
@@ -576,7 +589,7 @@ class NotaryItem(BaseModel):
         Parameters:
 
             chambers_only: If True, includes only the zip code, city, address, historical cities, and office city.
-            If False, includes the city, address, first name, last name, and office title full. Defaults: False.
+            If False, includes the city, address, first name, last name, and office title full. Formats: False.
 
         Returns:
 
@@ -642,6 +655,13 @@ class SDUPage(BaseModel):
             for sen in par.sentences:
                 ret += sen.text + " "
         return ret
+
+    def get_page_text(self) -> str:
+        page_text = ""
+        for paragraph in self.text.paragraphs:
+            for sentence in paragraph.sentences:
+                page_text += sentence.text
+        return page_text
 
     def get_text_no_lf_paragraph(self):
         ret = ""
@@ -757,6 +777,65 @@ class SDUPage(BaseModel):
 
     def set_input(self, input_text: str):
         self.input = input_text
+
+
+class BaseDocumentInput(BaseModel):
+    """
+    Data input model for extraction from document.
+
+    Attributes:
+        pages_text: The document data.
+        document_id: optional uuid for document.
+    """
+
+    pages_text: List[SDUPage] = []
+    document_id: Optional[UUID4]
+
+    def get_document_text(self) -> str:
+        document_text = ""
+        for page in self.pages_text:
+            for paragraph in page.text.paragraphs:
+                for sentence in paragraph.sentences:
+                    document_text += sentence.text
+        return document_text
+
+    def get_list_document_strings(self) -> List[str]:
+        strings = []
+        for page in self.pages_text:
+            for paragraph in page.text.paragraphs:
+                for sentence in paragraph.sentences:
+                    strings.append(sentence.text)
+        return strings
+
+    def get_list_paragraph_strings(self) -> List[str]:
+        strings = []
+        for page in self.pages_text:
+            for paragraph in page.text.paragraphs:
+                strings.append(paragraph.get_paragraph_text())
+        return strings
+
+    def get_list_page_strings(self) -> List[str]:
+        strings = []
+        for page in self.pages_text:
+            strings.append(page.get_page_text())
+        return strings
+
+    def get_document_lang(self) -> str:
+        if self.pages_text:
+            return self.pages_text[0].text.lang.code
+        return "unknown"
+
+
+class ExtractKeywordsDocumentInput(BaseDocumentInput):
+    """
+    Data input model for ExtractorKeywords.
+
+    Attributes:
+        result_output: Type of output format.
+        algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf"]
+    """
+    result_output: ResultType = ResultType.sentences
+    algorithms: List[str] = ["yake", "bert"]
 
 
 class SDUData(BaseModel):
@@ -963,7 +1042,7 @@ class TextWithPagesGet(BaseModel):
 
 class SegmentationInput(BaseModel):
     """
-    Input model to detect Segmentation
+    Input model to detect segmentation
 
     Attributes:
         document_id: optional uuid for document.
@@ -1039,7 +1118,7 @@ class SentimentInput(DocumentInput):
 
 class SentimentDTO(BaseModel):
     """
-    DTO, representing the result of service Sentiment.
+    DTO, representing the result of service ExtractorSentiment.
 
     Attributes:
         neg:Negativity score of the text.
@@ -1174,7 +1253,7 @@ class PhrasesWordBagDTO(BaseModel):
 
 class WeightedKeywordsDTO(BaseModel):
     """
-    DTO, representing the result of service Keywords.
+    DTO, representing the result of service ExtractorKeywords.
 
     Attributes:
         keywords:  List of keywords and/or keyphrases.
@@ -1185,7 +1264,7 @@ class WeightedKeywordsDTO(BaseModel):
 
 class ExtractKeywordsInput(BaseModel):
     """
-    Data input model for ExtractKeywords.
+    Data input model for ExtractorKeywords.
 
     Attributes:
         data: extended input text by InputKeyKeys, have the len as input.
@@ -1202,7 +1281,7 @@ class ExtractKeywordsInput(BaseModel):
 
 class ExtractKeywordsTextInput(DocumentInput):
     """
-    Data input model for ExtractKeywords.
+    Data input model for ExtractorKeywords.
 
     Attributes:
         algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf"]
@@ -1214,7 +1293,7 @@ class ExtractKeywordsTextInput(DocumentInput):
 
 class ExtractKeywordsTextDTO(BaseModel):
     """
-    DTO, representing the result of service Keywords.
+    DTO, representing the result of service ExtractorKeywords.
 
     Attributes:
         data: Extracted keywords for text.
@@ -1224,7 +1303,7 @@ class ExtractKeywordsTextDTO(BaseModel):
 
 class ExtractKeywordsDTO(BaseModel):
     """
-    DTO, representing the result of service Keywords.
+    DTO, representing the result of service ExtractorKeywords.
 
     Attributes:
         data: extended input text by InputKeyKeys, have the len as input.
@@ -1235,7 +1314,7 @@ class ExtractKeywordsDTO(BaseModel):
 
 class SummaryInput(DocumentLangInput):
     """
-    Data input model for Summary.
+    Data input model for EngineSummary.
 
     Attributes:
         sum_ratio: Coefficient.
@@ -1255,20 +1334,20 @@ class SummaryInput(DocumentLangInput):
 
 
 class StatisticsInput(DocumentLangInput):
-    """Data input model for Statistics."""
+    """Data input model for ExtractorStatistics."""
 
 
 class StatisticsDTO(SDUStatistic):
-    """DTO, representing the result of service Statistics."""
+    """DTO, representing the result of service ExtractorStatistics."""
 
 
 class SummaryEmbeddedInput(DocumentLangInput):
-    """Data input model for Summary Embedded."""
+    """Data input model for EngineSummary Embedded."""
 
 
 class SentenceTopicsInput(DocumentLangInput):
     """
-    Data input model for Sentence Topics.
+    Data input model for Sentence topics.
 
     Attributes:
 
@@ -1322,7 +1401,7 @@ class SentenceSummary(BaseModel):
 
 
 class SummaryEmbeddedDTO(BaseModel):
-    """DTO, representing the result of service Summary Embedded.
+    """DTO, representing the result of service EngineSummary Embedded.
     Attributes:
         sentences_summary: List of sentences along with their respective rates.
     """
@@ -1330,7 +1409,7 @@ class SummaryEmbeddedDTO(BaseModel):
 
 
 class SummaryDTO(wdc.WDCItem):
-    """DTO, representing the result of service Summary."""
+    """DTO, representing the result of service EngineSummary."""
 
 
 class Country(BaseModel):
@@ -1406,7 +1485,7 @@ class City(BaseModel):
 
 class TaxonomyCitiesDTO(BaseModel):
     """
-    DTO, representing the result of service Taxonomy Cities.
+    DTO, representing the result of service ExtractorTaxonomy cities.
 
     Attributes:
 
@@ -1420,7 +1499,7 @@ class TaxonomyCitiesDTO(BaseModel):
 
 class TaxonomyCountriesDTO(BaseModel):
     """
-    DTO, representing the result of service Taxonomy Countries.
+    DTO, representing the result of service ExtractorTaxonomy countries.
 
     Attributes:
 
@@ -1434,7 +1513,7 @@ class TaxonomyCountriesDTO(BaseModel):
 
 class TaxonomyCompaniesDTO(BaseModel):
     """
-    DTO, representing the result of service Taxonomy Companies.
+    DTO, representing the result of service ExtractorTaxonomy companies.
 
     Attributes:
 
@@ -1447,7 +1526,7 @@ class TaxonomyCompaniesDTO(BaseModel):
 
 
 class TaxonomyDTO(TaxonomyCountriesDTO, TaxonomyCompaniesDTO, TaxonomyCitiesDTO):
-    """DTO, representing the result of service Taxonomy."""
+    """DTO, representing the result of service ExtractorTaxonomy."""
 
 
 class TaxonomyInput(DocumentInput):
@@ -1906,21 +1985,17 @@ class FieldName(str, Enum):
 
 
 class EntityExtractorInput(DocumentLangInput):
-    """Model that contains input data for extract defaults."""
+    """Model that contains input data for extract Formats."""
 
 
-class EntityExtractorDocumentInput(BaseModel):
+class EntityExtractorDocumentInput(BaseDocumentInput):
     """
-    Model that contains input data for extract defaults.
+    Model that contains input data for extract Formats.
 
     Attributes:
-
-        pages_text: The document data.
-        document_id: optional uuid for document.
+        result_output: Type of output format.
     """
-
-    pages_text: List[SDUPage] = []
-    document_id: Optional[UUID4]
+    result_output: ResultType = ResultType.sentences
 
 
 class TextExtractionNLPInput(DocumentInput):
@@ -1929,18 +2004,14 @@ class TextExtractionNLPInput(DocumentInput):
     """
 
 
-class TextExtractionDocumentNLPInput(BaseModel):
+class TextExtractionDocumentNLPInput(BaseDocumentInput):
     """
     Data input model for extraction NLP from document.
 
     Attributes:
-
-        pages_text: The document data.
-        document_id: optional uuid for document.
+        result_output: Type of output format.
     """
-
-    pages_text: List[SDUPage] = []
-    document_id: Optional[UUID4]
+    result_output: ResultType = ResultType.sentences
 
 
 class ExtractionNLP(BaseModel):
@@ -1969,7 +2040,7 @@ class ExtractionNLP(BaseModel):
 
 class TextExtractionNLPDTO(BaseModel):
     """
-    Data input model for Text Clean.
+    Data input model for ExtractionNLP.
 
     Attributes:
 
@@ -1979,7 +2050,7 @@ class TextExtractionNLPDTO(BaseModel):
     extractions: Union[List[ExtractionNLP], List[List[ExtractionNLP]], Dict[Any, List[ExtractionNLP]]]
 
 
-class TextExtractionDocumentDefaultsDTO(BaseModel):
+class TextExtractionDocumentFormatsDTO(BaseModel):
     """
     Model that contains extraction data implemented in page data.
 
@@ -2053,19 +2124,6 @@ class TextExtractionDocumentNLPPage(BaseModel):
     pages_text: List[PageNLPDTO] = []
 
 
-class TextExtractionNLPDocumentDTO(BaseModel):
-    """
-    Model that contains nlp data implemented in sentence data.
-
-    Attributes:
-
-        text_extraction_nlp: The same structure with document.
-
-    """
-
-    text_extraction_nlp: TextExtractionDocumentNLPPage
-
-
 class Position(BaseModel):
     """
     Model that represents a position.
@@ -2120,17 +2178,14 @@ class TextExtractionNERInput(BaseModel):
     language: SDULanguage = SDULanguage(code="de", lang="geman")
 
 
-class TextExtractionDocumentNERInput(BaseModel):
+class TextExtractionDocumentNERInput(BaseDocumentInput):
     """
     Model that represents an input for named entity recognition text extraction on a document.
 
     Attributes:
-
-        pages_text: list of pages to perform named entity recognition on.
+        result_output: Type of output format.
     """
-
-    pages_text: List[SDUPage] = []
-    document_id: Optional[UUID4]
+    result_output: ResultType = ResultType.sentences
 
 
 class TextExtractionNERDTO(BaseModel):
@@ -2161,20 +2216,7 @@ class TextExtractionDocumentNERDTO(BaseModel):
     pages_text: List[PageNERDTO] = []
 
 
-class TextExtractionNERDocumentDTO(BaseModel):
-    """
-    Model that represents the result of named entity recognition text extraction on a document.
-
-    Attributes:
-
-        text_extraction_ner: result of named entity recognition text extraction on a document
-                            using the TextExtractionService.
-    """
-
-    text_extraction_ner: TextExtractionDocumentNERDTO
-
-
-class SentenceDefaultsDTO(NestingId):
+class SentenceFormatsDTO(NestingId):
     """
     Model that represents a sentences with NLP extractions.
 
@@ -2183,10 +2225,10 @@ class SentenceDefaultsDTO(NestingId):
         result: list of sentences with nlp found in the page.
     """
 
-    result: TextExtractionDefaults
+    result: TextExtractionFormats
 
 
-class ParagraphDefaultsDTO(NestingId):
+class ParagraphFormatsDTO(NestingId):
     """
     Model that represents a paragraph with NLP extractions.
 
@@ -2195,10 +2237,10 @@ class ParagraphDefaultsDTO(NestingId):
         sentences: list of sentences.
     """
 
-    sentences: List[SentenceDefaultsDTO] = []
+    sentences: List[SentenceFormatsDTO] = []
 
 
-class PageDefaultsDTO(NestingId):
+class PageFormatsDTO(NestingId):
     """
     Model that represents a page with named entity recognition extractions.
 
@@ -2207,10 +2249,10 @@ class PageDefaultsDTO(NestingId):
         paragraphs: list of paragraphs.
     """
 
-    paragraphs: List[ParagraphDefaultsDTO] = []
+    paragraphs: List[ParagraphFormatsDTO] = []
 
 
-class TextExtractionDocumentDefaultsPage(BaseModel):
+class TextExtractionDocumentFormatsPage(BaseModel):
     """
     Model that represents the result of named entity recognition text extraction on a document.
 
@@ -2221,20 +2263,7 @@ class TextExtractionDocumentDefaultsPage(BaseModel):
     """
 
     version: str
-    pages_text: List[PageDefaultsDTO] = []
-
-
-class TextExtractionDefaultsDocumentDTO(BaseModel):
-    """
-    Model that contains nlp data implemented in sentence data.
-
-    Attributes:
-
-            text_extraction_defaults: The same structure with document.
-
-    """
-
-    text_extraction_defaults: TextExtractionDocumentDefaultsPage
+    pages_text: List[PageFormatsDTO] = []
 
 
 class PageNotaryDTO(NestingId):
@@ -2243,37 +2272,24 @@ class PageNotaryDTO(NestingId):
 
     Attributes:
 
-        result: Notary object if found notary or empty dict.
+        result: Notary object if found notary.
     """
 
-    result: Union[Notary, Dict] = {}
+    result: Union[Notary, Dict]
 
 
-class TextExtractionNotaryDocumentPage(BaseModel):
+class TextExtractionNotaryDocument(BaseModel):
     """
-    Model that represents the result of search notary in text.
+    Model that represents the result of named entity recognition text extraction on a document for all doc.
 
     Attributes:
 
         version: version of the text extraction service used.
-        pages_text: list of pages with Notary extractions.
+        result: Notary object if found notary or empty dict.
     """
 
     version: str
-    pages_text: List[PageNotaryDTO] = []
-
-
-class TextExtractionNotaryDocumentDTO(BaseModel):
-    """
-    Model that contains notary data implemented in page data.
-
-    Attributes:
-
-            text_extraction_notary: The same structure with document.
-
-    """
-
-    text_extraction_notary: TextExtractionNotaryDocumentPage
+    result: Union[Notary, Dict]
 
 
 class InformationExtractionAnswerTextInput(DocumentInput):
@@ -2288,20 +2304,18 @@ class InformationExtractionAnswerTextInput(DocumentInput):
     limit: int = 1
 
 
-class InformationExtractionAnswerDocumentInput(BaseModel):
+class InformationExtractionAnswerDocumentInput(BaseDocumentInput):
     """
     Model that represents an input for extraction information from answers from document.
 
     Attributes:
-        pages_text: The document data.
+        result_output: Type of output format.
         questions: questions about context.
         limit: max number of answers.
-        document_id: optional uuid for document.
     """
-    pages_text: List[SDUPage] = []
+    result_output: ResultType = ResultType.pages
     questions: List[str] = []
     limit: int = 1
-    document_id: Optional[UUID4]
 
 
 class AnswerExtraction(BaseModel):
@@ -2342,20 +2356,18 @@ class InformationExtractionQuestionTextInput(DocumentInput):
     max_length: int = 64
 
 
-class InformationExtractionQuestionDocumentInput(BaseModel):
+class InformationExtractionQuestionDocumentInput(BaseDocumentInput):
     """
     Model that represents an input for extraction information from questions from document.
 
     Attributes:
-        pages_text: The document data.
+        result_output: Type of output format.
         answers: answers about context.
         max_length: max length of question.
-        document_id: optional uuid for document.
     """
-    pages_text: List[SDUPage] = []
+    result_output: ResultType = ResultType.pages
     answers: List[str] = []
     max_length: int = 64
-    document_id: Optional[UUID4]
 
 
 class InformationExtractionQuestionTextDTO(BaseModel):
@@ -2377,6 +2389,7 @@ class SentenceAnswerInformationDTO(NestingId):
     """
     result: List[AnswerExtraction] = []
 
+
 class ParagraphAnswerInformationDTO(NestingId):
     """
     Model that represents a paragraph with answer information extractions.
@@ -2386,6 +2399,17 @@ class ParagraphAnswerInformationDTO(NestingId):
     sentences: List[SentenceAnswerInformationDTO] = []
 
 
+class ParagraphAnswerInformationResult(NestingId):
+    """
+    Model that represents a sentences with answer information extractions.
+
+    Attributes:
+        result: list of sentences with answers found in Paragraph.
+    """
+
+    result: List[AnswerExtraction]
+
+
 class PageAnswerInformationDTO(NestingId):
     """
     Model that represents a page with named entity recognition extractions.
@@ -2393,7 +2417,18 @@ class PageAnswerInformationDTO(NestingId):
     Attributes:
         paragraphs: list of paragraphs.
     """
-    paragraphs: List[ParagraphAnswerInformationDTO] = []
+    paragraphs: Union[List[ParagraphAnswerInformationResult], List[ParagraphAnswerInformationDTO]]
+
+
+class PageAnswerInformationResult(NestingId):
+    """
+    Model that represents a sentences with answer information extractions.
+
+    Attributes:
+        result: list of sentences with answers found in page.
+    """
+
+    result: List[AnswerExtraction]
 
 
 class InformationExtractionAnswerDocumentPage(BaseModel):
@@ -2405,7 +2440,21 @@ class InformationExtractionAnswerDocumentPage(BaseModel):
         pages_text: list of pages with answer information extractions.
     """
     version: str
-    pages_text: List[PageAnswerInformationDTO] = []
+    pages_text: Union[List[PageAnswerInformationResult], List[PageAnswerInformationDTO]]
+
+
+class InformationExtractionAnswerDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text answer on a document for all doc.
+
+    Attributes:
+
+        version: version of the answer extraction service used.
+        result: list of sentences with answers found in the doc.
+    """
+
+    version: str
+    result: List[AnswerExtraction]
 
 
 class InformationExtractionAnswerDocumentDTO(BaseModel):
@@ -2415,7 +2464,7 @@ class InformationExtractionAnswerDocumentDTO(BaseModel):
     Attributes:
         information_extraction_answer: The same structure with document.
     """
-    information_extraction_answer: InformationExtractionAnswerDocumentPage
+    information_extraction_answer: Union[InformationExtractionAnswerDocument, InformationExtractionAnswerDocumentPage]
 
 
 class InformationExtractionAnswerPageDocumentPage(BaseModel):
@@ -2447,7 +2496,7 @@ class SentenceQuestionInformationDTO(NestingId):
     Attributes:
         result: list of sentences with questions found in the sentence of page.
     """
-    result: List[str] = []
+    result: List[str]
 
 
 class ParagraphQuestionInformationDTO(NestingId):
@@ -2457,7 +2506,18 @@ class ParagraphQuestionInformationDTO(NestingId):
     Attributes:
         sentences: list of sentences.
     """
-    sentences: List[SentenceQuestionInformationDTO] = []
+    sentences: List[SentenceQuestionInformationDTO]
+
+
+class ParagraphQuestionInformationResult(NestingId):
+    """
+    Model that represents a sentences with question information extractions.
+
+    Attributes:
+        result: list of sentences with question found in Paragraph.
+    """
+
+    result: List[str]
 
 
 class PageQuestionInformationDTO(NestingId):
@@ -2466,7 +2526,18 @@ class PageQuestionInformationDTO(NestingId):
     Attributes:
         paragraphs: list of paragraphs.
     """
-    paragraphs: List[ParagraphQuestionInformationDTO] = []
+    paragraphs: Union[List[ParagraphQuestionInformationResult], List[ParagraphQuestionInformationDTO]]
+
+
+class PageQuestionInformationResult(NestingId):
+    """
+    Model that represents a sentences with question information extractions.
+
+    Attributes:
+        result: list of sentences with question found in page.
+    """
+
+    result: List[str]
 
 
 class InformationExtractionQuestionDocumentPage(BaseModel):
@@ -2477,7 +2548,21 @@ class InformationExtractionQuestionDocumentPage(BaseModel):
         pages_text: list of pages with question information extractions.
     """
     version: str
-    pages_text: List[PageQuestionInformationDTO] = []
+    pages_text: Union[List[PageQuestionInformationResult], List[PageQuestionInformationDTO]]
+
+
+class InformationExtractionQuestionDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text question on a document for all doc.
+
+    Attributes:
+
+        version: version of the Question extraction service used.
+        result: list of sentences with Question found in the doc.
+    """
+
+    version: str
+    result: List[str]
 
 
 class InformationExtractionQuestionDocumentDTO(BaseModel):
@@ -2486,7 +2571,9 @@ class InformationExtractionQuestionDocumentDTO(BaseModel):
     Attributes:
         information_extraction_question: The same structure with document.
     """
-    information_extraction_question: InformationExtractionQuestionDocumentPage
+    information_extraction_question: Union[
+        InformationExtractionQuestionDocument, InformationExtractionQuestionDocumentPage
+    ]
 
 
 class InformationExtractionQuestionPageDocumentPage(BaseModel):
@@ -2531,3 +2618,2042 @@ class InformationExtractionQuestionInput(BaseModel):
     answer: str
     context: str
     max_length: int = 64
+
+
+class KeywordsDocument(BaseModel):
+    """
+    Model that represents the result of Keywords analysis on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: list of Keywords.
+    """
+
+    version: str
+    result: List
+
+
+class KeywordsPageResult(NestingId):
+    """
+    Model that represents the result of Keywords analysis on a document for page.
+
+    Attributes:
+
+        result: list of Keywords.
+    """
+
+    result: List
+
+
+class KeywordsParagraphResult(NestingId):
+    """
+    Model that represents the result of Keywords analysis on a document for paragraph.
+
+    Attributes:
+
+        result: list of Keywords.
+    """
+
+    result: List
+
+
+class KeywordsSentenceResult(NestingId):
+    """
+    Model that represents the result of keywords analysis on a document for sentence.
+
+    Attributes:
+
+        result: list of Keywords.
+    """
+
+    result: List
+
+
+class KeywordsParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences with result of keywords analysis on a document.
+
+    Attributes:
+
+        sentences: list of sentences with result of keywords analysis extractions.
+    """
+
+    sentences: List[KeywordsSentenceResult]
+
+
+class KeywordsPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs with result of keywords analysis on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with result of keywords analysis extractions.
+    """
+
+    paragraphs: Union[List[KeywordsParagraphResult], List[KeywordsParagraphSentences]]
+
+
+class KeywordsPages(BaseModel):
+    """
+    Model that represents the list of pages with result of keywords analysis on a document.
+
+    Attributes:
+
+        version: version of the keywords analysis service used.
+        pages_text: list of pages with result of keywords analysis extractions.
+    """
+
+    version: str
+    pages_text: Union[List[KeywordsPageResult], List[KeywordsPageParagraphs]]
+
+
+class KeywordsDocumentDTO(BaseModel):
+    """
+    Model that contains result of keywords analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            text_keywords: The same structure with document.
+
+    """
+
+    text_keywords: Union[KeywordsDocument, KeywordsPages]
+
+
+class ConciseData(BaseModel):
+    """
+    Model that represents concise data.
+
+    Attributes:
+
+        concept_data: A dictionary of concept data.
+        upper_data: A dictionary of upper data.
+        input_data: A dictionary of input data.
+        patterns: A list of patterns.
+        concise_config: A dictionary of Concise configuration data.
+    """
+
+    concept_data: Dict[str, List[str]]
+    upper_data: Dict[str, List[str]]
+    input_data: Dict[str, List[str]]
+    patterns: List
+    concise_config: Dict
+
+
+class ConciseElement(BaseModel):
+    """
+    Model that represents a concise element.
+
+    Attributes:
+
+        path: the path where model is located.
+        name: name of the Concise element.
+        lang: language of the Concise element.
+        data: ConciseData instance containing the data for the Concise element.
+    """
+
+    path: str
+    name: str
+    lang: str
+    data: ConciseData
+
+
+class EntityInfo(BaseModel):
+    """
+    Model that represent founded entities.
+
+    Attributes:
+
+        hits: The number of occurrences .
+        avg: The Average number of predict.
+        min: The Minimal number of predict.
+        max: The Maximum number of predict.
+        high: The High number of predict.
+
+    """
+
+    hits: int
+    avg: float
+    min: float
+    max: float
+    high: float
+
+
+class TextDomainsInput(BaseModel):
+    """
+    Model that represents an input for named entity recognition text extraction.
+
+    Attributes:
+
+        input_text: input text.
+    """
+
+    input_text: Union[str, List[str], Dict[Any, str]]
+
+
+class DomainEntity(BaseModel):
+    """
+    Model that represent founded entities.
+
+    Attributes:
+
+        entity: The entity.
+        scores: The object of scores.
+
+    """
+
+    entity: str
+    scores: EntityInfo
+
+
+class ClassifierEntity(BaseModel):
+    """
+    Model that represent founded entities.
+
+    Attributes:
+
+        entity: The entity.
+        scores: The object of scores.
+
+    """
+
+    entity: str
+    scores: EntityInfo
+
+
+class PageConciseDTO(NestingId):
+    """
+    Model that represents a page with named entity recognition extractions.
+
+    Attributes:
+
+        result: PreparedConciseResult object
+    """
+
+    result: List[ClassifierEntity]
+
+
+class ParagraphResultConciseDTO(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for paragraph.
+
+    Attributes:
+
+        result: list of named entity recognition extractions found in the paragraph.
+    """
+
+    result: List[ClassifierEntity]
+
+
+class SentenceResultConciseDTO(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for sentence.
+
+    Attributes:
+
+        result: list of named entity recognition extractions found in the sentence.
+    """
+
+    result: List[ClassifierEntity]
+
+
+class ParagraphSentencesConciseDTO(NestingId):
+    """
+    Model that represents the list of sentences of text extraction on a document.
+
+    Attributes:
+
+        sentences: list of sentences with concise concept extractions.
+    """
+
+    sentences: List[SentenceResultConciseDTO]
+
+
+class PageParagraphsConciseDTO(NestingId):
+    """
+    Model that represents the list of paragraphs of text extraction on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with concise concept extractions.
+    """
+
+    paragraphs: Union[List[ParagraphResultConciseDTO], List[ParagraphSentencesConciseDTO]]
+
+
+class TextExtractionConciseDocumentPage(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with concise concept result.
+    """
+
+    version: str
+    model_version: str
+    pages_text: Union[List[PageConciseDTO], List[PageParagraphsConciseDTO]]
+
+
+class TextExtractionConciseDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction concise on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: list of ClassifierEntity objects.
+    """
+
+    version: str
+    model_version: str
+    result: List[ClassifierEntity]
+
+
+class TextExtractionConciseDocumentDTO(BaseModel):
+    """
+    DTO, representing the result of concise concepts
+
+    Attributes:
+
+        text_extraction_concise: TextExtractionConciseDocumentPage object
+    """
+
+    text_extraction_concise: Union[TextExtractionConciseDocumentPage, TextExtractionConciseDocument]
+
+
+class TextExtractionDocumentConciseConceptsInput(BaseDocumentInput):
+    """
+    Data input model for extraction EngineConciseConcept from document.
+
+    Attributes:
+        result_output: Type of output format.
+        path: The path where model is located.
+
+    """
+    result_output: ResultType = ResultType.pages
+    path: str = ""
+
+
+class TextExtractionTextConciseConceptsInput(BaseModel):
+    """
+    Data input model for extraction EngineConciseConcept from text.
+
+    Attributes:
+
+        path: The path where model is located.
+                input_text: The document data.
+
+    """
+
+    path: str = ""
+    input_text: str
+
+
+class TrainDocumentConciseConceptsInput(BaseModel):
+    """
+    Data input model for train EngineConciseConcept from document.
+
+    Attributes:
+
+        data: A dictionary containing the training data. The keys are concept names and the values are
+              lists of strings.
+        use_wordnet_enrichment: A boolean value indicating whether to use WordNet enrichment. Default is False.
+        element_name: The name of the element to train. Default is "LoeBi".
+        lang: The language of the input data. Default is "de".
+        version: The version of the model to train. Default is "v1".
+        top_default: The number of words to be returned for each class.
+        verbose: Use verbose formatting.
+        exclude_pos: A list of POS tags to exclude from the rule based match
+        exclude_dep: list of dependencies to exclude from the rule based match
+        include_compound_words: If True, it will include compound words in the entity. For example,
+                                    if the entity is "New York", it will also include "New York City" as an entity,
+                                    Formats to False (optional)
+        case_sensitive: Whether to match the case of the words in the text, Formats to False (optional)
+        fuzzy: If True, it will be use fuzzy matching formatting.
+        entities_threshold: Threshold to include entities.
+        verbose: Use verbose formatting.
+    """
+
+    data: Dict
+    element_name: str = "LoeBi"
+    lang: str = "de"
+    version: str = "v1"
+    use_wordnet_enrichment: bool = False
+    top_default: int = 100
+    verbose: bool = False
+    exclude_pos: List[str] = ["VERB", "AUX"]
+    exclude_dep: List[str] = ["DOBJ", "PCOMP"]
+    include_compound_words: bool = False
+    case_sensitive: bool = False
+    fuzzy: bool = True
+    entities_threshold: float = 0.3
+
+
+class SentimentDocumentInput(BaseDocumentInput):
+    """
+    Model that contains input data to sentiment analysis.
+
+    Attributes:
+        result_output: Type of output format.
+    """
+    result_output: ResultType = ResultType.sentences
+
+
+class SentimentDocument(BaseModel):
+    """
+    Model that represents the result of sentiment analysis on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: SentimentDTO object.
+    """
+
+    version: str
+    result: SentimentDTO
+
+
+class SentimentPageResult(NestingId):
+    """
+    Model that represents the result of sentiment analysis on a document for page.
+
+    Attributes:
+
+        result: SentimentDTO object.
+    """
+
+    result: SentimentDTO
+
+
+class SentimentParagraphResult(NestingId):
+    """
+    Model that represents the result of sentiment analysis on a document for paragraph.
+
+    Attributes:
+
+        result: SentimentDTO object.
+    """
+
+    result: SentimentDTO
+
+
+class SentimentSentenceResult(NestingId):
+    """
+    Model that represents the result of sentiment analysis on a document for sentence.
+
+    Attributes:
+
+        result: SentimentDTO object.
+    """
+
+    result: SentimentDTO
+
+
+class SentimentParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences with result of sentiment analysis on a document.
+
+    Attributes:
+
+        sentences: list of sentences with result of sentiment analysis extractions.
+    """
+
+    sentences: List[SentimentSentenceResult]
+
+
+class SentimentPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs with result of sentiment analysis on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with result of sentiment analysis extractions.
+    """
+
+    paragraphs: Union[List[SentimentParagraphResult], List[SentimentParagraphSentences]]
+
+
+class SentimentPages(BaseModel):
+    """
+    Model that represents the list of pages with result of sentiment analysis on a document.
+
+    Attributes:
+
+        version: version of the sentiment analysis service used.
+        pages_text: list of pages with result of sentiment analysis extractions.
+    """
+
+    version: str
+    pages_text: Union[List[SentimentPageResult], List[SentimentPageParagraphs]]
+
+
+class SentimentDocumentDTO(BaseModel):
+    """
+    Model that contains result of sentiment analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            text_sentiment: The same structure with document.
+
+    """
+
+    text_sentiment: Union[SentimentDocument, SentimentPages]
+
+
+class TextLanguageDocumentInput(BaseDocumentInput):
+    """
+    Model that contains input data to detect language.
+
+    Attributes:
+        result_output: Type of output format.
+        hint_languages: language hint for analyzer. 'ITALIAN' or 'it' boosts Italian;see LANGUAGES for known languages.
+        hint_encoding: encoding hint for analyzer. 'SJS' boosts Japanese; see ENCODINGS for all known encodings.
+        sentence_detection: turn on/off language detection by sentence.
+        get_vectors: turn on/off return of sentence vectors.
+        is_plain_text: if turned off, and HTML is provided as input, detection will skip HTML tags,
+            expand HTML entities and detect HTML <lang ...> tags.
+        is_short_text: turn on to get the best effort results (instead of unknown) for short text.
+
+    """
+    result_output: ResultType = ResultType.pages
+    hint_languages: str = ""
+    hint_encoding: str = ""
+    sentence_detection: bool = True
+    get_vectors: bool = True
+    is_plain_text: bool = True
+    is_short_text: bool = False
+
+
+class TextLanguageDocument(BaseModel):
+    """
+    Model that represents the result of detected language on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: LanguageDTO object.
+    """
+
+    version: str
+    result: LanguageDTO
+
+
+class TextLanguagePageResult(NestingId):
+    """
+    Model that represents the result of detected language on a document for page.
+
+    Attributes:
+
+        result: LanguageDTO object.
+    """
+
+    result: LanguageDTO
+
+
+class TextLanguageParagraphResult(NestingId):
+    """
+    Model that represents the result of detected language on a document for paragraph.
+
+    Attributes:
+
+        result: LanguageDTO object.
+    """
+
+    result: LanguageDTO
+
+
+class TextLanguageSentenceResult(NestingId):
+    """
+    Model that represents the result of detected language on a document for sentence.
+
+    Attributes:
+
+        result: LanguageDTO object.
+    """
+
+    result: LanguageDTO
+
+
+class TextLanguageParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences with result of detected language on a document.
+
+    Attributes:
+
+        sentences: list of sentences with result of detected language extractions.
+    """
+
+    sentences: List[TextLanguageSentenceResult]
+
+
+class TextLanguagePageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs with result of detected language on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with result of detected language extractions.
+    """
+
+    paragraphs: Union[List[TextLanguageParagraphResult], List[TextLanguageParagraphSentences]]
+
+
+class TextLanguagePages(BaseModel):
+    """
+    Model that represents the list of pages with result of detected language on a document.
+
+    Attributes:
+
+        version: version of the text language service used.
+        pages_text: list of pages with result of detected language extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TextLanguagePageResult], List[TextLanguagePageParagraphs]]
+
+
+class TextLanguageDocumentDTO(BaseModel):
+    """
+    Model that contains result of detected language implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            text_language: The same structure with document.
+
+    """
+
+    text_language: Union[TextLanguageDocument, TextLanguagePages]
+
+
+class StatisticsDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition ExtractorStatistics on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: SDUStatistic object.
+    """
+
+    version: str
+    result: SDUStatistic
+
+
+class StatisticsPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition ExtractorStatistics on a document for page.
+
+    Attributes:
+
+        result: SDUStatistic object.
+    """
+
+    result: SDUStatistic
+
+
+class StatisticsParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition ExtractorStatistics on a document for paragraph.
+
+    Attributes:
+
+        result: SDUStatistic object.
+    """
+
+    result: SDUStatistic
+
+
+class StatisticsSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition ExtractorStatistics on a document for sentence.
+
+    Attributes:
+
+        result: SDUStatistic object.
+    """
+
+    result: SDUStatistic
+
+
+class StatisticsParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of ExtractorStatistics on a document.
+
+    Attributes:
+
+        sentences: list of sentences with ExtractorStatistics extractions.
+    """
+
+    sentences: List[StatisticsSentenceResult]
+
+
+class StatisticsPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of ExtractorStatistics on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with ExtractorStatistics extractions.
+    """
+
+    paragraphs: Union[List[StatisticsParagraphResult], List[StatisticsParagraphSentences]]
+
+
+class StatisticsPages(BaseModel):
+    """
+    Model that represents the list of pages of ExtractorStatistics on a document.
+
+    Attributes:
+
+        version: version of the ExtractorStatistics service used.
+        pages_text: list of pages with ExtractorStatistics extractions.
+    """
+
+    version: str
+    pages_text: Union[List[StatisticsPageResult], List[StatisticsPageParagraphs]]
+
+
+class StatisticsDocumentDTO(BaseModel):
+    """
+    Model that contains ExtractorStatistics data implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            text_extraction_statistics: The same structure with document.
+
+    """
+
+    text_extraction_statistics: Union[StatisticsDocument, StatisticsPages]
+
+
+class CleanDocumentInput(BaseDocumentInput):
+    """
+    Model that contains input data to clean text from document.
+
+    Attributes:
+        language: language of text
+        result_output: Type of output format.
+    """
+    result_output: ResultType = ResultType.pages
+    language: SDULanguage = SDULanguage(code="de", lang="german")
+
+
+class PageCleanDTO(NestingId):
+    """
+    Model that represents a page with clean document.
+
+    Attributes:
+
+        result: clean string.
+    """
+
+    result: str
+
+
+class CleanParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineClean on a document for paragraph.
+
+    Attributes:
+
+        result: clean string.
+    """
+
+    result: str
+
+
+class CleanSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineClean on a document for sentence.
+
+    Attributes:
+
+        result: clean string.
+    """
+
+    result: str
+
+
+class CleanParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of EngineClean on a document.
+
+    Attributes:
+
+        sentences: list of sentences with EngineClean extractions.
+    """
+
+    sentences: List[CleanSentenceResult]
+
+
+class CleanPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of EngineClean on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with EngineClean extractions.
+    """
+
+    paragraphs: Union[List[CleanParagraphResult], List[CleanParagraphSentences]]
+
+
+class PageClean(BaseModel):
+    """
+    Model that represents the result of EngineClean of a document.
+
+    Attributes:
+
+        version: version of the translation service used.
+        pages_text: list of pages with document EngineClean.
+    """
+
+    version: str
+    pages_text: Union[List[PageCleanDTO], List[CleanPageParagraphs]]
+
+
+class CleanDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition EngineClean on a document for all doc.
+
+    Attributes:
+
+        version: version of the EngineClean service used.
+        result: EngineClean string.
+    """
+
+    version: str
+    result: str
+
+
+class CleanDocumentDTO(BaseModel):
+    """
+    Model that contains Document EngineClean data per page.
+
+    Attributes:
+
+        text_clean: The same structure with document.
+
+    """
+
+    text_clean: Union[CleanDocument, PageClean]
+
+
+class TranslateTextInput(BaseModel):
+    """
+    Model that contains input data to translate text.
+
+    Attributes:
+        input_text: str, contains text to translate
+        from_lang: str, language from which text will be translated (language of text)
+        to_lang: str, language to which text will be translated
+        split_underscore: bool, if text is split by underscore
+
+    """
+
+    input_text: Union[str, List[str], Dict[Any, str]]
+    from_lang: Optional[str] = None
+    to_lang: Optional[str] = None
+    split_underscore: bool = False
+
+
+class TranslateDocumentInput(BaseDocumentInput):
+    """
+    Model that contains input data to translate text from document.
+
+    Attributes:
+        result_output: Type of output format.
+        from_lang: language from which text will be translated (language of text)
+        to_lang: language to which text will be translated
+        split_underscore: split underscore or no
+    """
+    result_output: ResultType = ResultType.pages
+    from_lang: Optional[str] = None
+    to_lang: Optional[str] = None
+    split_underscore: bool = False
+
+
+class TranslateEntity(BaseModel):
+    """
+    Model that contains input data to translate text from document.
+
+    Attributes:
+        input_text: str, text to translate
+        translated_text: str, translated text
+        from_lang: str, language from which text will be translated
+        to_lang: str, language to which text will be translated
+        split_underscore: bool, does text contain underscores instead of spaces
+    """
+
+    input_text: str
+    translated_text: str
+    from_lang: str
+    to_lang: str
+    split_underscore: bool
+
+
+class TranslateTextDTO(BaseModel):
+    """
+    Model that represents the result of translation.
+
+    Attributes:
+        result: result of translation
+    """
+
+    result: Union[TranslateEntity, List[TranslateEntity], Dict[Any, TranslateEntity]]
+
+
+class PageTranslationDTO(NestingId):
+    """
+    Model that represents a page with translated document.
+
+    Attributes:
+
+        result: TranslateEntityDTO.
+    """
+
+    result: TranslateEntity
+
+
+class TranslationParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text translate on a document for paragraph.
+
+    Attributes:
+
+        result: TranslateEntity object.
+    """
+
+    result: TranslateEntity
+
+
+class TranslationSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text translation on a document for sentence.
+
+    Attributes:
+
+        result: TranslateEntity object.
+    """
+
+    result: TranslateEntity
+
+
+class TranslationParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of text translation on a document.
+
+    Attributes:
+
+        sentences: list of sentences with EngineTranslation extractions.
+    """
+
+    sentences: List[TranslationSentenceResult]
+
+
+class TranslationPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of text translation on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with EngineTranslation extractions.
+    """
+
+    paragraphs: Union[List[TranslationParagraphResult], List[TranslationParagraphSentences]]
+
+
+class PageTranslation(BaseModel):
+    """
+    Model that represents the result of translation of a document.
+
+    Attributes:
+
+        version: version of the translation service used.
+        pages_text: list of pages with document EngineTranslation extractions.
+    """
+
+    version: str
+    pages_text: Union[List[PageTranslationDTO], List[TranslationPageParagraphs]]
+
+
+class TranslationDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition EngineTranslation on a document for all doc.
+
+    Attributes:
+
+        version: version of the EngineTranslation service used.
+        result: TranslateEntity object.
+    """
+
+    version: str
+    result: TranslateEntity
+
+
+class TranslateDocumentDTO(BaseModel):
+    """
+    Model that contains Document EngineTranslation data.
+
+    Attributes:
+
+        text_translation: The same structure with document.
+
+    """
+
+    text_translation: Union[TranslationDocument, PageTranslation]
+
+
+class AISearchInputModel(BaseModel):
+    """
+    Input data model for "ai-search" router.
+
+    Attributes:
+
+        document_id: ID of the document.
+        input_text: The input text to search. Can be a string, list, or dictionary.
+    """
+
+    document_id: Optional[str] = None
+    input_text: Union[str, List, Dict]
+
+
+class AISearchOutputModel(BaseModel):
+    """
+    Output data model for "ai-search" router.
+
+    Attributes:
+
+        document_id: ID of the document.
+        data: Notary object.
+    """
+
+    document_id: Optional[str] = None
+    data: Notary
+
+
+class ExtractionDocumentNotaryInput(BaseDocumentInput):
+    """
+    Data input model for extraction Notary from document.
+
+    Attributes:
+        result_output: Type of output format.
+    """
+    result_output: ResultType = ResultType.pages
+
+
+class ParagraphResultNotaryDTO(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for paragraph.
+
+    Attributes:
+
+        result: Notary object if found notary or empty dict.
+    """
+
+    result: Union[Notary, Dict]
+
+
+class SentenceResultNotaryDTO(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for sentence.
+
+    Attributes:
+
+        result: Notary object if found notary or empty dict.
+    """
+
+    result: Union[Notary, Dict]
+
+
+class ParagraphSentencesNotaryDTO(NestingId):
+    """
+    Model that represents the list of sentences of text extraction on a document.
+
+    Attributes:
+
+        sentences: list of sentences with Notary extractions.
+    """
+
+    sentences: List[SentenceResultNotaryDTO]
+
+
+class PageParagraphsNotaryDTO(NestingId):
+    """
+    Model that represents the list of paragraphs of text extraction on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with Notary extractions.
+    """
+
+    paragraphs: Union[List[ParagraphResultNotaryDTO], List[ParagraphSentencesNotaryDTO]]
+
+
+class TextExtractionNotaryDocumentPage(BaseModel):
+    """
+    Model that represents the result of search notary in text.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with Notary extractions.
+    """
+
+    version: str
+    pages_text: Union[List[PageNotaryDTO], List[PageParagraphsNotaryDTO]]
+
+
+class TextExtractionNotaryDocumentDTO(BaseModel):
+    """
+    Model that contains notary data.
+
+    Attributes:
+
+            text_extraction_notary: The same structure with document.
+
+    """
+
+    text_extraction_notary: Union[TextExtractionNotaryDocumentPage, TextExtractionNotaryDocument]
+
+
+class PredictionFieldNames(str, Enum):
+    """
+    Enum Class that represents choices for prediction fields.
+    """
+
+    hits = "hits"
+    avg = "avg"
+    min = "min"
+    max = "max"
+    high = "high"
+
+
+class DeviceTypes(str, Enum):
+    """
+    Enum Class that represents choices for device type.
+    """
+
+    auto = "auto"
+    cuda_0 = "cuda:0"
+    cpu = "cpu"
+
+
+class DocClassifierTextInput(BaseModel):
+    """
+    Model that represents the input for classification of text.
+
+    Attributes:
+
+        input_text: text to classify.
+        label_structure_data: topics for text classification.
+        learnset_name: name of learnset.
+        learnset_version: version of learnset.
+        learnset_lang: lang of learnset.
+        multi_label: does 'label_structure_data' contain more than one topic.
+        score_threshold: threshold to include entities.
+        use_text_filters: use filters to clean text.
+        context_min_length: min length of context.
+    """
+
+    input_text: Union[str, List[str], Dict[Any, str]]
+    label_structure_data: Dict[str, List[str]]
+    learnset_name: str = ""
+    learnset_version: str = ""
+    learnset_lang: str = ""
+    multi_label: bool = True
+    score_threshold: float = 0.3
+    use_text_filters: bool = True
+    context_min_length: int = 50
+
+
+class DocClassifierDocumentInput(BaseDocumentInput):
+    """
+    Model that represents the input for classification of document.
+
+    Attributes:
+        result_output: Type of output format.
+        label_structure_data: topics for text classification.
+        learnset_name: name of learnset.
+        learnset_version: version of learnset.
+        learnset_lang: lang of learnset.
+        multi_label: does 'label_structure_data' contain more than one topic.
+        score_threshold: threshold to include entities.
+        use_text_filters: use filters to clean text.
+        context_min_length: min length of context.
+    """
+
+    result_output: ResultType = ResultType.pages
+    label_structure_data: Dict[str, List[str]]
+    learnset_name: str = ""
+    learnset_version: str = ""
+    learnset_lang: str = ""
+    multi_label: bool = True
+    score_threshold: float = 0.3
+    use_text_filters: bool = True
+    context_min_length: int = 50
+
+
+class DocClassifierDTO(BaseModel):
+    """
+    Model that represents result of classification of the model.
+
+    Attributes:
+
+        prediction: result of classification of the model.
+    """
+
+    prediction: Union[List[ClassifierEntity], List[List[ClassifierEntity]], Dict[Any, List[ClassifierEntity]]]
+
+
+class PageClassifierDTO(NestingId):
+    """
+    Model that represents a page with document prediction.
+
+    Attributes:
+
+        result: list ClassifierEntity.
+    """
+
+    result: List[ClassifierEntity]
+
+
+class ClassifierParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for paragraph.
+
+    Attributes:
+
+        result: list of ClassifierEntity objects.
+    """
+
+    result: List[ClassifierEntity]
+
+
+class ClassifierSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for sentence.
+
+    Attributes:
+
+        result: list of ClassifierEntity objects.
+    """
+
+    result: List[ClassifierEntity]
+
+
+class ClassifierParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of text extraction on a document.
+
+    Attributes:
+
+        sentences: list of sentences with Classifier extractions.
+    """
+
+    sentences: List[ClassifierSentenceResult]
+
+
+class ClassifierPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of text extraction on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with Classifier extractions.
+    """
+
+    paragraphs: Union[List[ClassifierParagraphResult], List[ClassifierParagraphSentences]]
+
+
+class DocClassifierPage(BaseModel):
+    """
+    Model that represents the result classifier on a document.
+
+    Attributes:
+
+        version: version of the classifier service used.
+        learnset_version: version of the learnset used.
+        pages_text: list of pages with document prediction.
+    """
+
+    version: str
+    learnset_version: str
+    pages_text: Union[List[PageClassifierDTO], List[ClassifierPageParagraphs]]
+
+
+class DocClassifierDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: list of ClassifierEntity objects.
+    """
+
+    version: str
+    result: List[ClassifierEntity]
+
+
+class DocClassifierDocumentDTO(BaseModel):
+    """
+    Model that contains document prediction data.
+
+    Attributes:
+
+        doc_classifier: The same structure with document.
+
+    """
+
+    doc_classifier: Union[DocClassifierDocument, DocClassifierPage]
+
+
+class DomainsExtractorDocumentInput(BaseDocumentInput):
+    """
+    Model that contains input data for extract formats.
+
+    Attributes:
+        result_output: Type of output format.
+    """
+    result_output: ResultType = ResultType.sentences
+
+
+class TextDomainsDTO(BaseModel):
+    """
+    Data input model for EngineClean.
+
+    Attributes:
+
+        extractions: List of ExtractionDomains.
+    """
+
+    extractions: Union[List[DomainEntity], List[List[DomainEntity]], Dict[Any, List[DomainEntity]]]
+
+
+class SentenceDomainsDTO(NestingId):
+    """
+    Model that represents a sentences with domains extractions.
+
+    Attributes:
+
+        result: list of sentences with domains found in the page.
+    """
+
+    result: List[DomainEntity]
+
+
+class TextExtractionDomainsParagraphSentences(NestingId):
+    """
+    Model that represents a paragraph with domains extractions.
+
+    Attributes:
+
+        sentences: list of sentences.
+    """
+
+    sentences: List[SentenceDomainsDTO]
+
+
+class TextExtractionDomainsParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for paragraph.
+
+    Attributes:
+
+        result: list of DomainEntity objects.
+    """
+
+    result: List[DomainEntity]
+
+
+class TextExtractionDomainsPageParagraphs(NestingId):
+    """
+    Model that represents a page with named entity recognition extractions.
+
+    Attributes:
+
+        paragraphs: list of paragraphs.
+    """
+
+    paragraphs: Union[List[TextExtractionDomainsParagraphResult], List[TextExtractionDomainsParagraphSentences]]
+
+
+class TextExtractionDomainsPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for page.
+
+    Attributes:
+
+        result: list of DomainEntity objects.
+    """
+
+    result: List[DomainEntity]
+
+
+class TextExtractionDomainsPages(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with Domains extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TextExtractionDomainsPageResult], List[TextExtractionDomainsPageParagraphs]]
+
+
+class TextExtractionDomainsDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: list of DomainEntity objects.
+    """
+
+    version: str
+    result: List[DomainEntity]
+
+
+class TextDomainsDocumentDTO(BaseModel):
+    """
+    Model that contains Domains data implemented in sentence data.
+
+    Attributes:
+
+        text_extraction_domains: The same structure with document.
+
+    """
+
+    text_extraction_domains: Union[TextExtractionDomainsDocument, TextExtractionDomainsPages]
+
+
+class DomainsData(BaseModel):
+    """
+    Model that contains domains data.
+
+    Attributes:
+
+        domains_flat: English wordnet domains.
+        domains_flat_de: German wordnet domains.
+        synsets_by_domain: English Synsets for wordnet.
+        lemmas_by_domain: English Lemmas for wordnet.
+        synsets_by_domain_de: German Synsets for wordnet.
+        lemmas_by_domain_de: German Lemmas for wordnet.
+
+    """
+
+    domains_flat: List[str] = []
+    domains_flat_de: List[str] = []
+    synsets_by_domain: Dict[str, List[str]] = {}
+    lemmas_by_domain: Dict[str, List[str]] = {}
+    synsets_by_domain_de: Dict[str, List[str]] = {}
+    lemmas_by_domain_de: Dict[str, List[str]] = {}
+
+
+class SearchResultNodeBase(BaseModel):
+    """
+    BaseModel for search result nodes.
+
+    Attributes:
+
+        name: entry name.
+        tooltip: hover tooltip for his node
+    """
+
+    name: str
+    tooltip: str
+    itemStyle: dict = {}
+
+
+class SearchResultLeaf(SearchResultNodeBase):
+    """
+    Leaf Model for search result nodes with no parents.
+
+    Attributes:
+
+        value: number, needs to be 1 for echart.
+    """
+
+    value: int = 1
+
+
+class SearchResultNode(SearchResultNodeBase):
+    """
+    Node Model for search result nodes with parents.
+
+    Attributes:
+
+        name: entry name.
+        tooltip: hover tooltip for his node
+    """
+
+    children: List
+
+
+class LemmasData(BaseModel):
+    """
+    Model that get/represents a lemmas.
+
+    Attributes:
+
+        data: dict of lemmas with list of words for each lemma.
+    """
+
+    data: Dict
+    lang: str = "de"
+
+
+class SearchInputData(BaseModel):
+    """
+    Model that get/represents a search input.
+
+    Attributes:
+
+        word: str word to search.
+        lang: str language to use for search (Wordnet languages)
+    """
+
+    word: str
+    lang: str = "de"
+
+
+class SearchResultData(BaseModel):
+    """
+    Model that get/represents a search result.
+
+    Attributes:
+
+        word: word that was searched.
+        lang: language that was used for search (Wordnet languages)
+        tree: result tree data list of nodes and leafs (children)
+        synsets: synsets and there infos
+        info: summary/info of search result
+        err_msg: empty if search was ok, else error message
+    """
+
+    word: str
+    lang: str
+    tree: List
+    synsets: Dict
+    info: Dict
+    err_msg: str
+
+
+class LanguageData(BaseModel):
+    """
+    Model that get/represents a list of languages.
+
+    Attributes:
+
+        data: dict of lemmas with list of words for each lemma.
+    """
+
+    data: List
+
+
+class PageResultTextKnowledgeDTO(NestingId):
+    """
+    Model that represents a page with named entity recognition extractions.
+
+    Attributes:
+
+        result: list of named entity recognition extractions found in the page.
+    """
+
+    result: Dict
+
+
+class ParagraphResultTextKnowledgeDTO(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for paragraph.
+
+    Attributes:
+
+        result: list of named entity recognition extractions found in the paragraph.
+    """
+
+    result: Dict
+
+
+class SentenceResultTextKnowledgeDTO(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for sentence.
+
+    Attributes:
+
+        result: list of named entity recognition extractions found in the sentence.
+    """
+
+    result: Dict
+
+
+class ParagraphSentencesTextKnowledgeDTO(NestingId):
+    """
+    Model that represents the list of sentences of text extraction on a document.
+
+    Attributes:
+
+        sentences: list of sentences with Knowledge extractions.
+    """
+
+    sentences: List[SentenceResultTextKnowledgeDTO]
+
+
+class PageParagraphsTextKnowledgeDTO(NestingId):
+    """
+    Model that represents the list of paragraphs of text extraction on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with Knowledge extractions.
+    """
+
+    paragraphs: Union[List[ParagraphResultTextKnowledgeDTO], List[ParagraphSentencesTextKnowledgeDTO]]
+
+
+class TextExtractionKnowledgeDocumentPage(BaseModel):
+    """
+    Model that represents the result of text knowledge.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with text knowledge extractions.
+    """
+
+    version: str
+    pages_text: Union[List[PageResultTextKnowledgeDTO], List[PageParagraphsTextKnowledgeDTO]]
+
+
+class TextKnowledgeDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: TextExtractionFormats object.
+    """
+
+    version: str
+    result: Dict
+
+
+class TextKnowledgeDocumentDTO(BaseModel):
+    """
+    Model that contains text knowledge data implemented in page data.
+
+    Attributes:
+
+        text_extraction_knowledge: The same structure with document.
+
+    """
+
+    text_extraction_knowledge: Union[TextExtractionKnowledgeDocumentPage, TextKnowledgeDocument]
+
+
+class TextExtractionDocumentKnowledgeInput(BaseDocumentInput):
+    """
+    Data input model for extraction Knowledge from document.
+
+    Attributes:
+        result_output: Type of output format.
+    """
+    result_output: ResultType = ResultType.pages
+
+
+class SynsetMeaning(BaseModel):
+    """
+    Represents the meaning of a synset in WordNet.
+
+    Attributes:
+
+        id: Synset ID.
+        s: Synset start offset in the corresponding text.
+        e: Synset end offset in the corresponding text.
+        token: The concatenated string of all the senses of the synset.
+        name: Synset name.
+        pos: Part of speech.
+        ili: Inter-Lingual Index.
+        lexid: Lexical ID.
+        lexicalized: True if the synset is lexicalized.
+        lexfile: Lexical file.
+        definition: Synset definition.
+        metadata: Metadata associated with the synset.
+        examples: Examples of usage.
+        lemmas: Synonym lemmas.
+        senses: Sense keys.
+        senses_lemmas: Sense keys mapped to their corresponding lemmas.
+        words: Words associated with the synset.
+        words_lemmas: Words associated with the synset mapped to their corresponding lemmas.
+        hypernyms: Hypernyms of the synset.
+        hyponyms: Hyponyms of the synset.
+        holonyms: Holonyms of the synset.
+        meronyms: Meronyms of the synset.
+        hypernyms_lemmas: Hypernyms of the synset mapped to their corresponding lemmas.
+        hyponyms_lemmas: Hyponyms of the synset mapped to their corresponding lemmas.
+        holonyms_lemmas: Holonyms of the synset mapped to their corresponding lemmas.
+        meronyms_lemmas: Meronyms of the synset mapped to their corresponding lemmas.
+        hypernyms_path: A list of paths to the hypernyms.
+        hypernyms_path_lemmas: A list of paths to the hypernyms mapped to their corresponding lemmas.
+        root: The topmost synset
+        depth_min: The minimum depth of the synset in the hierarchy.
+        depth_max: The maximum depth of the synset in the hierarchy.
+    """
+
+    id: int = -1
+    s: int = -1
+    e: int = -1
+    token: str = ""
+    name: str = ""
+    pos: str = ""
+    ili: Dict = {}
+    lexid: int = -1
+    lexicalized: bool = False
+    lexfile: str = ""
+    definition: str = ""
+    metadata: Dict[str, Any] = {}
+    examples: List[str] = []
+    lemmas: List[str] = []
+    senses: List[str] = []
+    senses_lemmas: List[str] = []
+    words: List[str] = []
+    words_lemmas: List[str] = []
+    hypernyms: List[str] = []
+    hyponyms: List[str] = []
+    holonyms: List[str] = []
+    meronyms: List[str] = []
+    hypernyms_lemmas: List[str] = []
+    hyponyms_lemmas: List[str] = []
+    holonyms_lemmas: List[str] = []
+    meronyms_lemmas: List[str] = []
+    hypernyms_path: List[List[str]] = []
+    hypernyms_path_lemmas: List[List[str]] = []
+    root: str = ""
+    depth_min: int = -1
+    depth_max: int = -1
+
+
+class KnowledgeTextInputModel(BaseModel):
+    """
+    Input model for 'knowledge-text' router
+
+    Attributes:
+
+        input_text: str, dict or list of str
+        lang: text language. Default: de
+    """
+
+    input_text: Union[str, Dict, List]
+    lang: str = "de"
+
+
+class TextExtractionNLPDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: ExtractionNLP object.
+    """
+
+    version: str
+    result: List[ExtractionNLP]
+
+
+class TextExtractionNLPPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for page.
+
+    Attributes:
+
+        result: ExtractionNLP object.
+    """
+
+    result: List[ExtractionNLP]
+
+
+class TextExtractionNLPParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for paragraph.
+
+    Attributes:
+
+        result: ExtractionNLP object.
+    """
+
+    result: List[ExtractionNLP]
+
+
+class TextExtractionNLPSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for sentence.
+
+    Attributes:
+
+        result: ExtractionNLP object.
+    """
+
+    result: List[ExtractionNLP]
+
+
+class TextExtractionNLPParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of text extraction on a document.
+
+    Attributes:
+
+        sentences: list of sentences with NLP extractions.
+    """
+
+    sentences: List[TextExtractionNLPSentenceResult]
+
+
+class TextExtractionNLPPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of text extraction on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with NLP extractions.
+    """
+
+    paragraphs: Union[List[TextExtractionNLPParagraphResult], List[TextExtractionNLPParagraphSentences]]
+
+
+class TextExtractionNLPPages(BaseModel):
+    """
+    Model that represents the list of pages of text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with NLP extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TextExtractionNLPPageResult], List[TextExtractionNLPPageParagraphs]]
+
+
+class TextExtractionNERDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: list of ExtractionNER objects.
+    """
+
+    version: str
+    result: List[ExtractionNER]
+
+
+class TextExtractionNERPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for page.
+
+    Attributes:
+
+        result: list of ExtractionNER objects.
+    """
+
+    result: List[ExtractionNER]
+
+
+class TextExtractionNERParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for paragraph.
+
+    Attributes:
+
+        result: list of ExtractionNER objects.
+    """
+
+    result: List[ExtractionNER]
+
+
+class TextExtractionNERSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for sentence.
+
+    Attributes:
+
+        result: list of ExtractionNER objects.
+    """
+
+    result: List[ExtractionNER]
+
+
+class TextExtractionNERParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of text extraction on a document.
+
+    Attributes:
+
+        sentences: list of sentences with NER extractions.
+    """
+
+    sentences: List[TextExtractionNERSentenceResult]
+
+
+class TextExtractionNERPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of text extraction on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with NER extractions.
+    """
+
+    paragraphs: Union[List[TextExtractionNERParagraphResult], List[TextExtractionNERParagraphSentences]]
+
+
+class TextExtractionNERPages(BaseModel):
+    """
+    Model that represents the list of pages of text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with NER extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TextExtractionNERPageResult], List[TextExtractionNERPageParagraphs]]
+
+
+class TextExtractionNERDocumentDTO(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document.
+
+    Attributes:
+
+        text_extraction_ner: result of named entity recognition text extraction on a document
+                            using the TextExtractionService.
+    """
+
+    text_extraction_ner: Union[TextExtractionNERDocument, TextExtractionNERPages]
+
+
+class TextExtractionFormatsDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: TextExtractionFormats object.
+    """
+
+    version: str
+    result: TextExtractionFormats
+
+
+class TextExtractionFormatsPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for page.
+
+    Attributes:
+
+        result: TextExtractionFormats object.
+    """
+
+    result: TextExtractionFormats
+
+
+class TextExtractionFormatsParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for paragraph.
+
+    Attributes:
+
+        result: TextExtractionFormats object.
+    """
+
+    result: TextExtractionFormats
+
+
+class TextExtractionFormatsSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition text extraction on a document for sentence.
+
+    Attributes:
+
+        result: TextExtractionFormats object.
+    """
+
+    result: TextExtractionFormats
+
+
+class TextExtractionFormatsParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of text extraction on a document.
+
+    Attributes:
+
+        sentences: list of sentences with Formats extractions.
+    """
+
+    sentences: List[TextExtractionFormatsSentenceResult]
+
+
+class TextExtractionFormatsPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of text extraction on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with Formats extractions.
+    """
+
+    paragraphs: Union[List[TextExtractionFormatsParagraphResult], List[TextExtractionFormatsParagraphSentences]]
+
+
+class TextExtractionFormatsPages(BaseModel):
+    """
+    Model that represents the list of pages of text extraction on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with Formats extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TextExtractionFormatsPageResult], List[TextExtractionFormatsPageParagraphs]]
+
+
+class TextExtractionFormatsDocumentDTO(BaseModel):
+    """
+    Model that contains nlp data implemented in sentence data.
+
+    Attributes:
+
+            text_extraction_Formats: The same structure with document.
+
+    """
+
+    text_extraction_Formats: Union[TextExtractionFormatsDocument, TextExtractionFormatsPages]
+
+
+class TextExtractionNLPDocumentDTO(BaseModel):
+    """
+    Model that contains nlp data implemented in sentence data.
+
+    Attributes:
+
+        text_extraction_nlp: The same structure with document.
+
+    """
+
+    text_extraction_nlp: Union[TextExtractionNLPDocument, TextExtractionNLPPages]

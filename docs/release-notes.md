@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.72
+
+- add models to working with full document/pages/paragraphs/sentences
+
 # 0.0.71
 
 - add data field to store files data 
