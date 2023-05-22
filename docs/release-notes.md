@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.73
+
+- add output_file_paths field to document
+- fix model to working with documents
+
 # 0.0.72
 
 - add models to working with full document/pages/paragraphs/sentences
