@@ -1692,12 +1692,12 @@ class DBBaseDocumentInput(BaseModel):
         name: document name.
         mimetype: mimetype.
         full_file_path: path to file.
-        layout_file_path: path to layout file.
         debug_file_path: path to debug file.
         readorder_file_path: path to readorder file.
         clean_text_path: path to txt file with clean text.
         raw_text_path: path to txt file with raw text.
         html_path: path to txt file with html.
+        output_file_paths: paths to output files.
         folder: folder name.
         group_uuid: group identifier.
         tags: list of tags.
@@ -1719,12 +1719,12 @@ class DBBaseDocumentInput(BaseModel):
     mimetype: str = "text/plain"
     email_file_path: str = ""
     full_file_path: str = ""
-    layout_file_path: str = ""
     debug_file_path: str = ""
     readorder_file_path: str = ""
     clean_text_path: str = ""
     raw_text_path: str = ""
     html_path: str = ""
+    output_file_paths: List[str] = []
     folder: str = ""
     group_uuid: str = ""
     project: str = ""
@@ -2218,11 +2218,11 @@ class TextExtractionDocumentNERDTO(BaseModel):
 
 class SentenceFormatsDTO(NestingId):
     """
-    Model that represents a sentences with NLP extractions.
+    Model that represents a sentences with ExtractionFormats extractions.
 
     Attributes:
 
-        result: list of sentences with nlp found in the page.
+        result: list of sentences with ExtractionFormats found in the page.
     """
 
     result: TextExtractionFormats
@@ -2230,7 +2230,7 @@ class SentenceFormatsDTO(NestingId):
 
 class ParagraphFormatsDTO(NestingId):
     """
-    Model that represents a paragraph with NLP extractions.
+    Model that represents a paragraph with ExtractionFormats extractions.
 
     Attributes:
 
@@ -2259,7 +2259,7 @@ class TextExtractionDocumentFormatsPage(BaseModel):
     Attributes:
 
         version: version of the text extraction service used.
-        pages_text: list of pages with NLP extractions.
+        pages_text: list of pages with ExtractionFormats extractions.
     """
 
     version: str
@@ -2809,7 +2809,25 @@ class DomainEntity(BaseModel):
 
 class ClassifierEntity(BaseModel):
     """
-    Model that represent founded entities.
+    Model that represent founded Entities.
+    Attributes:
+        start: start ent
+        end: end ent
+        label: The label.
+        scores: The object of scores.
+    """
+
+    start: int
+    end: int
+    label: str
+    scores: EntityInfo
+    tooltip: str
+    kb_id: str
+
+
+class DocClassifierEntity(BaseModel):
+    """
+    Model that represent founded Entities.
 
     Attributes:
 
@@ -3806,7 +3824,7 @@ class DocClassifierDTO(BaseModel):
         prediction: result of classification of the model.
     """
 
-    prediction: Union[List[ClassifierEntity], List[List[ClassifierEntity]], Dict[Any, List[ClassifierEntity]]]
+    prediction: Union[List[DocClassifierEntity], List[List[DocClassifierEntity]], Dict[Any, List[DocClassifierEntity]]]
 
 
 class PageClassifierDTO(NestingId):
@@ -3818,7 +3836,7 @@ class PageClassifierDTO(NestingId):
         result: list ClassifierEntity.
     """
 
-    result: List[ClassifierEntity]
+    result: List[DocClassifierEntity]
 
 
 class ClassifierParagraphResult(NestingId):
@@ -3830,7 +3848,7 @@ class ClassifierParagraphResult(NestingId):
         result: list of ClassifierEntity objects.
     """
 
-    result: List[ClassifierEntity]
+    result: List[DocClassifierEntity]
 
 
 class ClassifierSentenceResult(NestingId):
@@ -3842,7 +3860,7 @@ class ClassifierSentenceResult(NestingId):
         result: list of ClassifierEntity objects.
     """
 
-    result: List[ClassifierEntity]
+    result: List[DocClassifierEntity]
 
 
 class ClassifierParagraphSentences(NestingId):
@@ -3896,7 +3914,7 @@ class DocClassifierDocument(BaseModel):
     """
 
     version: str
-    result: List[ClassifierEntity]
+    result: List[DocClassifierEntity]
 
 
 class DocClassifierDocumentDTO(BaseModel):
@@ -4635,15 +4653,15 @@ class TextExtractionFormatsPages(BaseModel):
 
 class TextExtractionFormatsDocumentDTO(BaseModel):
     """
-    Model that contains nlp data implemented in sentence data.
+    Model that contains ExtractionFormats data implemented in sentence data.
 
     Attributes:
 
-            text_extraction_Formats: The same structure with document.
+            text_extraction_formats: The same structure with document.
 
     """
 
-    text_extraction_Formats: Union[TextExtractionFormatsDocument, TextExtractionFormatsPages]
+    text_extraction_formats: Union[TextExtractionFormatsDocument, TextExtractionFormatsPages]
 
 
 class TextExtractionNLPDocumentDTO(BaseModel):
