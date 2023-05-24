@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.74
+
+- add model to working with document for Summary/Phrases 
+
 # 0.0.73
 
 - add output_file_paths field to document
