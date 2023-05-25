@@ -1969,19 +1969,198 @@ class EmailConverterResponse(BaseModel):
 
 
 class FieldName(str, Enum):
-    """
-    Matching pydantic models with fields in the db.
+    """Matching pydantic models with fields in the db.
 
     Attributes:
 
         TestsetDataInput: name of testset input model.
         LearnsetDataInput: name of learnset input model.
         ModelDataInput: name of model input model.
+        TaxonomyDataInput: name of taxonomy input model.
     """
 
     TestsetDataInput = "testset"
     LearnsetDataInput = "learnset"
     ModelDataInput = "model"
+    TaxonomyDataInput = "taxonomy"
+
+
+class SaveConfigInputModel(BaseModel):
+    """
+    Input data model for "save-config" router.
+
+    Attributes:
+
+        input_data: json config.
+    """
+
+    input_data: Dict
+
+
+class SaveAIDataInputModel(BaseModel):
+    """
+    Input data model for "save-ai-data" router.
+
+    Attributes:
+
+        subdomain: db name(tenant).
+        ai_data: testset / learnset.
+    """
+
+    ai_data: Union[TestsetDataInput, LearnsetDataInput]
+    subdomain: str
+
+
+class SaveAIModelInputModel(BaseModel):
+    """
+    Input data model for "save-ai-model" router.
+
+    Attributes:
+
+        ai_data: model.
+        subdomain: db name(tenant).
+    """
+
+    ai_data: ModelDataInput
+    subdomain: str
+
+
+class UpdateAIModelInputModel(BaseModel):
+    """
+    Input data model for "update-testset"/"update-model"/"update-learnset" routers.
+
+    Attributes:
+
+        subdomain: db name(tenant).
+        version: testset version.
+        name: name of testset.
+        process: process name.
+        data_for_update: field for update.
+    """
+
+    subdomain: str
+    version: str
+    name: str
+    process: str
+    data_for_update: UpdateAI
+
+
+class SaveFullDocumentInputModel(BaseModel):
+    """
+    Input data model for "save-full-document" router.
+
+    Attributes:
+
+        input_data: document fields.
+        subdomain: db name(tenant).
+        client_id: collection name(user identifier).
+    """
+
+    input_data: DBBaseDocumentInput
+    subdomain: str
+    client_id: str
+
+
+class UpdateSDUFieldInputModel(BaseModel):
+    """
+    Input data model for "update-sdu-field" / "update-sdu-list-field" routers.
+
+    Attributes:
+
+        input_data: Dict that contains data to be processed.
+        subdomain: db name(tenant).
+        client_id: collection name(user identifier).
+        document_uid: uid of the document to be updated.
+    """
+
+    input_data: Dict
+    subdomain: str
+    client_id: str
+    document_uid: str
+
+
+class UpdateStatusInputModel(BaseModel):
+    """
+    Input data model for "update-status" router.
+
+    Attributes:
+
+        process_status: number of the process status.
+        subdomain: db name(tenant).
+        client_id: collection name(user identifier).
+        document_uid: uid of the document.
+    """
+
+    process_status: str
+    subdomain: str
+    client_id: str
+    document_uid: str
+
+
+class UpdateDocumentInputModel(BaseModel):
+    """
+    Input data model for "update-document-fields" router.
+
+    Attributes:
+
+        subdomain: db name (tenant)
+        client_id: collection name(user identifier).
+        document_uid: uid of the document to be updated.
+        fields_for_update: fields with new data
+    """
+
+    subdomain: str
+    client_id: str
+    document_uid: str
+    fields_for_update: Dict
+
+
+class FilterByStatusInputModel(BaseModel):
+    """
+    Input data model for "filter-by-status" router.
+
+    Attributes:
+
+        subdomain: db name (tenant)
+        client_id: collection name (user identifier)
+        document_uid: uid of the document
+        status_lower_bound: status of document should be greater than this parameter (X in the x <= status <= y)
+        status_upper_bound: status of documents should be lower than this parameter (Y in the x <= status <= y)
+        one_document: only one document if True
+        update_status: change status document, when return
+    """
+
+    subdomain: Optional[str] = None
+    client_id: Optional[str] = None
+    document_uid: Optional[str] = None
+    status_lower_bound: Optional[str] = "000"
+    status_upper_bound: Optional[str] = "999.999.999.999"
+    update_status: Optional[str] = None
+    one_document: bool = False
+
+
+class CheckStatusHistoryInputModel(BaseModel):
+    """
+    Input data model for "check-status-history" router.
+
+    Attributes:
+
+        status: status of document
+        status_lower_bound: status of document should be greater than this parameter (X in the x <= status <= y)
+        status_upper_bound: status of documents should be lower than this parameter (Y in the x <= status <= y)
+        subdomain: db name (tenant)
+        client_id: collection name (user identifier)
+        document_uid: uid of the document
+        update_status: change status document, when return
+    """
+
+    status: Optional[str] = None
+    status_lower_bound: Optional[str] = None
+    status_upper_bound: Optional[str] = None
+    subdomain: Optional[str] = None
+    client_id: Optional[str] = None
+    document_uid: Optional[str] = None
+    update_status: Optional[str] = None
 
 
 class EntityExtractorInput(DocumentLangInput):
@@ -4675,3 +4854,832 @@ class TextExtractionNLPDocumentDTO(BaseModel):
     """
 
     text_extraction_nlp: Union[TextExtractionNLPDocument, TextExtractionNLPPages]
+
+
+class SummaryEmbeddedDocumentInput(BaseDocumentInput):
+    """Data input model for EngineSummary Embedded.
+
+    Attributes:
+
+        language: object SDULanguage.
+        result_output: Type of output format.
+    """
+
+    language: SDULanguage = SDULanguage(code="en", lang="english")
+    result_output: ResultType = ResultType.pages
+
+
+class EngineSummaryEmbeddedDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition EngineSummaryEmbedded on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: SummaryEmbeddedDTO object.
+    """
+
+    version: str
+    result: SummaryEmbeddedDTO
+
+
+class EngineSummaryEmbeddedPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummaryEmbedded on a document for page.
+
+    Attributes:
+
+        result: SummaryEmbeddedDTO object.
+    """
+
+    result: SummaryEmbeddedDTO
+
+
+class EngineSummaryEmbeddedParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummaryEmbedded on a document for paragraph.
+
+    Attributes:
+
+        result: SummaryEmbeddedDTO object.
+    """
+
+    result: SummaryEmbeddedDTO
+
+
+class EngineSummaryEmbeddedSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummaryEmbedded on a document for sentence.
+
+    Attributes:
+
+        result: SummaryEmbeddedDTO object.
+    """
+
+    result: SummaryEmbeddedDTO
+
+
+class EngineSummaryEmbeddedParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of EngineSummaryEmbedded on a document.
+
+    Attributes:
+
+        sentences: list of sentences with EngineSummaryEmbedded extractions.
+    """
+
+    sentences: List[EngineSummaryEmbeddedSentenceResult]
+
+
+class EngineSummaryEmbeddedPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of EngineSummaryEmbedded on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with EngineSummaryEmbedded extractions.
+    """
+
+    paragraphs: Union[List[EngineSummaryEmbeddedParagraphResult], List[EngineSummaryEmbeddedParagraphSentences]]
+
+
+class EngineSummaryEmbeddedPages(BaseModel):
+    """
+    Model that represents the list of pages of EngineSummaryEmbedded on a document.
+
+    Attributes:
+
+        version: version of the EngineSummaryEmbedded service used.
+        pages_text: list of pages with EngineSummaryEmbedded extractions.
+    """
+
+    version: str
+    pages_text: Union[List[EngineSummaryEmbeddedPageResult], List[EngineSummaryEmbeddedPageParagraphs]]
+
+
+class EngineSummaryEmbeddedDocumentDTO(BaseModel):
+    """
+    Model that contains EngineSummaryEmbedded data implemented in sentence data.
+
+    Attributes:
+
+            engine_summary_embedded: The same structure with document.
+
+    """
+
+    engine_summary_embedded: Union[EngineSummaryEmbeddedDocument, EngineSummaryEmbeddedPages]
+
+
+class SummaryDocumentInput(BaseDocumentInput):
+    """
+    Data input model for EngineSummary.
+
+    Attributes:
+        sum_ratio: Coefficient.
+        sentences_count: Amount of sentences.
+        lsa: Algorithm
+        corpus_size: Coefficient
+        community_size: Coefficient
+        cluster_threshold: Coefficient
+        language: object SDULanguage.
+        result_output: Type of output format.
+    """
+
+    sum_ratio: float = 0.2
+    sentences_count: int = 15
+    lsa: bool = False
+    corpus_size: int = 5000
+    community_size: int = 5
+    cluster_threshold: float = 0.65
+    language: SDULanguage = SDULanguage(code="en", lang="english")
+    result_output: ResultType = ResultType.pages
+
+
+class EngineSummaryDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition EngineSummary on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: list SummaryDTO objects.
+    """
+
+    version: str
+    result: List[SummaryDTO]
+
+
+class EngineSummaryPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummary on a document for page.
+
+    Attributes:
+
+        result: list SummaryDTO objects.
+    """
+
+    result: List[SummaryDTO]
+
+
+class EngineSummaryParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummary on a document for paragraph.
+
+    Attributes:
+
+        result: list SummaryDTO objects.
+    """
+
+    result: List[SummaryDTO]
+
+
+class EngineSummarySentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummary on a document for sentence.
+
+    Attributes:
+
+        result: list SummaryDTO objects.
+    """
+
+    result: List[SummaryDTO]
+
+
+class EngineSummaryParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of EngineSummary on a document.
+
+    Attributes:
+
+        sentences: list of sentences with EngineSummary extractions.
+    """
+
+    sentences: List[EngineSummarySentenceResult]
+
+
+class EngineSummaryPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of EngineSummary on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with EngineSummary extractions.
+    """
+
+    paragraphs: Union[List[EngineSummaryParagraphResult], List[EngineSummaryParagraphSentences]]
+
+
+class EngineSummaryPages(BaseModel):
+    """
+    Model that represents the list of pages of EngineSummary on a document.
+
+    Attributes:
+
+        version: version of the EngineSummary service used.
+        pages_text: list of pages with EngineSummary extractions.
+    """
+
+    version: str
+    pages_text: Union[List[EngineSummaryPageResult], List[EngineSummaryPageParagraphs]]
+
+
+class EngineSummaryDocumentDTO(BaseModel):
+    """
+    Model that contains EngineSummary data implemented in sentence data.
+
+    Attributes:
+
+            engine_summary: The same structure with document.
+
+    """
+
+    engine_summary: Union[EngineSummaryDocument, EngineSummaryPages]
+
+
+class SummaryTopicsDocumentInput(BaseDocumentInput):
+    """
+    Data input model for Doc topics.
+
+    Attributes:
+
+        multiplier: Multiplier used for increasing the size of the training data using synthetic samples.
+        language: object SDULanguage.
+        result_output: Type of output format.
+    """
+    multiplier: int = 20
+    language: SDULanguage = SDULanguage(code="en", lang="english")
+    result_output: ResultType = ResultType.pages
+
+
+class EngineSummaryTopicsDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition EngineSummaryTopics on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: SentenceTopicsDTO object.
+    """
+
+    version: str
+    result: SentenceTopicsDTO
+
+
+class EngineSummaryTopicsPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummaryTopics on a document for page.
+
+    Attributes:
+
+        result: SentenceTopicsDTO object.
+    """
+
+    result: SentenceTopicsDTO
+
+
+class EngineSummaryTopicsParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummaryTopics on a document for paragraph.
+
+    Attributes:
+
+        result: SentenceTopicsDTO object.
+    """
+
+    result: SentenceTopicsDTO
+
+
+class EngineSummaryTopicsSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition EngineSummaryTopics on a document for sentence.
+
+    Attributes:
+
+        result: SentenceTopicsDTO object.
+    """
+
+    result: SentenceTopicsDTO
+
+
+class EngineSummaryTopicsParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of EngineSummaryTopics on a document.
+
+    Attributes:
+
+        sentences: list of sentences with EngineSummaryTopics extractions.
+    """
+
+    sentences: List[EngineSummaryTopicsSentenceResult]
+
+
+class EngineSummaryTopicsPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of EngineSummaryTopics on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with EngineSummaryTopics extractions.
+    """
+
+    paragraphs: Union[List[EngineSummaryTopicsParagraphResult], List[EngineSummaryTopicsParagraphSentences]]
+
+
+class EngineSummaryTopicsPages(BaseModel):
+    """
+    Model that represents the list of pages of EngineSummaryTopics on a document.
+
+    Attributes:
+
+        version: version of the EngineSummaryTopics service used.
+        pages_text: list of pages with EngineSummaryTopics extractions.
+    """
+
+    version: str
+    pages_text: Union[List[EngineSummaryTopicsPageResult], List[EngineSummaryTopicsPageParagraphs]]
+
+
+class EngineSummaryTopicsDocumentDTO(BaseModel):
+    """
+    Model that contains EngineSummaryTopics data implemented in sentence data.
+
+    Attributes:
+
+            engine_summary_topics: The same structure with document.
+
+    """
+
+    engine_summary_topics: Union[EngineSummaryTopicsDocument, EngineSummaryTopicsPages]
+
+
+class PhrasesContribDocumentInput(BaseDocumentInput):
+    """
+    Input model to extract PhrasesContrib
+
+    Attributes:
+
+        keyphrase_ngram_range: Length, in words, of the extracted keywords/keyphrases.
+        top_n: Return the top n keywords/keyphrases
+        use_maxsum: Whether to use Max Sum Distance for the selection of keywords/keyphrases.
+        use_mmr: Whether to use Maximal Marginal Relevance (MMR) for the selection of keywords/keyphrases.
+        diversity: The diversity of the results between 0 and 1 if `use_mmr` is set to True.
+        nr_candidates: The number of candidates to consider if `use_maxsum` is set to True.
+        language: object SDULanguage.
+        result_output: Type of output format.
+    """
+
+    keyphrase_ngram_range: Tuple[int, int] = (1, 1)
+    top_n: int = 5
+    use_maxsum: bool = False
+    use_mmr: bool = False
+    diversity: float = 0.5
+    nr_candidates: int = 20
+    multiplier: int = 20
+    language: SDULanguage = SDULanguage(code="en", lang="english")
+    result_output: ResultType = ResultType.pages
+
+
+class PhrasesContribDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition PhrasesContrib on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: PhrasesContribDTO object.
+    """
+
+    version: str
+    result: PhrasesContribDTO
+
+
+class PhrasesContribPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesContrib on a document for page.
+
+    Attributes:
+
+        result: PhrasesContribDTO object.
+    """
+
+    result: PhrasesContribDTO
+
+
+class PhrasesContribParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesContrib on a document for paragraph.
+
+    Attributes:
+
+        result: PhrasesContribDTO object.
+    """
+
+    result: PhrasesContribDTO
+
+
+class PhrasesContribSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesContrib on a document for sentence.
+
+    Attributes:
+
+        result: PhrasesContribDTO object.
+    """
+
+    result: PhrasesContribDTO
+
+
+class PhrasesContribParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of PhrasesContrib on a document.
+
+    Attributes:
+
+        sentences: list of sentences with PhrasesContrib extractions.
+    """
+
+    sentences: List[PhrasesContribSentenceResult]
+
+
+class PhrasesContribPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of PhrasesContrib on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with PhrasesContrib extractions.
+    """
+
+    paragraphs: Union[List[PhrasesContribParagraphResult], List[PhrasesContribParagraphSentences]]
+
+
+class PhrasesContribPages(BaseModel):
+    """
+    Model that represents the list of pages of PhrasesContrib on a document.
+
+    Attributes:
+
+        version: version of the PhrasesContrib service used.
+        pages_text: list of pages with PhrasesContrib extractions.
+    """
+
+    version: str
+    pages_text: Union[List[PhrasesContribPageResult], List[PhrasesContribPageParagraphs]]
+
+
+class PhrasesContribDocumentDTO(BaseModel):
+    """
+    Model that contains PhrasesContrib data implemented in sentence data.
+
+    Attributes:
+
+            extractor_phrases_contrib: The same structure with document.
+
+    """
+
+    extractor_phrases_contrib: Union[PhrasesContribDocument, PhrasesContribPages]
+
+
+class PhrasesRakeDocumentInput(BaseDocumentInput):
+    """
+    Input model to extract PhrasesRake
+
+    Attributes:
+
+        language: object SDULanguage.
+        result_output: Type of output format.
+    """
+
+    language: SDULanguage = SDULanguage(code="en", lang="english")
+    result_output: ResultType = ResultType.pages
+
+
+class PhrasesRakeDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition PhrasesRake on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: PhrasesRakeDTO object.
+    """
+
+    version: str
+    result: PhrasesRakeDTO
+
+
+class PhrasesRakePageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesRake on a document for page.
+
+    Attributes:
+
+        result: PhrasesRakeDTO object.
+    """
+
+    result: PhrasesRakeDTO
+
+
+class PhrasesRakeParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesRake on a document for paragraph.
+
+    Attributes:
+
+        result: PhrasesRakeDTO object.
+    """
+
+    result: PhrasesRakeDTO
+
+
+class PhrasesRakeSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesRake on a document for sentence.
+
+    Attributes:
+
+        result: PhrasesRakeDTO object.
+    """
+
+    result: PhrasesRakeDTO
+
+
+class PhrasesRakeParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of PhrasesRake on a document.
+
+    Attributes:
+
+        sentences: list of sentences with PhrasesRake extractions.
+    """
+
+    sentences: List[PhrasesRakeSentenceResult]
+
+
+class PhrasesRakePageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of PhrasesRake on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with PhrasesRake extractions.
+    """
+
+    paragraphs: Union[List[PhrasesRakeParagraphResult], List[PhrasesRakeParagraphSentences]]
+
+
+class PhrasesRakePages(BaseModel):
+    """
+    Model that represents the list of pages of PhrasesRake on a document.
+
+    Attributes:
+
+        version: version of the PhrasesRake service used.
+        pages_text: list of pages with PhrasesRake extractions.
+    """
+
+    version: str
+    pages_text: Union[List[PhrasesRakePageResult], List[PhrasesRakePageParagraphs]]
+
+
+class PhrasesRakeDocumentDTO(BaseModel):
+    """
+    Model that contains PhrasesRake data implemented in sentence data.
+
+    Attributes:
+
+            extractor_phrases_rake: The same structure with document.
+
+    """
+
+    extractor_phrases_rake: Union[PhrasesRakeDocument, PhrasesRakePages]
+
+
+class PhrasesTermsDocumentInput(BaseDocumentInput):
+    """
+    Input model to extract PhrasesTerms
+
+    Attributes:
+
+        language: object SDULanguage.
+        result_output: Type of output format.
+    """
+
+    language: SDULanguage = SDULanguage(code="en", lang="english")
+    result_output: ResultType = ResultType.pages
+
+
+class PhrasesTermsDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition PhrasesTerms on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: PhrasesKeyTermsDTO object.
+    """
+
+    version: str
+    result: PhrasesKeyTermsDTO
+
+
+class PhrasesTermsPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesTerms on a document for page.
+
+    Attributes:
+
+        result: PhrasesKeyTermsDTO object.
+    """
+
+    result: PhrasesKeyTermsDTO
+
+
+class PhrasesTermsParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesTerms on a document for paragraph.
+
+    Attributes:
+
+        result: PhrasesKeyTermsDTO object.
+    """
+
+    result: PhrasesKeyTermsDTO
+
+
+class PhrasesTermsSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesTerms on a document for sentence.
+
+    Attributes:
+
+        result: PhrasesKeyTermsDTO object.
+    """
+
+    result: PhrasesKeyTermsDTO
+
+
+class PhrasesTermsParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of PhrasesTerms on a document.
+
+    Attributes:
+
+        sentences: list of sentences with PhrasesTerms extractions.
+    """
+
+    sentences: List[PhrasesTermsSentenceResult]
+
+
+class PhrasesTermsPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of PhrasesTerms on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with PhrasesTerms extractions.
+    """
+
+    paragraphs: Union[List[PhrasesTermsParagraphResult], List[PhrasesTermsParagraphSentences]]
+
+
+class PhrasesTermsPages(BaseModel):
+    """
+    Model that represents the list of pages of PhrasesTerms on a document.
+
+    Attributes:
+
+        version: version of the PhrasesTerms service used.
+        pages_text: list of pages with PhrasesTerms extractions.
+    """
+
+    version: str
+    pages_text: Union[List[PhrasesTermsPageResult], List[PhrasesTermsPageParagraphs]]
+
+
+class PhrasesTermsDocumentDTO(BaseModel):
+    """
+    Model that contains PhrasesTerms data implemented in sentence data.
+
+    Attributes:
+
+            extractor_phrases_terms: The same structure with document.
+
+    """
+
+    extractor_phrases_terms: Union[PhrasesTermsDocument, PhrasesTermsPages]
+
+
+class PhrasesWordbagDocumentInput(BaseDocumentInput):
+    """
+    Input model to extract PhrasesWordbag
+
+    Attributes:
+
+        language: object SDULanguage.
+        result_output: Type of output format.
+    """
+
+    language: SDULanguage = SDULanguage(code="en", lang="english")
+    result_output: ResultType = ResultType.pages
+
+
+class PhrasesWordbagDocument(BaseModel):
+    """
+    Model that represents the result of named entity recognition PhrasesWordbag on a document for all doc.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        result: PhrasesWordBagDTO object.
+    """
+
+    version: str
+    result: PhrasesWordBagDTO
+
+
+class PhrasesWordbagPageResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesWordbag on a document for page.
+
+    Attributes:
+
+        result: PhrasesWordBagDTO object.
+    """
+
+    result: PhrasesWordBagDTO
+
+
+class PhrasesWordbagParagraphResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesWordbag on a document for paragraph.
+
+    Attributes:
+
+        result: PhrasesWordBagDTO object.
+    """
+
+    result: PhrasesWordBagDTO
+
+
+class PhrasesWordbagSentenceResult(NestingId):
+    """
+    Model that represents the result of named entity recognition PhrasesWordbag on a document for sentence.
+
+    Attributes:
+
+        result: PhrasesWordBagDTO object.
+    """
+
+    result: PhrasesWordBagDTO
+
+
+class PhrasesWordbagParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences of PhrasesWordbag on a document.
+
+    Attributes:
+
+        sentences: list of sentences with PhrasesWordbag extractions.
+    """
+
+    sentences: List[PhrasesWordbagSentenceResult]
+
+
+class PhrasesWordbagPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs of PhrasesWordbag on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with PhrasesWordbag extractions.
+    """
+
+    paragraphs: Union[List[PhrasesWordbagParagraphResult], List[PhrasesWordbagParagraphSentences]]
+
+
+class PhrasesWordbagPages(BaseModel):
+    """
+    Model that represents the list of pages of PhrasesWordbag on a document.
+
+    Attributes:
+
+        version: version of the PhrasesWordbag service used.
+        pages_text: list of pages with PhrasesWordbag extractions.
+    """
+
+    version: str
+    pages_text: Union[List[PhrasesWordbagPageResult], List[PhrasesWordbagPageParagraphs]]
+
+
+class PhrasesWordbagDocumentDTO(BaseModel):
+    """
+    Model that contains PhrasesWordbag data implemented in sentence data.
+
+    Attributes:
+
+            extractor_phrases_wordbag: The same structure with document.
+
+    """
+
+    extractor_phrases_wordbag: Union[PhrasesWordbagDocument, PhrasesWordbagPages]
