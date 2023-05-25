@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.75
+
+- add models for working with document statuses
+
 # 0.0.74
 
 - add model to working with document for Summary/Phrases 

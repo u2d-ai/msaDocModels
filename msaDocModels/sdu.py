@@ -1969,19 +1969,198 @@ class EmailConverterResponse(BaseModel):
 
 
 class FieldName(str, Enum):
-    """
-    Matching pydantic models with fields in the db.
+    """Matching pydantic models with fields in the db.
 
     Attributes:
 
         TestsetDataInput: name of testset input model.
         LearnsetDataInput: name of learnset input model.
         ModelDataInput: name of model input model.
+        TaxonomyDataInput: name of taxonomy input model.
     """
 
     TestsetDataInput = "testset"
     LearnsetDataInput = "learnset"
     ModelDataInput = "model"
+    TaxonomyDataInput = "taxonomy"
+
+
+class SaveConfigInputModel(BaseModel):
+    """
+    Input data model for "save-config" router.
+
+    Attributes:
+
+        input_data: json config.
+    """
+
+    input_data: Dict
+
+
+class SaveAIDataInputModel(BaseModel):
+    """
+    Input data model for "save-ai-data" router.
+
+    Attributes:
+
+        subdomain: db name(tenant).
+        ai_data: testset / learnset.
+    """
+
+    ai_data: Union[TestsetDataInput, LearnsetDataInput]
+    subdomain: str
+
+
+class SaveAIModelInputModel(BaseModel):
+    """
+    Input data model for "save-ai-model" router.
+
+    Attributes:
+
+        ai_data: model.
+        subdomain: db name(tenant).
+    """
+
+    ai_data: ModelDataInput
+    subdomain: str
+
+
+class UpdateAIModelInputModel(BaseModel):
+    """
+    Input data model for "update-testset"/"update-model"/"update-learnset" routers.
+
+    Attributes:
+
+        subdomain: db name(tenant).
+        version: testset version.
+        name: name of testset.
+        process: process name.
+        data_for_update: field for update.
+    """
+
+    subdomain: str
+    version: str
+    name: str
+    process: str
+    data_for_update: UpdateAI
+
+
+class SaveFullDocumentInputModel(BaseModel):
+    """
+    Input data model for "save-full-document" router.
+
+    Attributes:
+
+        input_data: document fields.
+        subdomain: db name(tenant).
+        client_id: collection name(user identifier).
+    """
+
+    input_data: DBBaseDocumentInput
+    subdomain: str
+    client_id: str
+
+
+class UpdateSDUFieldInputModel(BaseModel):
+    """
+    Input data model for "update-sdu-field" / "update-sdu-list-field" routers.
+
+    Attributes:
+
+        input_data: Dict that contains data to be processed.
+        subdomain: db name(tenant).
+        client_id: collection name(user identifier).
+        document_uid: uid of the document to be updated.
+    """
+
+    input_data: Dict
+    subdomain: str
+    client_id: str
+    document_uid: str
+
+
+class UpdateStatusInputModel(BaseModel):
+    """
+    Input data model for "update-status" router.
+
+    Attributes:
+
+        process_status: number of the process status.
+        subdomain: db name(tenant).
+        client_id: collection name(user identifier).
+        document_uid: uid of the document.
+    """
+
+    process_status: str
+    subdomain: str
+    client_id: str
+    document_uid: str
+
+
+class UpdateDocumentInputModel(BaseModel):
+    """
+    Input data model for "update-document-fields" router.
+
+    Attributes:
+
+        subdomain: db name (tenant)
+        client_id: collection name(user identifier).
+        document_uid: uid of the document to be updated.
+        fields_for_update: fields with new data
+    """
+
+    subdomain: str
+    client_id: str
+    document_uid: str
+    fields_for_update: Dict
+
+
+class FilterByStatusInputModel(BaseModel):
+    """
+    Input data model for "filter-by-status" router.
+
+    Attributes:
+
+        subdomain: db name (tenant)
+        client_id: collection name (user identifier)
+        document_uid: uid of the document
+        status_lower_bound: status of document should be greater than this parameter (X in the x <= status <= y)
+        status_upper_bound: status of documents should be lower than this parameter (Y in the x <= status <= y)
+        one_document: only one document if True
+        update_status: change status document, when return
+    """
+
+    subdomain: Optional[str] = None
+    client_id: Optional[str] = None
+    document_uid: Optional[str] = None
+    status_lower_bound: Optional[str] = "000"
+    status_upper_bound: Optional[str] = "999.999.999.999"
+    update_status: Optional[str] = None
+    one_document: bool = False
+
+
+class CheckStatusHistoryInputModel(BaseModel):
+    """
+    Input data model for "check-status-history" router.
+
+    Attributes:
+
+        status: status of document
+        status_lower_bound: status of document should be greater than this parameter (X in the x <= status <= y)
+        status_upper_bound: status of documents should be lower than this parameter (Y in the x <= status <= y)
+        subdomain: db name (tenant)
+        client_id: collection name (user identifier)
+        document_uid: uid of the document
+        update_status: change status document, when return
+    """
+
+    status: Optional[str] = None
+    status_lower_bound: Optional[str] = None
+    status_upper_bound: Optional[str] = None
+    subdomain: Optional[str] = None
+    client_id: Optional[str] = None
+    document_uid: Optional[str] = None
+    update_status: Optional[str] = None
 
 
 class EntityExtractorInput(DocumentLangInput):
