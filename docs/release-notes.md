@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.76
+
+- add project to filter document by status
+
 # 0.0.75
 
 - add models for working with document statuses
