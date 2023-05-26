@@ -2118,21 +2118,20 @@ class UpdateDocumentInputModel(BaseModel):
 class FilterByStatusInputModel(BaseModel):
     """
     Input data model for "filter-by-status" router.
-
     Attributes:
-
         subdomain: db name (tenant)
         client_id: collection name (user identifier)
         document_uid: uid of the document
+        project: name of the project
         status_lower_bound: status of document should be greater than this parameter (X in the x <= status <= y)
         status_upper_bound: status of documents should be lower than this parameter (Y in the x <= status <= y)
         one_document: only one document if True
         update_status: change status document, when return
     """
-
     subdomain: Optional[str] = None
     client_id: Optional[str] = None
     document_uid: Optional[str] = None
+    project: Optional[str] = None
     status_lower_bound: Optional[str] = "000"
     status_upper_bound: Optional[str] = "999.999.999.999"
     update_status: Optional[str] = None
@@ -2142,24 +2141,23 @@ class FilterByStatusInputModel(BaseModel):
 class CheckStatusHistoryInputModel(BaseModel):
     """
     Input data model for "check-status-history" router.
-
     Attributes:
-
         status: status of document
         status_lower_bound: status of document should be greater than this parameter (X in the x <= status <= y)
         status_upper_bound: status of documents should be lower than this parameter (Y in the x <= status <= y)
         subdomain: db name (tenant)
         client_id: collection name (user identifier)
         document_uid: uid of the document
+        project: name of the project
         update_status: change status document, when return
     """
-
     status: Optional[str] = None
     status_lower_bound: Optional[str] = None
     status_upper_bound: Optional[str] = None
     subdomain: Optional[str] = None
     client_id: Optional[str] = None
     document_uid: Optional[str] = None
+    project: Optional[str] = None
     update_status: Optional[str] = None
 
 
