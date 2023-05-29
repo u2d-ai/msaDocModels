@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.77
+
+- change initial status to document
+
 # 0.0.76
 
 - add project to filter document by status

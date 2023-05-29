@@ -1678,7 +1678,7 @@ class ProcessStatus(BaseModel):
         timestamp: time when number was changes
     """
 
-    number: str = "000"
+    number: str = "000.000.000.000"
     timestamp: str = str(datetime.utcnow())
 
 
@@ -2132,7 +2132,7 @@ class FilterByStatusInputModel(BaseModel):
     client_id: Optional[str] = None
     document_uid: Optional[str] = None
     project: Optional[str] = None
-    status_lower_bound: Optional[str] = "000"
+    status_lower_bound: Optional[str] = "000.000.000.000"
     status_upper_bound: Optional[str] = "999.999.999.999"
     update_status: Optional[str] = None
     one_document: bool = False
