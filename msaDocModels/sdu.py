@@ -834,6 +834,7 @@ class ExtractKeywordsDocumentInput(BaseDocumentInput):
         result_output: Type of output format.
         algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf"]
     """
+
     result_output: ResultType = ResultType.sentences
     algorithms: List[str] = ["yake", "bert"]
 
@@ -1148,6 +1149,7 @@ class PhrasesMiningInput(DocumentInput):
         max_phrase_size: Maximum allowed phrase size.
         alpha: Threshold for the significance score.
     """
+
     min_support: int = 10
     max_phrase_size: int = 40
     alpha: int = 4
@@ -1194,6 +1196,7 @@ class PhraseKeyword(BaseModel):
         entity: keyword of document.
         distance: keyword distance to the input document.
     """
+
     entity: str
     distance: float
 
@@ -1205,6 +1208,7 @@ class PhrasesKeyTermsDTO(BaseModel):
     Attributes:
         phrases: List of key terms
     """
+
     phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
 
 
@@ -1215,6 +1219,7 @@ class PhrasesContribDTO(BaseModel):
     Attributes:
         phrases: List of phrases contribution
     """
+
     phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
 
 
@@ -1225,6 +1230,7 @@ class PhrasesRakeDTO(BaseModel):
     Attributes:
         phrases: List of most common words
     """
+
     phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
 
 
@@ -1236,6 +1242,7 @@ class PhraseMiningDTO(BaseModel):
         partitioned_docs: Document.
         index_vocab: Vocabulary for text.
     """
+
     partitioned_docs: List[List[List[int]]]
     index_vocab: List[Any]
 
@@ -1287,6 +1294,7 @@ class ExtractKeywordsTextInput(DocumentInput):
         algorithms: which algorithms use for extract. Can be list of ["yake", "bert", "bert_vectorized", "tf_idf"]
         language: default is german
     """
+
     algorithms: List[str] = ["yake", "bert"]
     language: SDULanguage = SDULanguage(code="de", lang="german")
 
@@ -1298,6 +1306,7 @@ class ExtractKeywordsTextDTO(BaseModel):
     Attributes:
         data: Extracted keywords for text.
     """
+
     data: Union[List[str], List[List[str]], Dict[Any, List[str]]]
 
 
@@ -1353,6 +1362,7 @@ class SentenceTopicsInput(DocumentLangInput):
 
             multiplier: Multiplier used for increasing the size of the training data using synthetic samples.
     """
+
     multiplier: int = 20
 
 
@@ -1396,6 +1406,7 @@ class SentenceTopicsDTO(BaseModel):
 
 class SentenceSummary(BaseModel):
     """Sentence along with its respective rate."""
+
     sentence: str
     rate: float
 
@@ -1405,6 +1416,7 @@ class SummaryEmbeddedDTO(BaseModel):
     Attributes:
         sentences_summary: List of sentences along with their respective rates.
     """
+
     sentences_summary: List[SentenceSummary]
 
 
@@ -1679,7 +1691,7 @@ class ProcessStatus(BaseModel):
     """
 
     number: str = "000.000.000.000"
-    timestamp: str = str(datetime.utcnow())
+    timestamp: datetime = datetime.utcnow()
 
 
 class DBBaseDocumentInput(BaseModel):
@@ -1814,6 +1826,7 @@ class BaseInfo(BaseModel):
         process: process name.
         name: object name.
     """
+
     version: str
     description: str
     datetime: datetime
@@ -1832,6 +1845,7 @@ class UpdateAI(BaseModel):
         process: process name.
         name: object name.
     """
+
     version: Optional[str]
     description: Optional[str]
     datetime: Optional[datetime]
@@ -1900,6 +1914,7 @@ class TestsetsDataDTO(MongoId):
     Attributes:
         testsets: list of testsets object.
     """
+
     testsets: List[TestsetDataInput]
 
 
@@ -1910,6 +1925,7 @@ class LearnsetsDataDTO(MongoId):
     Attributes:
         learnsets: list of learnsets object.
     """
+
     learnsets: List[LearnsetDataInput]
 
 
@@ -1919,6 +1935,7 @@ class ModelsDataDTO(MongoId):
     Attributes:
         models: list of models object.
     """
+
     models: List[ModelDataInput]
 
 
@@ -2128,6 +2145,7 @@ class FilterByStatusInputModel(BaseModel):
         one_document: only one document if True
         update_status: change status document, when return
     """
+
     subdomain: Optional[str] = None
     client_id: Optional[str] = None
     document_uid: Optional[str] = None
@@ -2151,6 +2169,7 @@ class CheckStatusHistoryInputModel(BaseModel):
         project: name of the project
         update_status: change status document, when return
     """
+
     status: Optional[str] = None
     status_lower_bound: Optional[str] = None
     status_upper_bound: Optional[str] = None
@@ -2172,6 +2191,7 @@ class EntityExtractorDocumentInput(BaseDocumentInput):
     Attributes:
         result_output: Type of output format.
     """
+
     result_output: ResultType = ResultType.sentences
 
 
@@ -2188,6 +2208,7 @@ class TextExtractionDocumentNLPInput(BaseDocumentInput):
     Attributes:
         result_output: Type of output format.
     """
+
     result_output: ResultType = ResultType.sentences
 
 
@@ -2362,6 +2383,7 @@ class TextExtractionDocumentNERInput(BaseDocumentInput):
     Attributes:
         result_output: Type of output format.
     """
+
     result_output: ResultType = ResultType.sentences
 
 
@@ -2477,6 +2499,7 @@ class InformationExtractionAnswerTextInput(DocumentInput):
         questions: questions about context.
         limit: max number of answers.
     """
+
     questions: List[str] = []
     limit: int = 1
 
@@ -2490,6 +2513,7 @@ class InformationExtractionAnswerDocumentInput(BaseDocumentInput):
         questions: questions about context.
         limit: max number of answers.
     """
+
     result_output: ResultType = ResultType.pages
     questions: List[str] = []
     limit: int = 1
@@ -2505,6 +2529,7 @@ class AnswerExtraction(BaseModel):
         s: answer start position.
         e: answer end position.
     """
+
     answer: str
     score: float
     s: int
@@ -2518,6 +2543,7 @@ class InformationExtractionAnswerTextDTO(BaseModel):
     Attributes:
         result: extracted answers.
     """
+
     result: Union[List[AnswerExtraction], List[List[AnswerExtraction]], Dict[Any, List[AnswerExtraction]]]
 
 
@@ -2529,6 +2555,7 @@ class InformationExtractionQuestionTextInput(DocumentInput):
         answers: answers about context.
         max_length: max length of question.
     """
+
     answers: List[str] = []
     max_length: int = 64
 
@@ -2542,6 +2569,7 @@ class InformationExtractionQuestionDocumentInput(BaseDocumentInput):
         answers: answers about context.
         max_length: max length of question.
     """
+
     result_output: ResultType = ResultType.pages
     answers: List[str] = []
     max_length: int = 64
@@ -2554,6 +2582,7 @@ class InformationExtractionQuestionTextDTO(BaseModel):
     Attributes:
         result: extracted questions.
     """
+
     result: Union[List[str], List[List[str]], Dict[Any, List[str]]]
 
 
@@ -2564,6 +2593,7 @@ class SentenceAnswerInformationDTO(NestingId):
     Attributes:
         result: list of sentences with answers found in the sentence of page.
     """
+
     result: List[AnswerExtraction] = []
 
 
@@ -2573,6 +2603,7 @@ class ParagraphAnswerInformationDTO(NestingId):
     Attributes:
         sentences: list of sentences.
     """
+
     sentences: List[SentenceAnswerInformationDTO] = []
 
 
@@ -2594,6 +2625,7 @@ class PageAnswerInformationDTO(NestingId):
     Attributes:
         paragraphs: list of paragraphs.
     """
+
     paragraphs: Union[List[ParagraphAnswerInformationResult], List[ParagraphAnswerInformationDTO]]
 
 
@@ -2616,6 +2648,7 @@ class InformationExtractionAnswerDocumentPage(BaseModel):
         version: version of the text extraction service used.
         pages_text: list of pages with answer information extractions.
     """
+
     version: str
     pages_text: Union[List[PageAnswerInformationResult], List[PageAnswerInformationDTO]]
 
@@ -2641,6 +2674,7 @@ class InformationExtractionAnswerDocumentDTO(BaseModel):
     Attributes:
         information_extraction_answer: The same structure with document.
     """
+
     information_extraction_answer: Union[InformationExtractionAnswerDocument, InformationExtractionAnswerDocumentPage]
 
 
@@ -2652,6 +2686,7 @@ class InformationExtractionAnswerPageDocumentPage(BaseModel):
         version: version of the text extraction service used.
         pages_text: list of pages with answer information extractions.
     """
+
     version: str
     pages_text: List[SentenceAnswerInformationDTO] = []
 
@@ -2663,6 +2698,7 @@ class InformationExtractionAnswerPageDocumentDTO(BaseModel):
     Attributes:
         information_extraction_answer: The same structure with document.
     """
+
     information_extraction_answer: InformationExtractionAnswerPageDocumentPage
 
 
@@ -2673,6 +2709,7 @@ class SentenceQuestionInformationDTO(NestingId):
     Attributes:
         result: list of sentences with questions found in the sentence of page.
     """
+
     result: List[str]
 
 
@@ -2683,6 +2720,7 @@ class ParagraphQuestionInformationDTO(NestingId):
     Attributes:
         sentences: list of sentences.
     """
+
     sentences: List[SentenceQuestionInformationDTO]
 
 
@@ -2703,6 +2741,7 @@ class PageQuestionInformationDTO(NestingId):
     Attributes:
         paragraphs: list of paragraphs.
     """
+
     paragraphs: Union[List[ParagraphQuestionInformationResult], List[ParagraphQuestionInformationDTO]]
 
 
@@ -2724,6 +2763,7 @@ class InformationExtractionQuestionDocumentPage(BaseModel):
         version: version of the text extraction service used.
         pages_text: list of pages with question information extractions.
     """
+
     version: str
     pages_text: Union[List[PageQuestionInformationResult], List[PageQuestionInformationDTO]]
 
@@ -2748,6 +2788,7 @@ class InformationExtractionQuestionDocumentDTO(BaseModel):
     Attributes:
         information_extraction_question: The same structure with document.
     """
+
     information_extraction_question: Union[
         InformationExtractionQuestionDocument, InformationExtractionQuestionDocumentPage
     ]
@@ -2760,6 +2801,7 @@ class InformationExtractionQuestionPageDocumentPage(BaseModel):
         version: version of the text extraction service used.
         pages_text: list of pages with question information extractions.
     """
+
     version: str
     pages_text: List[SentenceQuestionInformationDTO] = []
 
@@ -2770,6 +2812,7 @@ class InformationExtractionQuestionPageDocumentDTO(BaseModel):
     Attributes:
         information_extraction_question: The same structure with document.
     """
+
     information_extraction_question: InformationExtractionQuestionPageDocumentPage
 
 
@@ -2780,6 +2823,7 @@ class InformationExtractionAnswerInput(BaseModel):
         question: question about context
         context: text which using as context for question
     """
+
     question: str
     context: str
 
@@ -2792,6 +2836,7 @@ class InformationExtractionQuestionInput(BaseModel):
         context: text which using as context for answer
         max_length: max length of answer
     """
+
     answer: str
     context: str
     max_length: int = 64
@@ -3128,6 +3173,7 @@ class TextExtractionDocumentConciseConceptsInput(BaseDocumentInput):
         path: The path where model is located.
 
     """
+
     result_output: ResultType = ResultType.pages
     path: str = ""
 
@@ -3194,6 +3240,7 @@ class SentimentDocumentInput(BaseDocumentInput):
     Attributes:
         result_output: Type of output format.
     """
+
     result_output: ResultType = ResultType.sentences
 
 
@@ -3313,6 +3360,7 @@ class TextLanguageDocumentInput(BaseDocumentInput):
         is_short_text: turn on to get the best effort results (instead of unknown) for short text.
 
     """
+
     result_output: ResultType = ResultType.pages
     hint_languages: str = ""
     hint_encoding: str = ""
@@ -3532,6 +3580,7 @@ class CleanDocumentInput(BaseDocumentInput):
         language: language of text
         result_output: Type of output format.
     """
+
     result_output: ResultType = ResultType.pages
     language: SDULanguage = SDULanguage(code="de", lang="german")
 
@@ -3665,6 +3714,7 @@ class TranslateDocumentInput(BaseDocumentInput):
         to_lang: language to which text will be translated
         split_underscore: split underscore or no
     """
+
     result_output: ResultType = ResultType.pages
     from_lang: Optional[str] = None
     to_lang: Optional[str] = None
@@ -3837,6 +3887,7 @@ class ExtractionDocumentNotaryInput(BaseDocumentInput):
     Attributes:
         result_output: Type of output format.
     """
+
     result_output: ResultType = ResultType.pages
 
 
@@ -4114,6 +4165,7 @@ class DomainsExtractorDocumentInput(BaseDocumentInput):
     Attributes:
         result_output: Type of output format.
     """
+
     result_output: ResultType = ResultType.sentences
 
 
@@ -4462,6 +4514,7 @@ class TextExtractionDocumentKnowledgeInput(BaseDocumentInput):
     Attributes:
         result_output: Type of output format.
     """
+
     result_output: ResultType = ResultType.pages
 
 
@@ -5104,6 +5157,7 @@ class SummaryTopicsDocumentInput(BaseDocumentInput):
         language: object SDULanguage.
         result_output: Type of output format.
     """
+
     multiplier: int = 20
     language: SDULanguage = SDULanguage(code="en", lang="english")
     result_output: ResultType = ResultType.pages
@@ -5681,3 +5735,41 @@ class PhrasesWordbagDocumentDTO(BaseModel):
     """
 
     extractor_phrases_wordbag: Union[PhrasesWordbagDocument, PhrasesWordbagPages]
+
+
+class RemoveFolderInputModel(BaseModel):
+    """
+    Input model for '/remove/folder' endpoint
+
+    Parameters:
+
+        data: A list of dictionaries. Each dictionary should contain 'collection_name',
+              'uuid', and 'folder' keys. 'folder' key with the value being the path to the folder to be removed.
+        return_only_successful: If True - only items for which the directory was successfully deleted will
+                                be included in the response. If False, all items.
+
+    """
+
+    data: List[Dict]
+    return_only_successful: bool
+
+
+class ClearOutDocumentInputModel(BaseModel):
+    """
+    Input data model for "clear-out" router.
+
+    Attributes:
+
+        subdomain: tenant identifier
+        client_id: client identifier
+        days: how old documents to look for. Default: 3
+        return_only_successful: If True - only items for which the directory was successfully deleted will be included in the response. If False, all items.
+                                Default: False
+        params: additional parameters for search
+    """
+
+    subdomain: str
+    client_id: Optional[str] = None
+    days: int = 3
+    return_only_successful: bool = False
+    params: Dict = {}
