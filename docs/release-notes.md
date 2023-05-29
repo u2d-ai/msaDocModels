@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.78
+
+- added RemoveFolderInputModel and ClearOutDocumentInputModel models
+
 # 0.0.77
 
 - change initial status to document
@@ -15,7 +19,7 @@
 
 # 0.0.74
 
-- add model to working with document for Summary/Phrases 
+- add model to working with document for Summary/Phrases
 
 # 0.0.73
 
@@ -28,7 +32,7 @@
 
 # 0.0.71
 
-- add data field to store files data 
+- add data field to store files data
 - add project per document
 - change document status to string
 
@@ -50,12 +54,12 @@
 
 # 0.0.66
 
-- Remove taxonomy stuff 
+- Remove taxonomy stuff
 
 ## 0.0.65
 
 - Remove fields active and inherited for learnsets/testsets/models
-- Add models to get list of learnsets/testsets/models 
+- Add models to get list of learnsets/testsets/models
 
 ## 0.0.64
 
