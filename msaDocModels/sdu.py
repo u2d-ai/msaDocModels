@@ -1691,7 +1691,7 @@ class ProcessStatus(BaseModel):
     """
 
     number: str = "000.000.000.000"
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = str(datetime.utcnow())
 
 
 class DBBaseDocumentInput(BaseModel):
