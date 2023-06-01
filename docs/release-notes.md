@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.79
+
+- fix ProcessStatus model
+
 # 0.0.78
 
 - added RemoveFolderInputModel and ClearOutDocumentInputModel models
