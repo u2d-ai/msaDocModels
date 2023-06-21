@@ -1740,7 +1740,7 @@ class DBBaseDocumentInput(BaseModel):
     folder: str = ""
     group_uuid: str = ""
     project: str = ""
-    tags: Optional[Dict] = {}
+    tags: Optional[List] = []
     language: Optional[SDULanguage] = None
     needs_update: bool = False
     data: Dict = {}
