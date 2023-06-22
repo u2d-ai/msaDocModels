@@ -1939,18 +1939,32 @@ class ModelsDataDTO(MongoId):
     models: List[ModelDataInput]
 
 
-class ConversionInput(BaseModel):
+class ConvertToXLSXInput(BaseModel):
     """
     Model that contains inference data along with filenames to use for XLSX conversion.
 
     Attributes:
 
-        filenames: list of filenames that files should be saved as
+        file_paths: list of file paths (can include filenames or filenames with directories) to be saved
         inference: inference data, first key means sheet name for XLSX file
     """
 
-    filenames: List[str]
+    file_paths: List[str]
     inference: List[Dict[str, Dict[str, Any]]]
+
+
+class ConvertToZIPInput(BaseModel):
+    """
+    Model that contains filespaths which need to save in zip.
+
+    Attributes:
+
+        file_paths: list of list of file paths to be saved.
+        zip_names: list of names of archives
+    """
+
+    file_paths: List[List[str]]
+    zip_names: List[str]
 
 
 class HTMLConverterResponse(BaseModel):
