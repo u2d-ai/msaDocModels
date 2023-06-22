@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.80
+
+- fix DBBaseDocumentInput
+- added ConvertToZIPInput, ConvertToXLSXInput
+
 # 0.0.79
 
 - fix ProcessStatus model
