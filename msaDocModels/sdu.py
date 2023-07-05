@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 from bson.objectid import ObjectId
 from msaDocModels import wdc
@@ -5787,3 +5787,422 @@ class ClearOutDocumentInputModel(BaseModel):
     days: int = 3
     return_only_successful: bool = False
     params: Dict = {}
+
+
+class BaseEmailCred(BaseModel):
+    """
+    Base email configuration model.
+
+    Attributes:
+
+        host: Email host. For example, "smtp.gmail.com"
+        port: The port to use for the email service. For example, 587 for Gmail's SMTP.
+    """
+
+    host: str
+    port: int
+
+
+class UserCred(BaseModel):
+    """
+    User email credentials model.
+
+    Attributes:
+
+        email: Email address of the user.
+        password: Password for the email account.
+    """
+
+    email: str
+    password: str
+
+
+class UserData(BaseModel):
+    """
+    User data model.
+
+    Attributes:
+
+        subdomain: Specific user subdomain.
+        client_id: client ID. Default: "616fbefe-c6a0-489b-a942-b2098e46a3e2"
+    """
+
+    subdomain: str
+    client_id: str = "616fbefe-c6a0-489b-a942-b2098e46a3e2"
+
+
+class GmailCred(UserCred, BaseEmailCred):
+    """
+    Gmail specific credentials model.
+    """
+
+    pass
+
+
+class BaseSenderConfig(BaseModel):
+    """
+    Base sender configuration model.
+
+    Attributes:
+
+        email_to: Recipient's email address.
+        subject: The subject of the email. Default: "Subject".
+        file_paths: List of file paths to be attached to the email.
+        body: The body text of the email.
+    """
+
+    email_to: str
+    subject: str = "Subject"
+    file_paths: Optional[List[str]]
+    body: str
+
+
+class SenderConfigOutlook(BaseSenderConfig):
+    """
+    Sender configuration for Outlook.
+
+    Attributes:
+
+        office_tenant_id: The tenant ID for the Office 365 account.
+        client_secret: Client secret for the Office 365 account.
+        office_client_id: The client ID for the Office 365 account.
+    """
+
+    office_tenant_id: str
+    client_secret: str
+    office_client_id: str
+
+
+class SenderConfigGmail(BaseEmailCred, BaseSenderConfig):
+    """
+    Sender configuration for Gmail.
+    """
+
+    pass
+
+
+class SendEmailOutlook(BaseModel):
+    """
+    Outlook specific sender email parameters.
+
+    Attributes:
+
+        email: The email address of the sender.
+        config: Configuration parameters for sending email through Outlook.
+    """
+
+    email: str
+    config: SenderConfigOutlook
+
+
+class SendEmailGmail(UserCred):
+    """
+    Gmail specific sender email parameters.
+
+    Attributes:
+
+        config: Configuration parameters for sending email through Gmail.
+    """
+
+    config: SenderConfigGmail
+
+
+class ReadEmailGmail(UserData):
+    """
+    Gmail specific email reading parameters.
+
+    Attributes:
+
+        config: Gmail specific email reading configuration.
+    """
+
+    config: GmailCred
+
+
+class OutlookCred(BaseModel):
+    """
+    Outlook credential model.
+
+    Attributes:
+
+        host: IMAP Outlook host. Default: "outlook.office365.com"
+        client_id: The application's client ID.
+        authority: The authority URL.
+        secret: Secret key for the application.
+        scope: Scopes for the application.
+        email: Email for reading.
+    """
+
+    host: str = "outlook.office365.com"
+    client_id: str
+    authority: str
+    secret: str
+    scope: List[str]
+    email: str
+
+
+class ReaderEmailOutlook(UserData):
+    """
+    Outlook specific email reading parameters.
+
+    Attributes:
+
+        config: Outlook specific email reading configuration.
+    """
+
+    config: OutlookCred
+
+
+class ConvertToHTMLInputModel(BaseModel):
+    """
+    Input data model for "convert-to-html" router.
+
+    Attributes:
+
+        full_file_path: the path to the file to be converted
+        document_id: document identifier
+        from_pandas: set true if need html from pandas
+                    Default from apache tika
+    """
+
+    full_file_path: str
+    document_id: Optional[str] = None
+    from_pandas: bool = False
+
+
+class ConvertToHTMLOutputModel(BaseModel):
+    """
+    Output data model for "convert-to-html" router.
+
+    Attributes:
+
+        document_id: document identifier
+        data: HTMLConverterResponse object
+    """
+
+    document_id: Optional[str] = None
+    data: HTMLConverterResponse
+
+
+class FileType(str, Enum):
+    XLS = ".xls"
+    XLSX = ".xlsx"
+    CSV = ".csv"
+    XML = ".xml"
+    JSON = ".json"
+
+
+class MailType(str, Enum):
+    EML = ".eml"
+    MSG = ".msg"
+
+
+class ConverterLayoutInputModel(BaseModel):
+    """
+    Input model for 'parse-email-file' router
+
+    Attributes:
+
+        full_file_path: the path to the file to be converted
+    """
+
+    full_file_path: str
+
+
+class ConvertToTextInputModel(BaseModel):
+    """
+    Input data model for "convert-to-text" router.
+
+    Attributes:
+
+        full_file_path: the path to the file to be converted.
+    """
+
+    full_file_path: str
+
+
+class HTMLToPDFInputModel(BaseModel):
+    """
+    Input data model for "html-to-pdf" router.
+
+    Attributes:
+
+        str_html: html as str
+        path_to_save: path to save with filename. Ex: data/filename.pdf
+                    if not set, it will return a string of bytes
+    """
+
+    str_html: str
+    path_to_save: str = None
+
+
+class OCRConfig(BaseModel):
+    """
+    OCR config
+
+    Attributes:
+
+        ocr_clean: boolean flag to indicate whether to apply OCR cleaning or not. Default: True
+        ocr_deskew: boolean flag to indicate whether to deskew the image before OCR or not. Default: True
+        ocr_tqm_progress: boolean flag to disable or enable progress bar. Default: True
+        ocr_image_dpi:  the DPI of the input image. Default 300
+        ocr_languages: list of languages to be used for OCR. Default: ["eng", "deu", "fra", "spa", "ita"]
+        ocr_optimize: flag to indicate whether to optimize OCR. Defaults: 1
+        ocr_page_seqmode: allows you to pass page segmentation arguments to Tesseract OCR. Default: 1
+        option_embedded_ocr: flag to indicate if the OCR should be done for embedded images. Default: False
+        option_skip_text: skip pages with text. Default: True
+
+    """
+
+    ocr_clean: bool = True
+    ocr_deskew: bool = True
+    ocr_tqm_progress: bool = True
+    ocr_image_dpi: int = 300
+    ocr_languages: List = ["eng", "deu", "fra", "spa", "ita"]
+    ocr_optimize: int = 1
+    ocr_page_seqmode: int = 1
+    option_embedded_ocr: bool = False
+    option_skip_text: bool = True
+
+
+class PDFConverterResult(BaseModel):
+    """
+    A class to represent the result of a PDF conversion operation.
+
+    Attributes:
+
+        metadata: dictionary containing metadata information of the PDF file.
+        html_path: path to file with HTML representation of the PDF.
+        images: list of `SDUPageImage` objects representing images.
+        pages_layout: list of `SDULayout` objects representing the layout of each page in the PDF.
+        pages_text: list of `SDUPage` objects representing the text content of each page in the PDF.
+        full_file_path: full path of the input PDF file.
+        debug_file_path: full path of the debug file.
+        readorder_file_path: full path of the read order file.
+        clean_text_path: path to file with clean text content of the PDF.
+        lang: `SDULanguage` object representing the detected language of the PDF.
+        raw_text_path: path to file with raw text content of the PDF.
+    """
+
+    metadata: Dict = {}
+    html_path: str = ""
+    images: List[SDUPageImage] = []
+    pages_layout: List[SDULayout] = []
+    pages_text: List[SDUPage] = []
+    full_file_path: str = ""
+    debug_file_path: str = ""
+    readorder_file_path: str = ""
+    clean_text_path: str = ""
+    lang: SDULanguage = SDULanguage()
+    raw_text_path: str = ""
+
+
+class BBFormat(Enum):
+    """
+    Enumeration of bounding box formats.
+
+    Attributes:
+
+        XYWH: indicates the bounding box format as (x, y, width, height).
+        XYX2Y2: indicates the bounding box format as (x1, y1, x2, y2).
+
+    """
+
+    XYWH = 1
+    XYX2Y2 = 2
+
+
+class CreatePDFInputModel(BaseModel):
+    """
+    Input data model for "create-pdf" router.
+
+    Attributes:
+
+        full_file_path: full file path of the input file.
+        document_id: optional document ID.
+    """
+
+    full_file_path: str
+    document_id: Optional[str] = None
+
+
+class CreatePDFOutputModel(BaseModel):
+    """
+    Output data model for "create-pdf" router.
+
+    Attributes:
+
+        data: full file path of the input file.
+        document_id: optional document ID.
+    """
+
+    data: PDFConverterResult
+    document_id: Optional[str] = None
+
+
+class TemplateInput(BaseModel):
+    """
+    Input model
+
+    Attributes:
+
+        output_type: type of output file. Default: pdf
+        template_name: name of template
+        doc_data: variables for filling template
+        template_version: template version. Default: v1
+        tenant_id: tenant identifier
+        document_id: document identifier
+    """
+
+    output_type: Literal["pdf", "html", "docx"] = "pdf"
+    template_name: str
+    doc_data: Dict = {}
+    template_version: str = "v1"
+    tenant_id: str
+    document_id: str
+
+
+class PublishInputModel(BaseModel):
+    """
+    Input data model for "publish" router.
+
+    Attributes:
+
+        message: text to publish
+        topic_name: pubsub topic name
+        service_name: service that publishes the message
+    """
+
+    message: str
+    topic_name: str
+    service_name: Optional[str] = None
+
+
+class BarcodesDTO(BaseModel):
+    """
+    Input model
+
+    Attributes:
+
+        client_id: collection name(user identifier)
+        subdomain: tenant identifier
+        document_id: document identifier
+    """
+
+    document_id: str
+    subdomain: str
+    client_id: str
+
+
+class CreatePDFInputModel(BaseModel):
+    """
+    Input data model for "create-pdf" router.
+
+    Attributes:
+
+        full_file_path: full file path of the input file.
+        document_id: optional document ID.
+    """
+
+    full_file_path: str
+    document_id: Optional[str] = None

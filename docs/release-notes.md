@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.81
+
+- added new models
+
+
 # 0.0.80
 
 - fix DBBaseDocumentInput
