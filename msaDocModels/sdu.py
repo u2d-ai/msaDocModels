@@ -5997,7 +5997,7 @@ class MailType(str, Enum):
     MSG = ".msg"
 
 
-class ConverterLayoutInputModel(BaseModel):
+class ConverterEmailInputModel(BaseModel):
     """
     Input model for 'parse-email-file' router
 
