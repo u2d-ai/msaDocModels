@@ -1,10 +1,13 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.82
+
+- fix model
+
 # 0.0.81
 
 - added new models
-
 
 # 0.0.80
 
