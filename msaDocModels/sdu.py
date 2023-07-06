@@ -5,8 +5,9 @@ from enum import Enum
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 from bson.objectid import ObjectId
-from msaDocModels import wdc
 from pydantic import UUID4, BaseModel, Field
+
+from msaDocModels import wdc
 
 
 def to_camel(string: str) -> str:
@@ -1998,6 +1999,8 @@ class EmailConverterResponse(BaseModel):
     msg: SDUEmail
     content_unzipped_files: Optional[List[HTMLConverterResponse]]
 
+class EmailConverterWithoutAttachmentsResponse(EmailConverterResponse):
+    content_attachments: Optional[List[SDUAttachment]]
 
 class FieldName(str, Enum):
     """Matching pydantic models with fields in the db.
