@@ -2197,8 +2197,28 @@ class CheckStatusHistoryInputModel(BaseModel):
     update_status: Optional[str] = None
 
 
+class PatternsEntities(BaseModel):
+    """
+    Model that contains input patterns for extract Formats.
+
+    Attributes:
+        zip: Dict with patterns. Each key it's a country abbreviations and the value its regex.
+        license: Dict with patterns. Each key it's a country license abbreviations  and the value its regex.
+        entity: Dict with patterns. Each key it's entity name  and the value its list of regex.
+    """
+    zip: Dict[str, str]
+    license: Dict[str, str]
+    entity: Dict[str, List[str]]
+
+
 class EntityExtractorInput(DocumentLangInput):
-    """Model that contains input data for extract Formats."""
+    """
+    Model that contains input data for extract Formats.
+
+    Attributes:
+        regex to extract data.
+    """
+    patterns: PatternsEntities
 
 
 class EntityExtractorDocumentInput(BaseDocumentInput):
@@ -2206,9 +2226,10 @@ class EntityExtractorDocumentInput(BaseDocumentInput):
     Model that contains input data for extract Formats.
 
     Attributes:
+        patterns: regex to extract data.
         result_output: Type of output format.
     """
-
+    patterns: PatternsEntities
     result_output: ResultType = ResultType.sentences
 
 
@@ -6143,6 +6164,19 @@ class CreatePDFOutputModel(BaseModel):
     document_id: Optional[str] = None
 
 
+class TemplateContent(BaseModel):
+    """
+    Model contains template content
+
+    Attributes:
+
+        main_tpl_code: code for main template
+        pdf_tpl_code: code for template to convert to pdf
+    """
+    main_tpl_code: str
+    pdf_tpl_code: Optional[str] = ""
+
+
 class TemplateInput(BaseModel):
     """
     Input model
@@ -6155,6 +6189,7 @@ class TemplateInput(BaseModel):
         template_version: template version. Default: v1
         tenant_id: tenant identifier
         document_id: document identifier
+        template_content: content for templates
     """
 
     output_type: Literal["pdf", "html", "docx"] = "pdf"
@@ -6163,6 +6198,7 @@ class TemplateInput(BaseModel):
     template_version: str = "v1"
     tenant_id: str
     document_id: str
+    template_content: Optional[TemplateContent] ={}
 
 
 class PublishInputModel(BaseModel):
