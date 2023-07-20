@@ -1,6 +1,15 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.84
+
+- update models for TemplateInput, EntityExtractorInput, EntityExtractorDocumentInput
+- add models for work with database updates from pub/sub
+
+## 0.0.83 
+
+- Added model with optional attachments in converteremail svc
+
 # 0.0.82
 
 - fix model
