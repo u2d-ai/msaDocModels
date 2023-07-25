@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.85
+
+- fix EntityExtractorInput, EntityExtractorDocumentInput models
+
 # 0.0.84
 
 - update models for TemplateInput, EntityExtractorInput, EntityExtractorDocumentInput

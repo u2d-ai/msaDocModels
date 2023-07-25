@@ -5,9 +5,8 @@ from enum import Enum
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 from bson.objectid import ObjectId
-from pydantic import UUID4, BaseModel, Field
-
 from msaDocModels import wdc
+from pydantic import UUID4, BaseModel, Field
 
 
 def to_camel(string: str) -> str:
@@ -1999,8 +1998,10 @@ class EmailConverterResponse(BaseModel):
     msg: SDUEmail
     content_unzipped_files: Optional[List[HTMLConverterResponse]]
 
+
 class EmailConverterWithoutAttachmentsResponse(EmailConverterResponse):
     content_attachments: Optional[List[SDUAttachment]]
+
 
 class FieldName(str, Enum):
     """Matching pydantic models with fields in the db.
@@ -2206,9 +2207,10 @@ class PatternsEntities(BaseModel):
         license: Dict with patterns. Each key it's a country license abbreviations  and the value its regex.
         entity: Dict with patterns. Each key it's entity name  and the value its list of regex.
     """
-    zip: Dict[str, str]
-    license: Dict[str, str]
-    entity: Dict[str, List[str]]
+
+    zip: Dict[str, str] = {}
+    license: Dict[str, str] = {}
+    entity: Dict[str, List[str]] = {}
 
 
 class EntityExtractorInput(DocumentLangInput):
@@ -2218,7 +2220,8 @@ class EntityExtractorInput(DocumentLangInput):
     Attributes:
         regex to extract data.
     """
-    patterns: PatternsEntities
+
+    patterns: Optional[PatternsEntities]
 
 
 class EntityExtractorDocumentInput(BaseDocumentInput):
@@ -2229,7 +2232,8 @@ class EntityExtractorDocumentInput(BaseDocumentInput):
         patterns: regex to extract data.
         result_output: Type of output format.
     """
-    patterns: PatternsEntities
+
+    patterns: Optional[PatternsEntities]
     result_output: ResultType = ResultType.sentences
 
 
@@ -6173,6 +6177,7 @@ class TemplateContent(BaseModel):
         main_tpl_code: code for main template
         pdf_tpl_code: code for template to convert to pdf
     """
+
     main_tpl_code: str
     pdf_tpl_code: Optional[str] = ""
 
@@ -6198,7 +6203,7 @@ class TemplateInput(BaseModel):
     template_version: str = "v1"
     tenant_id: str
     document_id: str
-    template_content: Optional[TemplateContent] ={}
+    template_content: Optional[TemplateContent] = {}
 
 
 class PublishInputModel(BaseModel):

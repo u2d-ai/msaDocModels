@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, Any
+from typing import Any, Dict
 
 from pydantic import BaseModel, validator
 
@@ -8,6 +8,7 @@ class UpdateStatusTypes(Enum):
     """
     Enum Class that represents choices for statuses in pubsub message.
     """
+
     create = "create"
     update = "update"
     delete = "delete"
@@ -22,6 +23,7 @@ class DatabaseUpdateMessageDTO(BaseModel):
         type: Type of update.
         entry: Data from database entry.
     """
+
     class_name: str
     type: str
     entry: Dict[str, Any]
