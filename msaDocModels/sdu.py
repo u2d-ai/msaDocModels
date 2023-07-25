@@ -205,9 +205,9 @@ class TextExtractionFormatsDTO(BaseModel):
     """DTO, representing the result of extraction Formats"""
 
     extractions: Union[
-        Dict[Any, TextExtractionFormats],
-        List[TextExtractionFormats],
         TextExtractionFormats,
+        List[TextExtractionFormats],
+        Dict[Any, TextExtractionFormats]
     ]
 
 
