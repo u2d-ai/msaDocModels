@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.86
+
+- fix model queue in TextExtractionFormatsDTO
+
 # 0.0.85
 
 - fix EntityExtractorInput, EntityExtractorDocumentInput models
