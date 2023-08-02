@@ -127,6 +127,18 @@ class ExtractionDefaultResult(BaseModel):
     end: int
 
 
+class ExtractionExtendedDefaultResult(ExtractionDefaultResult):
+    """
+    Model for representing an extracted entity with a name to which the result is related.
+
+    Attributes:
+
+        name: The name to which the result refers.
+    """
+
+    name: str
+
+
 class RecognizerDefaultResult(ExtractionDefaultResult):
     """
     Model for representing a recognized entity.
@@ -140,75 +152,36 @@ class RecognizerDefaultResult(ExtractionDefaultResult):
 
 class TextExtractionFormats(BaseModel):
     """
-    Data transfer object for  entity extractor.
+    Data transfer object for entity extractor.
 
     Attributes:
-        recognizer: List of recognizer results.
-        zipcode: List of extracted zipcodes.
-        phone_number: List of extracted phone numbers.
-        url: List of extracted URLs.
-        credit_card: List of extracted credit card numbers.
-        credit_cards_strict: List of strictly extracted credit card numbers.
-        ipv4: List of extracted IPv4 addresses.
-        ipv6: List of extracted IPv6 addresses.
-        mac_address: List of extracted MAC addresses.
-        hex_value: List of extracted hexadecimal values.
-        slug: List of extracted slugs.
-        bitcoin_address: List of extracted Bitcoin addresses.
-        yandex_money_address: List of extracted Yandex Money addresses.
-        latitude: List of extracted latitudes.
-        longitude:  List of extracted longitudes.
-        irc :  list  IRCs
-        license_plate : list License plates
-        time : list Time
-        iso_datetime : list ISO datetime
-        isbn : list ISBNs
-        roman_numeral : list Roman numerals
-        ethereum_address : list Ethereum addresses
-        ethereum_hash : list Ethereum hashes
-        uuid : list UUIDs
-        float_number : list Float numbers
-        pgp_fingerprint : list PGP fingerprints
-        pesel :list PESELs
+
+        recognizer: A list of RecognizerDefaultResult objects representing the results obtained from entity recognition.
+        result: A dictionary representing results extracted by regex patterns.
+            The keys of the dictionary are unique identifiers for the extracted data,
+            and the values are lists of ExtractionDefaultResult or ExtractionExtendedDefaultResult objects.
     """
 
     recognizer: List[RecognizerDefaultResult] = []
-    zipcode: List[ExtractionDefaultResult] = []
-    phone_number: List[ExtractionDefaultResult] = []
-    url: List[ExtractionDefaultResult] = []
-    credit_card: List[ExtractionDefaultResult] = []
-    credit_cards_strict: List[ExtractionDefaultResult] = []
-    ipv4: List[ExtractionDefaultResult] = []
-    ipv6: List[ExtractionDefaultResult] = []
-    mac_address: List[ExtractionDefaultResult] = []
-    hex_value: List[ExtractionDefaultResult] = []
-    slug: List[ExtractionDefaultResult] = []
-    bitcoin_address: List[ExtractionDefaultResult] = []
-    yandex_money_address: List[ExtractionDefaultResult] = []
-    latitude: List[ExtractionDefaultResult] = []
-    longitude: List[ExtractionDefaultResult] = []
-    irc: List[ExtractionDefaultResult] = []
-    license_plate: List[ExtractionDefaultResult] = []
-    time: List[ExtractionDefaultResult] = []
-    iso_datetime: List[ExtractionDefaultResult] = []
-    isbn: List[ExtractionDefaultResult] = []
-    roman_numeral: List[ExtractionDefaultResult] = []
-    ethereum_address: List[ExtractionDefaultResult] = []
-    ethereum_hash: List[ExtractionDefaultResult] = []
-    uuid: List[ExtractionDefaultResult] = []
-    float_number: List[ExtractionDefaultResult] = []
-    pgp_fingerprint: List[ExtractionDefaultResult] = []
-    pesel: List[ExtractionDefaultResult] = []
+    result: Dict[str, List[Union[ExtractionExtendedDefaultResult, ExtractionDefaultResult]]] = {}
 
 
-class TextExtractionFormatsDTO(BaseModel):
-    """DTO, representing the result of extraction Formats"""
+class TextExtractionFormatsStrDTO(BaseModel):
+    """DTO, representing the result of extraction Formats for Str"""
 
-    extractions: Union[
-        TextExtractionFormats,
-        List[TextExtractionFormats],
-        Dict[Any, TextExtractionFormats]
-    ]
+    extractions: TextExtractionFormats
+
+
+class TextExtractionFormatsListDTO(BaseModel):
+    """DTO, representing the result of extraction Formats for List"""
+
+    extractions: List[TextExtractionFormats]
+
+
+class TextExtractionFormatsDictDTO(BaseModel):
+    """DTO, representing the result of extraction Formats for Dict"""
+
+    extractions: Dict[str, TextExtractionFormats]
 
 
 class SDUEmail(BaseModel):
@@ -2198,30 +2171,16 @@ class CheckStatusHistoryInputModel(BaseModel):
     update_status: Optional[str] = None
 
 
-class PatternsEntities(BaseModel):
-    """
-    Model that contains input patterns for extract Formats.
-
-    Attributes:
-        zip: Dict with patterns. Each key it's a country abbreviations and the value its regex.
-        license: Dict with patterns. Each key it's a country license abbreviations  and the value its regex.
-        entity: Dict with patterns. Each key it's entity name  and the value its list of regex.
-    """
-
-    zip: Dict[str, str] = {}
-    license: Dict[str, str] = {}
-    entity: Dict[str, List[str]] = {}
-
-
 class EntityExtractorInput(DocumentLangInput):
     """
     Model that contains input data for extract Formats.
 
     Attributes:
+
         regex to extract data.
     """
 
-    patterns: Optional[PatternsEntities]
+    patterns: Optional[Dict]
 
 
 class EntityExtractorDocumentInput(BaseDocumentInput):
@@ -2229,11 +2188,12 @@ class EntityExtractorDocumentInput(BaseDocumentInput):
     Model that contains input data for extract Formats.
 
     Attributes:
+
         patterns: regex to extract data.
         result_output: Type of output format.
     """
 
-    patterns: Optional[PatternsEntities]
+    patterns: Optional[Dict]
     result_output: ResultType = ResultType.sentences
 
 
