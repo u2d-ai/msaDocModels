@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.88
+
+- add field embedding_attachments to separate attachments
+
 # 0.0.87
 
 - add patterns for models TextExtractionFormatsInput
