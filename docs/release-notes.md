@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.89
+
+- changed model, learnset, testset models
+
 # 0.0.88
 
 - add field embedding_attachments to separate attachments
@@ -23,7 +27,7 @@
 - update models for TemplateInput, EntityExtractorInput, EntityExtractorDocumentInput
 - add models for work with database updates from pub/sub
 
-## 0.0.83 
+## 0.0.83
 
 - Added model with optional attachments in converteremail svc
 

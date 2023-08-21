@@ -1796,15 +1796,13 @@ class BaseInfo(BaseModel):
         version: version identifier.
         description: description.
         datetime: datetime.
-        process: process name.
-        name: object name.
+        key: object name.
     """
 
     version: str
     description: str
     datetime: datetime
-    process: str
-    name: str
+    key: str
 
 
 class UpdateAI(BaseModel):
@@ -1815,15 +1813,13 @@ class UpdateAI(BaseModel):
         version: version identifier.
         description: description.
         datetime: datetime.
-        process: process name.
-        name: object name.
+        key: object name.
     """
 
     version: Optional[str]
     description: Optional[str]
     datetime: Optional[datetime]
-    process: Optional[str]
-    name: Optional[str]
+    key: Optional[str]
 
 
 class LearnsetDataInput(BaseInfo):
@@ -2044,15 +2040,13 @@ class UpdateAIModelInputModel(BaseModel):
 
         subdomain: db name(tenant).
         version: testset version.
-        name: name of testset.
-        process: process name.
+        key: name of testset.
         data_for_update: field for update.
     """
 
     subdomain: str
     version: str
-    name: str
-    process: str
+    key: str
     data_for_update: UpdateAI
 
 
@@ -6130,7 +6124,6 @@ class CreatePDFOutputModel(BaseModel):
     data: PDFConverterResult
     document_id: Optional[str] = None
 
-
 class TemplateContent(BaseModel):
     """
     Model contains template content
@@ -6140,10 +6133,8 @@ class TemplateContent(BaseModel):
         main_tpl_code: code for main template
         pdf_tpl_code: code for template to convert to pdf
     """
-
     main_tpl_code: str
     pdf_tpl_code: Optional[str] = ""
-
 
 class TemplateInput(BaseModel):
     """
@@ -6166,7 +6157,7 @@ class TemplateInput(BaseModel):
     template_version: str = "v1"
     tenant_id: str
     document_id: str
-    template_content: Optional[TemplateContent] = {}
+    template_content: Optional[TemplateContent] ={}
 
 
 class PublishInputModel(BaseModel):
