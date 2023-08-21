@@ -6124,6 +6124,7 @@ class CreatePDFOutputModel(BaseModel):
     data: PDFConverterResult
     document_id: Optional[str] = None
 
+
 class TemplateContent(BaseModel):
     """
     Model contains template content
@@ -6133,8 +6134,10 @@ class TemplateContent(BaseModel):
         main_tpl_code: code for main template
         pdf_tpl_code: code for template to convert to pdf
     """
+
     main_tpl_code: str
     pdf_tpl_code: Optional[str] = ""
+
 
 class TemplateInput(BaseModel):
     """
@@ -6157,7 +6160,7 @@ class TemplateInput(BaseModel):
     template_version: str = "v1"
     tenant_id: str
     document_id: str
-    template_content: Optional[TemplateContent] ={}
+    template_content: Optional[TemplateContent] = {}
 
 
 class PublishInputModel(BaseModel):
