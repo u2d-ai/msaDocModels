@@ -6163,8 +6163,8 @@ class TemplateInput(BaseModel):
     template_name: str
     doc_data: Dict = {}
     template_version: str = "v1"
-    tenant_id: str
-    document_id: str
+    tenant_id: Optional[str]
+    document_id:  Optional[str]
     template_content: Optional[TemplateContent] = {}
 
 
