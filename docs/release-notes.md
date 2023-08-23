@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.90
+
+- remove docx from model, added optional document_id, fix Barcode models
+
 # 0.0.89
 
 - changed model, learnset, testset models

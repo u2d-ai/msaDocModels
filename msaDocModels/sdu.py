@@ -3993,6 +3993,7 @@ class DocClassifierTextInput(BaseModel):
 
     Attributes:
 
+        document_id: str
         input_text: text to classify.
         label_structure_data: topics for text classification.
         learnset_name: name of learnset.
@@ -4004,6 +4005,7 @@ class DocClassifierTextInput(BaseModel):
         context_min_length: min length of context.
     """
 
+    document_id: Optional[str]
     input_text: Union[str, List[str], Dict[Any, str]]
     label_structure_data: Dict[str, List[str]]
     learnset_name: str = ""
@@ -4020,6 +4022,8 @@ class DocClassifierDocumentInput(BaseDocumentInput):
     Model that represents the input for classification of document.
 
     Attributes:
+
+        document_id: str
         result_output: Type of output format.
         label_structure_data: topics for text classification.
         learnset_name: name of learnset.
@@ -4031,6 +4035,7 @@ class DocClassifierDocumentInput(BaseDocumentInput):
         context_min_length: min length of context.
     """
 
+    document_id: Optional[str]
     result_output: ResultType = ResultType.pages
     label_structure_data: Dict[str, List[str]]
     learnset_name: str = ""
@@ -6154,7 +6159,7 @@ class TemplateInput(BaseModel):
         template_content: content for templates
     """
 
-    output_type: Literal["pdf", "html", "docx"] = "pdf"
+    output_type: Literal["pdf", "html"] = "pdf"
     template_name: str
     doc_data: Dict = {}
     template_version: str = "v1"
@@ -6179,7 +6184,7 @@ class PublishInputModel(BaseModel):
     service_name: Optional[str] = None
 
 
-class BarcodesDTO(BaseModel):
+class BarcodeInput(BaseModel):
     """
     Input model
 
@@ -6193,6 +6198,18 @@ class BarcodesDTO(BaseModel):
     document_id: str
     subdomain: str
     client_id: str
+
+
+class BarcodeDTO(BaseModel):
+    """
+    Output model
+
+    Attributes:
+
+        result: Union[Dict, List].
+    """
+
+    result: Union[Dict, List]
 
 
 class CreatePDFInputModel(BaseModel):
