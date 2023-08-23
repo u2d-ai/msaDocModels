@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.91
+
+- added optional tenant_id and document_id for TemplateInput model
+
 # 0.0.90
 
 - remove docx from model, added optional document_id, fix Barcode models
