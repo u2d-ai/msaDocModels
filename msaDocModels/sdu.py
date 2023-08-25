@@ -1961,6 +1961,7 @@ class EmailConverterResponse(BaseModel):
         txt_content: SDUText.
         msg: SDUEmail.
         content_unzipped_files: object of unzipped files.
+        email_tags: segmented email by tags
     """
 
     content_attachments: List[SDUAttachment]
@@ -1968,6 +1969,7 @@ class EmailConverterResponse(BaseModel):
     txt_content: SDUText
     msg: SDUEmail
     content_unzipped_files: Optional[List[HTMLConverterResponse]]
+    email_tags: Dict = {}
 
 
 class EmailConverterWithoutAttachmentsResponse(EmailConverterResponse):

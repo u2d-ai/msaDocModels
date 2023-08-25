@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.93
+
+- added email_tags field to EmailConverterResponse model
+
 # 0.0.92
 
 - added default value for tenant_id and document_id in TemplateInput model
