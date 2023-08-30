@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.94
+
+- enum instead Literal for TemplateInput model
+
 # 0.0.93
 
 - added email_tags field to EmailConverterResponse model
