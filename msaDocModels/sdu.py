@@ -6146,6 +6146,15 @@ class TemplateContent(BaseModel):
     pdf_tpl_code: Optional[str] = ""
 
 
+class OutputType(str, Enum):
+    """
+    Possible variants of output type for EngineTemplate
+    """
+
+    PDF = "pdf"
+    HTML = "html"
+
+
 class TemplateInput(BaseModel):
     """
     Input model
@@ -6161,12 +6170,12 @@ class TemplateInput(BaseModel):
         template_content: content for templates
     """
 
-    output_type: Literal["pdf", "html"] = "pdf"
+    output_type: OutputType = OutputType.PDF
     template_name: str
     doc_data: Dict = {}
     template_version: str = "v1"
-    tenant_id: Optional[str] = str(uuid.uuid4())
-    document_id: Optional[str] = str(uuid.uuid4())
+    tenant_id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
+    document_id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     template_content: Optional[TemplateContent] = {}
 
 
