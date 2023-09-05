@@ -1,7 +1,5 @@
-import dataclasses
 import datetime
-from dataclasses import dataclass
-from typing import Generic, Type, TypeVar
+from typing import TypeVar
 
 from genson import SchemaBuilder
 from pydantic.types import UUID
@@ -21,7 +19,7 @@ except:
 
 
 import uuid
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel

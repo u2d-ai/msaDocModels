@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from bson.objectid import ObjectId
 from msaDocModels import wdc
@@ -156,7 +156,8 @@ class TextExtractionFormats(BaseModel):
 
     Attributes:
 
-        recognizer: A list of RecognizerDefaultResult objects representing the results obtained from entity recognition.
+        recognizer: A list of RecognizerDefaultResult objects representing the results obtained
+        from entity recognition.
         result: A dictionary representing results extracted by regex patterns.
             The keys of the dictionary are unique identifiers for the extracted data,
             and the values are lists of ExtractionDefaultResult or ExtractionExtendedDefaultResult objects.
@@ -571,11 +572,23 @@ class NotaryItem(BaseModel):
         xt_feature = ""
 
         if chambers_only:
-            for item in (self.zip_code, self.city, self.address, self.historical_cities, self.office_city):
+            for item in (
+                self.zip_code,
+                self.city,
+                self.address,
+                self.historical_cities,
+                self.office_city,
+            ):
                 if item:
                     xt_feature += " " + item
         else:
-            for item in (self.city, self.address, self.first_name, self.last_name, self.office_title_full):
+            for item in (
+                self.city,
+                self.address,
+                self.first_name,
+                self.last_name,
+                self.office_title_full,
+            ):
                 if item:
                     xt_feature += " " + item
 
@@ -799,6 +812,15 @@ class BaseDocumentInput(BaseModel):
         return "unknown"
 
 
+class KeywordsAlgorithms(str, Enum):
+    """Enumeration class for keyword extraction algorithms."""
+
+    YAKE = "yake"
+    BERT = "bert"
+    BERT_VECTOR = "bert_vectorized"
+    TFIDF = "tfidf"
+
+
 class ExtractKeywordsDocumentInput(BaseDocumentInput):
     """
     Data input model for ExtractorKeywords.
@@ -809,7 +831,7 @@ class ExtractKeywordsDocumentInput(BaseDocumentInput):
     """
 
     result_output: ResultType = ResultType.sentences
-    algorithms: List[str] = ["yake", "bert"]
+    algorithms: List[str] = [KeywordsAlgorithms.YAKE, KeywordsAlgorithms.BERT]
 
 
 class SDUData(BaseModel):
@@ -1254,7 +1276,7 @@ class ExtractKeywordsInput(BaseModel):
     """
 
     data: List[Dict[str, Dict[str, Any]]]
-    algorithms: List[str] = ["yake", "bert"]
+    algorithms: List[str] = [KeywordsAlgorithms.YAKE, KeywordsAlgorithms.BERT]
     keys: List[str] = []
     language: SDULanguage = SDULanguage(code="de", lang="german")
 
@@ -1268,7 +1290,7 @@ class ExtractKeywordsTextInput(DocumentInput):
         language: default is german
     """
 
-    algorithms: List[str] = ["yake", "bert"]
+    algorithms: List[str] = [KeywordsAlgorithms.YAKE, KeywordsAlgorithms.BERT]
     language: SDULanguage = SDULanguage(code="de", lang="german")
 
 
@@ -1620,10 +1642,10 @@ class BuildModelInput(BaseModel):
     remove_outliers: bool = False
     budget_time_minutes: float = 3.0
     included_engines: List[str] = ["svm", "nb", "ridge", "rf", "dt"]
-    use_gpu = False
+    use_gpu: bool = False
     fold: int = 7
     tuning_iterations: int = 7
-    create_metadata = False
+    create_metadata: bool = False
     webhook_url: Optional[str]
 
 
@@ -2545,7 +2567,11 @@ class InformationExtractionAnswerTextDTO(BaseModel):
         result: extracted answers.
     """
 
-    result: Union[List[AnswerExtraction], List[List[AnswerExtraction]], Dict[Any, List[AnswerExtraction]]]
+    result: Union[
+        List[AnswerExtraction],
+        List[List[AnswerExtraction]],
+        Dict[Any, List[AnswerExtraction]],
+    ]
 
 
 class InformationExtractionQuestionTextInput(DocumentInput):
@@ -4058,7 +4084,11 @@ class DocClassifierDTO(BaseModel):
         prediction: result of classification of the model.
     """
 
-    prediction: Union[List[DocClassifierEntity], List[List[DocClassifierEntity]], Dict[Any, List[DocClassifierEntity]]]
+    prediction: Union[
+        List[DocClassifierEntity],
+        List[List[DocClassifierEntity]],
+        Dict[Any, List[DocClassifierEntity]],
+    ]
 
 
 class PageClassifierDTO(NestingId):
@@ -4232,7 +4262,10 @@ class TextExtractionDomainsPageParagraphs(NestingId):
         paragraphs: list of paragraphs.
     """
 
-    paragraphs: Union[List[TextExtractionDomainsParagraphResult], List[TextExtractionDomainsParagraphSentences]]
+    paragraphs: Union[
+        List[TextExtractionDomainsParagraphResult],
+        List[TextExtractionDomainsParagraphSentences],
+    ]
 
 
 class TextExtractionDomainsPageResult(NestingId):
@@ -4681,7 +4714,10 @@ class TextExtractionNLPPageParagraphs(NestingId):
         paragraphs: list of paragraphs with NLP extractions.
     """
 
-    paragraphs: Union[List[TextExtractionNLPParagraphResult], List[TextExtractionNLPParagraphSentences]]
+    paragraphs: Union[
+        List[TextExtractionNLPParagraphResult],
+        List[TextExtractionNLPParagraphSentences],
+    ]
 
 
 class TextExtractionNLPPages(BaseModel):
@@ -4769,7 +4805,10 @@ class TextExtractionNERPageParagraphs(NestingId):
         paragraphs: list of paragraphs with NER extractions.
     """
 
-    paragraphs: Union[List[TextExtractionNERParagraphResult], List[TextExtractionNERParagraphSentences]]
+    paragraphs: Union[
+        List[TextExtractionNERParagraphResult],
+        List[TextExtractionNERParagraphSentences],
+    ]
 
 
 class TextExtractionNERPages(BaseModel):
@@ -4870,7 +4909,10 @@ class TextExtractionFormatsPageParagraphs(NestingId):
         paragraphs: list of paragraphs with Formats extractions.
     """
 
-    paragraphs: Union[List[TextExtractionFormatsParagraphResult], List[TextExtractionFormatsParagraphSentences]]
+    paragraphs: Union[
+        List[TextExtractionFormatsParagraphResult],
+        List[TextExtractionFormatsParagraphSentences],
+    ]
 
 
 class TextExtractionFormatsPages(BaseModel):
@@ -4997,7 +5039,10 @@ class EngineSummaryEmbeddedPageParagraphs(NestingId):
         paragraphs: list of paragraphs with EngineSummaryEmbedded extractions.
     """
 
-    paragraphs: Union[List[EngineSummaryEmbeddedParagraphResult], List[EngineSummaryEmbeddedParagraphSentences]]
+    paragraphs: Union[
+        List[EngineSummaryEmbeddedParagraphResult],
+        List[EngineSummaryEmbeddedParagraphSentences],
+    ]
 
 
 class EngineSummaryEmbeddedPages(BaseModel):
@@ -5240,7 +5285,10 @@ class EngineSummaryTopicsPageParagraphs(NestingId):
         paragraphs: list of paragraphs with EngineSummaryTopics extractions.
     """
 
-    paragraphs: Union[List[EngineSummaryTopicsParagraphResult], List[EngineSummaryTopicsParagraphSentences]]
+    paragraphs: Union[
+        List[EngineSummaryTopicsParagraphResult],
+        List[EngineSummaryTopicsParagraphSentences],
+    ]
 
 
 class EngineSummaryTopicsPages(BaseModel):
@@ -5769,8 +5817,8 @@ class ClearOutDocumentInputModel(BaseModel):
         subdomain: tenant identifier
         client_id: client identifier
         days: how old documents to look for. Default: 3
-        return_only_successful: If True - only items for which the directory was successfully deleted will be included in the response. If False, all items.
-                                Default: False
+        return_only_successful: If True - only items for which the directory was successfully deleted will be
+        included in the response. If False, all items. Default: False
         params: additional parameters for search
     """
 
@@ -6221,17 +6269,3 @@ class BarcodeDTO(BaseModel):
     """
 
     result: Union[Dict, List]
-
-
-class CreatePDFInputModel(BaseModel):
-    """
-    Input data model for "create-pdf" router.
-
-    Attributes:
-
-        full_file_path: full file path of the input file.
-        document_id: optional document ID.
-    """
-
-    full_file_path: str
-    document_id: Optional[str] = None

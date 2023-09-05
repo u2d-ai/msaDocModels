@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+
+# 0.0.95
+
+- add Enum with Keywords algorithms
+
 # 0.0.94
 
 - enum instead Literal for TemplateInput model
