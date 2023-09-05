@@ -799,6 +799,19 @@ class BaseDocumentInput(BaseModel):
         return "unknown"
 
 
+class KeywordsAlgorithms(str, Enum):
+    """
+    Enumeration class for keyword extraction algorithms.
+
+    This class defines keywords extraction algorithms as string constants.
+    """
+
+    YAKE = "yake"
+    BERT = "bert"
+    BERT_VECTOR = "bert_vectorized"
+    TFIDF = "tfidf"
+
+
 class ExtractKeywordsDocumentInput(BaseDocumentInput):
     """
     Data input model for ExtractorKeywords.
@@ -809,7 +822,7 @@ class ExtractKeywordsDocumentInput(BaseDocumentInput):
     """
 
     result_output: ResultType = ResultType.sentences
-    algorithms: List[str] = ["yake", "bert"]
+    algorithms: List[str] = [KeywordsAlgorithms.YAKE, KeywordsAlgorithms.BERT]
 
 
 class SDUData(BaseModel):
@@ -1620,10 +1633,10 @@ class BuildModelInput(BaseModel):
     remove_outliers: bool = False
     budget_time_minutes: float = 3.0
     included_engines: List[str] = ["svm", "nb", "ridge", "rf", "dt"]
-    use_gpu = False
+    use_gpu: bool = False
     fold: int = 7
     tuning_iterations: int = 7
-    create_metadata = False
+    create_metadata: bool = False
     webhook_url: Optional[str]
 
 
