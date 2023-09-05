@@ -800,11 +800,7 @@ class BaseDocumentInput(BaseModel):
 
 
 class KeywordsAlgorithms(str, Enum):
-    """
-    Enumeration class for keyword extraction algorithms.
-
-    This class defines keywords extraction algorithms as string constants.
-    """
+    """Enumeration class for keyword extraction algorithms."""
 
     YAKE = "yake"
     BERT = "bert"
