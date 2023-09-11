@@ -58,6 +58,16 @@ class ResultType(str, Enum):
     sentences = "sentences"
 
 
+class AlgorithmType(str, Enum):
+    zer_shot = "zero"
+    outlier_sing = "outlier_sing"
+    outlier_bin = "outlier_bin"
+    multi_label = "multi_label"
+    normal = "normal"
+    include_sent = "include_sent"
+    sent_transformer = "sent_transformer"
+
+
 class TenantIdInput(BaseModel):
     """
     Input model with tenant_id
@@ -89,6 +99,8 @@ class DocumentInput(TextInput):
     """
 
     document_id: Optional[UUID4]
+
+
 
 
 class SDUPageImage(BaseModel):
@@ -3081,12 +3093,16 @@ class DocClassifierEntity(BaseModel):
     Attributes:
 
         entity: The entity.
-        scores: The object of scores.
+        score: The score.
 
     """
 
     entity: str
-    scores: EntityInfo
+    score: float
+
+
+class DocClassifierScoreDTO(BaseModel):
+    result: List[DocClassifierEntity]
 
 
 class PageConciseDTO(NestingId):
@@ -4027,22 +4043,16 @@ class DocClassifierTextInput(BaseModel):
         learnset_name: name of learnset.
         learnset_version: version of learnset.
         learnset_lang: lang of learnset.
-        multi_label: does 'label_structure_data' contain more than one topic.
-        score_threshold: threshold to include entities.
-        use_text_filters: use filters to clean text.
-        context_min_length: min length of context.
     """
 
     document_id: Optional[str]
     input_text: Union[str, List[str], Dict[Any, str]]
     label_structure_data: Dict[str, List[str]]
+    language: SDULanguage = SDULanguage(code="de")
+    algorithm: AlgorithmType = AlgorithmType.multi_label
     learnset_name: str = ""
     learnset_version: str = ""
     learnset_lang: str = ""
-    multi_label: bool = True
-    score_threshold: float = 0.3
-    use_text_filters: bool = True
-    context_min_length: int = 50
 
 
 class DocClassifierDocumentInput(BaseDocumentInput):
@@ -4057,22 +4067,15 @@ class DocClassifierDocumentInput(BaseDocumentInput):
         learnset_name: name of learnset.
         learnset_version: version of learnset.
         learnset_lang: lang of learnset.
-        multi_label: does 'label_structure_data' contain more than one topic.
-        score_threshold: threshold to include entities.
-        use_text_filters: use filters to clean text.
-        context_min_length: min length of context.
     """
 
-    document_id: Optional[str]
     result_output: ResultType = ResultType.pages
+    language: SDULanguage = SDULanguage(code="de")
+    algorithm: AlgorithmType = AlgorithmType.multi_label
     label_structure_data: Dict[str, List[str]]
     learnset_name: str = ""
     learnset_version: str = ""
     learnset_lang: str = ""
-    multi_label: bool = True
-    score_threshold: float = 0.3
-    use_text_filters: bool = True
-    context_min_length: int = 50
 
 
 class DocClassifierDTO(BaseModel):
