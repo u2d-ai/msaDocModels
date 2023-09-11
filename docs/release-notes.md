@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.98
+
+- fix algorithm to DocClassifier Input 
+
 # 0.0.97
 
 - add algorithm to DocClassifier Input 
