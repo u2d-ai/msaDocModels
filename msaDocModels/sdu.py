@@ -4039,6 +4039,8 @@ class DocClassifierTextInput(BaseModel):
 
         document_id: str
         input_text: text to classify.
+        language: object SDULanguage.
+        algorithm: The algorithm to classification.
         label_structure_data: topics for text classification.
         learnset_name: name of learnset.
         learnset_version: version of learnset.
@@ -4047,9 +4049,9 @@ class DocClassifierTextInput(BaseModel):
 
     document_id: Optional[str]
     input_text: Union[str, List[str], Dict[Any, str]]
-    label_structure_data: Dict[str, List[str]]
     language: SDULanguage = SDULanguage(code="de")
     algorithm: AlgorithmType = AlgorithmType.multi_label
+    label_structure_data: Dict[str, List[str]]
     learnset_name: str = ""
     learnset_version: str = ""
     learnset_lang: str = ""
@@ -4061,8 +4063,9 @@ class DocClassifierDocumentInput(BaseDocumentInput):
 
     Attributes:
 
-        document_id: str
         result_output: Type of output format.
+        language: object SDULanguage.
+        algorithm: The algorithm to classification.
         label_structure_data: topics for text classification.
         learnset_name: name of learnset.
         learnset_version: version of learnset.
