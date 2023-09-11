@@ -1,10 +1,10 @@
 from enum import Enum
 from typing import Any, Dict
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 
-class UpdateStatusTypes(Enum):
+class UpdateStatusTypes(str, Enum):
     """
     Enum Class that represents choices for statuses in pubsub message.
     """
@@ -28,7 +28,7 @@ class DatabaseUpdateMessageDTO(BaseModel):
     type: str
     entry: Dict[str, Any]
 
-    @validator("type")
+    @field_validator("type")
     def validate_notification_type(cls, _type: str):
         available_types = [attr.value for attr in UpdateStatusTypes]
         if _type in available_types:

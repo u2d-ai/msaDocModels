@@ -19,5 +19,5 @@ class MSAHealthMessage(BaseModel):
     """Health Pydantic Response Service Message"""
 
     healthy: bool = False
-    message: Optional[str]
-    error: Optional[str]
+    message: Optional[str] = None
+    error: Optional[str] = None

@@ -1,10 +1,14 @@
 import datetime
-from typing import TypeVar
+import uuid
+from typing import List, Optional, TypeVar
 
+from fastapi.encoders import jsonable_encoder
 from genson import SchemaBuilder
+from pydantic import BaseModel
 from pydantic.types import UUID
 
 _T = TypeVar("_T")
+
 
 try:
     import orjson as json
@@ -16,13 +20,6 @@ except:
         import json
 
         json.__version__ = ""
-
-
-import uuid
-from typing import List, Optional
-
-from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
 
 
 class titem(BaseModel):
@@ -64,9 +61,8 @@ class MSAAPIMessage:
         classes = {}
         for k, v in self.__dict__.items():
             classes[k] = v.__class__.__name__
-            # print("TOMSG:",k,v, type(v), v.__class__.__name__)
         self.__dict__["classes"] = classes
-        return json.dumps(self, default=lambda x: jsonable_encoder(x.__dict__)).decode("utf8").replace("'", '"')
+        return json.dumps(self, default=lambda x: jsonable_encoder(x.__dict__)).replace("'", '"')
 
     def fromMsg(self, message: str):
         self.__dict__ = json.loads(message)
