@@ -101,8 +101,6 @@ class DocumentInput(TextInput):
     document_id: Optional[UUID4]
 
 
-
-
 class SDUPageImage(BaseModel):
     """Page Image Pydantic Model.
 
