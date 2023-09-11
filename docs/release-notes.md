@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.97
+
+- add algorithm to DocClassifier Input 
+- change dto model for DocClassifier
+
 # 0.0.96
 
 - add include_fields field to CreatePDFInputModel
