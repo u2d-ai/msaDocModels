@@ -6163,10 +6163,24 @@ class CreatePDFInputModel(BaseModel):
 
         full_file_path: full file path of the input file.
         document_id: optional document ID.
+        include_fields: list of fields to return
     """
 
     full_file_path: str
     document_id: Optional[str] = None
+    include_fields: List = [
+        "metadata",
+        "html_path",
+        "images",
+        "pages_layout",
+        "pages_text",
+        "full_file_path",
+        "debug_file_path",
+        "readorder_file_path",
+        "clean_text_path",
+        "lang",
+        "raw_text_path",
+    ]
 
 
 class CreatePDFOutputModel(BaseModel):

@@ -1,6 +1,9 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.96
+
+- add include_fields field to CreatePDFInputModel
 
 # 0.0.95
 
