@@ -59,7 +59,7 @@ class ResultType(str, Enum):
 
 
 class AlgorithmType(str, Enum):
-    zer_shot = "zero"
+    zero_shot = "zero"
     outlier_sing = "outlier_sing"
     outlier_bin = "outlier_bin"
     multi_label = "multi_label"
@@ -4062,7 +4062,6 @@ class DocClassifierDocumentInput(BaseDocumentInput):
     Attributes:
 
         result_output: Type of output format.
-        language: object SDULanguage.
         algorithm: The algorithm to classification.
         label_structure_data: topics for text classification.
         learnset_name: name of learnset.
@@ -4071,7 +4070,6 @@ class DocClassifierDocumentInput(BaseDocumentInput):
     """
 
     result_output: ResultType = ResultType.pages
-    language: SDULanguage = SDULanguage(code="de")
     algorithm: AlgorithmType = AlgorithmType.multi_label
     label_structure_data: Dict[str, List[str]]
     learnset_name: str = ""
