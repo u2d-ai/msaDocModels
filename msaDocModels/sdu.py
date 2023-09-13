@@ -58,6 +58,16 @@ class ResultType(str, Enum):
     sentences = "sentences"
 
 
+class AlgorithmType(str, Enum):
+    zero_shot = "zero"
+    outlier_sing = "outlier_sing"
+    outlier_bin = "outlier_bin"
+    multi_label = "multi_label"
+    normal = "normal"
+    include_sent = "include_sent"
+    sent_transformer = "sent_transformer"
+
+
 class TenantIdInput(BaseModel):
     """
     Input model with tenant_id
@@ -3081,12 +3091,16 @@ class DocClassifierEntity(BaseModel):
     Attributes:
 
         entity: The entity.
-        scores: The object of scores.
+        score: The score.
 
     """
 
     entity: str
-    scores: EntityInfo
+    score: float
+
+
+class DocClassifierScoreDTO(BaseModel):
+    result: List[DocClassifierEntity]
 
 
 class PageConciseDTO(NestingId):
@@ -4023,26 +4037,22 @@ class DocClassifierTextInput(BaseModel):
 
         document_id: str
         input_text: text to classify.
+        language: object SDULanguage.
+        algorithm: The algorithm to classification.
         label_structure_data: topics for text classification.
         learnset_name: name of learnset.
         learnset_version: version of learnset.
         learnset_lang: lang of learnset.
-        multi_label: does 'label_structure_data' contain more than one topic.
-        score_threshold: threshold to include entities.
-        use_text_filters: use filters to clean text.
-        context_min_length: min length of context.
     """
 
     document_id: Optional[str] = None
     input_text: Union[str, List[str], Dict[Any, str]]
+    language: SDULanguage = SDULanguage(code="de")
+    algorithm: AlgorithmType = AlgorithmType.multi_label
     label_structure_data: Dict[str, List[str]]
     learnset_name: str = ""
     learnset_version: str = ""
     learnset_lang: str = ""
-    multi_label: bool = True
-    score_threshold: float = 0.3
-    use_text_filters: bool = True
-    context_min_length: int = 50
 
 
 class DocClassifierDocumentInput(BaseDocumentInput):
@@ -4051,27 +4061,20 @@ class DocClassifierDocumentInput(BaseDocumentInput):
 
     Attributes:
 
-        document_id: str
         result_output: Type of output format.
+        algorithm: The algorithm to classification.
         label_structure_data: topics for text classification.
         learnset_name: name of learnset.
         learnset_version: version of learnset.
         learnset_lang: lang of learnset.
-        multi_label: does 'label_structure_data' contain more than one topic.
-        score_threshold: threshold to include entities.
-        use_text_filters: use filters to clean text.
-        context_min_length: min length of context.
     """
 
     result_output: ResultType = ResultType.pages
+    algorithm: AlgorithmType = AlgorithmType.multi_label
     label_structure_data: Dict[str, List[str]]
     learnset_name: str = ""
     learnset_version: str = ""
     learnset_lang: str = ""
-    multi_label: bool = True
-    score_threshold: float = 0.3
-    use_text_filters: bool = True
-    context_min_length: int = 50
 
 
 class DocClassifierDTO(BaseModel):
@@ -6159,10 +6162,24 @@ class CreatePDFInputModel(BaseModel):
 
         full_file_path: full file path of the input file.
         document_id: optional document ID.
+        include_fields: list of fields to return
     """
 
     full_file_path: str
     document_id: Optional[str] = None
+    include_fields: List = [
+        "metadata",
+        "html_path",
+        "images",
+        "pages_layout",
+        "pages_text",
+        "full_file_path",
+        "debug_file_path",
+        "readorder_file_path",
+        "clean_text_path",
+        "lang",
+        "raw_text_path",
+    ]
 
 
 class CreatePDFOutputModel(BaseModel):
