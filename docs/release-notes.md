@@ -1,13 +1,17 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.99
+
+- added supporting pydantic v2
+
 # 0.0.98
 
-- fix algorithm to DocClassifier Input 
+- fix algorithm to DocClassifier Input
 
 # 0.0.97
 
-- add algorithm to DocClassifier Input 
+- add algorithm to DocClassifier Input
 - change dto model for DocClassifier
 
 # 0.0.96
