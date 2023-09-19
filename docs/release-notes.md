@@ -1,7 +1,7 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
-# 0.0.99
+# 0.0.100
 
 - add Input and DTO models for Spellcheck 
 
