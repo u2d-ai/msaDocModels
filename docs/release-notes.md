@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.99
+
+- add Input and DTO models for Spellcheck 
+
 # 0.0.98
 
 - fix algorithm to DocClassifier Input 
