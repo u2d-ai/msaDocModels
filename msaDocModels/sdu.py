@@ -6299,3 +6299,77 @@ class BarcodeDTO(BaseModel):
     """
 
     result: Union[Dict, List]
+
+class SpellCheckDocumentInput(BaseDocumentInput):
+    """
+    Data input model for processing the document.
+
+    Attributes:
+        pages_text: The document data.
+        document_id: optional uuid for document.
+        language: The document Language
+    """
+    language: SDULanguage = SDULanguage(code="de")
+
+
+class SpellCheckDocumentDTO(BaseDocumentInput):
+    """
+    Data output model for processing the document.
+
+    Attributes:
+        pages_text: The document data.
+        document_id: optional uuid for document.
+
+    """
+    pass
+
+
+class Corrections(BaseModel):
+    """
+    Model corrections.
+
+    Attributes:
+        incoming_text: Input text or list of words from the given text.
+        corrected_text: Corrected text or list of words which was corrected.
+    """
+    incoming_text: Union[str, List]
+    corrected_text: Union[str, List]
+
+
+class SpellCheckTextEntity(BaseModel):
+    """
+    Model that represent corrections.
+
+    Attributes:
+       hit: True, if corrections were done
+       corrections: The corrections.
+       result_string: text with no typos
+
+   """
+    hit: bool = True
+    corrections: Corrections
+    result_string: str
+
+
+class SpellCheckTextDTO(BaseModel):
+    """
+    Data output model for processing text.
+
+       Attributes:
+           result: result of processing of the model..
+
+    """
+    result: Union[SpellCheckTextEntity, List[SpellCheckTextEntity], Dict[Any, SpellCheckTextEntity]]
+
+
+class SpellCheckTextInput(BaseModel):
+    """
+    Data output model for processing text.
+
+    Attributes:
+       input_text: string list or dicts structured text
+       language: The text Language
+
+    """
+    input_text: Union[str, List, Dict]
+    language: SDULanguage = SDULanguage(code="de")

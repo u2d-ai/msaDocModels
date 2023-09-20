@@ -1,9 +1,13 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
-# 0.0.99
+# 0.0.101
 
 - added supporting pydantic v2
+
+# 0.0.100
+
+- add Input and DTO models for Spellcheck
 
 # 0.0.98
 
