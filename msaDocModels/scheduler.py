@@ -45,18 +45,18 @@ class MSASchedulerTaskDetail(BaseModel):
     force_run: bool
     force_termination: bool
     status: str
-    timeout: Optional[Union[str, int, datetime.timedelta]]
+    timeout: Optional[Union[str, int, datetime.timedelta]] = None
     parameters: Any
     start_cond: Any
     end_cond: Any
     on_startup: bool
     on_shutdown: bool
-    last_run: Optional[datetime.datetime]
-    last_success: Optional[datetime.datetime]
-    last_fail: Optional[datetime.datetime]
-    last_terminate: Optional[datetime.datetime]
-    last_inaction: Optional[datetime.datetime]
-    last_crash: Optional[datetime.datetime]
+    last_run: Optional[datetime.datetime] = None
+    last_success: Optional[datetime.datetime] = None
+    last_fail: Optional[datetime.datetime] = None
+    last_terminate: Optional[datetime.datetime] = None
+    last_inaction: Optional[datetime.datetime] = None
+    last_crash: Optional[datetime.datetime] = None
     func: Any
     path: Any
     func_name: str

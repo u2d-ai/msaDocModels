@@ -2,11 +2,13 @@ import os
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
-
+from typing import Any, Dict, List, Optional, Tuple, Union, Annotated
+from pydantic.json_schema import JsonSchemaValue
 from bson.objectid import ObjectId
 from msaDocModels import wdc
-from pydantic import UUID4, BaseModel, Field
+from pydantic import UUID4, BaseModel, Field, GetJsonSchemaHandler, field_validator
+
+from pydantic_core import core_schema
 
 
 def to_camel(string: str) -> str:
@@ -98,7 +100,7 @@ class DocumentInput(TextInput):
         document_id: optional uuid for document.
     """
 
-    document_id: Optional[UUID4]
+    document_id: Optional[UUID4] = None
 
 
 class SDUPageImage(BaseModel):
@@ -608,18 +610,18 @@ class NotaryItem(BaseModel):
 class Notary(BaseModel):
     """Detected Notary Pydantic Model."""
 
-    sid: Optional[str]
-    last_name: Optional[str]
-    first_name: Optional[str]
-    zip_code: Optional[str]
-    city: Optional[str]
-    office_city: Optional[str]
-    official_location: Optional[str]
-    address: Optional[str]
-    additional_address: Optional[str]
-    title: Optional[str]
-    phone: Optional[str]
-    complete_name_with_official_location: Optional[str]
+    sid: Optional[str] = None
+    last_name: Optional[str] = None
+    first_name: Optional[str] = None
+    zip_code: Optional[str] = None
+    city: Optional[str] = None
+    office_city: Optional[str] = None
+    official_location: Optional[str] = None
+    address: Optional[str] = None
+    additional_address: Optional[str] = None
+    title: Optional[str] = None
+    phone: Optional[str] = None
+    complete_name_with_official_location: Optional[str] = None
     local_city: str = "Bremen"
     is_local_city: bool
 
@@ -639,13 +641,13 @@ class SDUPage(BaseModel):
     class Config:
         orm_mode = False
 
-    def has_text(self):
+    def has_text(self) -> bool:
         return len(self.text.paragraphs) > 0
 
-    def get_text_default(self):
+    def get_text_default(self) -> str:
         return self.get_text_no_lf()
 
-    def get_text_no_lf(self):
+    def get_text_no_lf(self) -> str:
         ret = ""
         for par in self.text.paragraphs:
             for sen in par.sentences:
@@ -659,7 +661,7 @@ class SDUPage(BaseModel):
                 page_text += sentence.text
         return page_text
 
-    def get_text_no_lf_paragraph(self):
+    def get_text_no_lf_paragraph(self) -> str:
         ret = ""
         for par in self.text.paragraphs:
             for sen in par.sentences:
@@ -667,7 +669,7 @@ class SDUPage(BaseModel):
             ret += get_cr_paragraph()
         return ret
 
-    def get_text_lf(self, space_before_lf: bool = False):
+    def get_text_lf(self, space_before_lf: bool = False) -> str:
         ret = ""
         for par in self.text.paragraphs:
             for sen in par.sentences:
@@ -677,7 +679,7 @@ class SDUPage(BaseModel):
                 ret += get_crlf()
         return ret
 
-    def get_text_lf_paragraph(self, space_before_lf: bool = False):
+    def get_text_lf_paragraph(self, space_before_lf: bool = False) -> str:
         ret = ""
         for par in self.text.paragraphs:
             for sen in par.sentences:
@@ -688,7 +690,7 @@ class SDUPage(BaseModel):
             ret += get_cr_paragraph()
         return ret
 
-    def get_all_sentences_text_list_lf(self):
+    def get_all_sentences_text_list_lf(self) -> List[str]:
         ret = []
         for par in self.text.paragraphs:
             for i, sen in enumerate(par.sentences):
@@ -700,7 +702,7 @@ class SDUPage(BaseModel):
                 ret.append(txt)
         return ret
 
-    def get_text_for_nlp(self):
+    def get_text_for_nlp(self) -> List[str]:
         ret = []
 
         for par in self.text.paragraphs:
@@ -711,7 +713,7 @@ class SDUPage(BaseModel):
                 ret.append(txt)
         return ret
 
-    def get_text_for_display(self):
+    def get_text_for_display(self) -> str:
         ret = ""
         for par in self.text.paragraphs:
             txt: str
@@ -729,7 +731,7 @@ class SDUPage(BaseModel):
         ret = ret.replace(get_cr_paragraph() + get_crlf(), get_cr_paragraph())
         return ret
 
-    def get_all_sentences_text_list(self):
+    def get_all_sentences_text_list(self) -> List[str]:
         ret = []
 
         for par in self.text.paragraphs:
@@ -740,7 +742,7 @@ class SDUPage(BaseModel):
             ret.append(txt)
         return ret
 
-    def get_all_sentences_text_list_no_table_and_lists(self):
+    def get_all_sentences_text_list_no_table_and_lists(self) -> List[str]:
         ret = []
 
         for par in self.text.paragraphs:
@@ -771,7 +773,7 @@ class SDUPage(BaseModel):
                 ret.append(txt)
         return ret
 
-    def set_input(self, input_text: str):
+    def set_input(self, input_text: str) -> None:
         self.input = input_text
 
 
@@ -785,7 +787,7 @@ class BaseDocumentInput(BaseModel):
     """
 
     pages_text: List[SDUPage] = []
-    document_id: Optional[UUID4]
+    document_id: Optional[UUID4] = None
 
     def get_document_text(self) -> str:
         document_text = ""
@@ -961,7 +963,7 @@ class SentencesInput(BaseModel):
         sentences: list of sentences
     """
 
-    document_id: Optional[UUID4]
+    document_id: Optional[UUID4] = None
     sentences: List[str]
 
 
@@ -1056,7 +1058,7 @@ class SegmentationInput(BaseModel):
 
     """
 
-    document_id: Optional[UUID4]
+    document_id: Optional[UUID4] = None
     input_text: Union[str, List[str], Dict[int, str]]
 
 
@@ -1134,11 +1136,11 @@ class SentimentDTO(BaseModel):
         error: None if there is no errors, otherwise contains description of the error.
     """
 
-    neg: Optional[float]
-    neu: Optional[float]
-    pos: Optional[float]
-    compound: Optional[float]
-    error: Optional[str]
+    neg: Optional[float] = None
+    neu: Optional[float] = None
+    pos: Optional[float] = None
+    compound: Optional[float] = None
+    error: Optional[str] = None
 
 
 class PhrasesWordBagInput(DocumentLangInput):
@@ -1453,7 +1455,7 @@ class Country(BaseModel):
     region: str
     subregion: str
     languages: Dict[str, str]
-    latlng: List[int]
+    latlng: List[float]
     flag: str
     calling_codes: List[str]
 
@@ -1491,6 +1493,14 @@ class Company(BaseModel):
     assets: str
     market_value: str
 
+    @field_validator("employees", "change_in_rank", mode="before")
+    @classmethod
+    def employees_must_be_str(cls, v):
+        if isinstance(v, float) or isinstance(v, int):
+            return str(v)
+        else:
+            return v
+
 
 class City(BaseModel):
     """Detected City Pydantic Model."""
@@ -1511,7 +1521,7 @@ class TaxonomyCitiesDTO(BaseModel):
     """
 
     cities: List[City]
-    cities_winner: Optional[City]
+    cities_winner: Optional[City] = None
 
 
 class TaxonomyCountriesDTO(BaseModel):
@@ -1525,7 +1535,7 @@ class TaxonomyCountriesDTO(BaseModel):
     """
 
     countries: List[Country]
-    countries_winner: Optional[Country]
+    countries_winner: Optional[Country] = None
 
 
 class TaxonomyCompaniesDTO(BaseModel):
@@ -1539,7 +1549,7 @@ class TaxonomyCompaniesDTO(BaseModel):
     """
 
     companies: List[Company]
-    companies_winner: Optional[Company]
+    companies_winner: Optional[Company] = None
 
 
 class TaxonomyDTO(TaxonomyCountriesDTO, TaxonomyCompaniesDTO, TaxonomyCitiesDTO):
@@ -1563,9 +1573,9 @@ class AutoMLStatus(BaseModel):
     """
 
     info: str
-    id: Optional[uuid.UUID]
-    path: Optional[str]
-    model_data: Optional[Dict]
+    id: Optional[uuid.UUID] = None
+    path: Optional[str] = None
+    model_data: Optional[Dict] = None
 
 
 class ProfileInput(BaseModel):
@@ -1656,7 +1666,7 @@ class BuildModelInput(BaseModel):
     fold: int = 7
     tuning_iterations: int = 7
     create_metadata: bool = False
-    webhook_url: Optional[str]
+    webhook_url: Optional[str] = None
 
 
 class InferenceInput(BaseModel):
@@ -1696,7 +1706,7 @@ class ProcessStatus(BaseModel):
     """
 
     number: str = "000.000.000.000"
-    timestamp: datetime = str(datetime.utcnow())
+    timestamp: datetime = datetime.utcnow()
 
 
 class DBBaseDocumentInput(BaseModel):
@@ -1760,42 +1770,30 @@ class DBBaseDocumentInput(BaseModel):
     status_history: List[ProcessStatus] = [ProcessStatus()]
 
 
-class PyObjectId(ObjectId):
-    """
-    Converts ObjectId to string.
-    """
+class PyObjectId:
+    @classmethod
+    def validate_object_id(cls, v: Any, handler) -> ObjectId:
+        if isinstance(v, ObjectId):
+            return v
+
+        s = handler(v)
+        if ObjectId.is_valid(s):
+            return ObjectId(s)
+        else:
+            raise ValueError("Invalid ObjectId")
 
     @classmethod
-    def __get_validators__(cls):
-        """
-        Generator to return validate method.
-        """
-        yield cls.validate
+    def __get_pydantic_core_schema__(cls, source_type, _handler) -> core_schema.CoreSchema:
+        assert source_type is ObjectId
+        return core_schema.no_info_wrap_validator_function(
+            cls.validate_object_id,
+            core_schema.str_schema(),
+            serialization=core_schema.to_string_ser_schema(),
+        )
 
     @classmethod
-    def validate(cls, v):
-        """
-        Validates Object ID.
-
-        Parameters:
-
-             v: value to validate.
-
-        Returns:
-
-            Object ID with specified value.
-
-        Raises:
-
-            ValueError if Object ID does not pass validation.
-        """
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid objectid")
-        return ObjectId(v)
-
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
+    def __get_pydantic_json_schema__(cls, _core_schema, handler) -> JsonSchemaValue:
+        return handler(core_schema.str_schema())
 
 
 class MongoId(BaseModel):
@@ -1807,7 +1805,7 @@ class MongoId(BaseModel):
         id: The id of element in mongo.
     """
 
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: Annotated[ObjectId, PyObjectId] = Field(alias="_id")
 
     class Config:
         allow_population_by_field_name = True
@@ -1848,10 +1846,10 @@ class UpdateAI(BaseModel):
         key: object name.
     """
 
-    version: Optional[str]
-    description: Optional[str]
-    datetime: Optional[datetime]
-    key: Optional[str]
+    version: Optional[str] = None
+    description: Optional[str] = None
+    datetime: Optional[datetime] = None
+    key: Optional[str] = None
 
 
 class LearnsetDataInput(BaseInfo):
@@ -1908,32 +1906,36 @@ class ModelDataDTO(ModelDataInput, MongoId):
     """
 
 
-class TestsetsDataDTO(MongoId):
+class TestsetsDataDTO(BaseModel):
     """
     AI testsets output.
 
     Attributes:
+
         testsets: list of testsets object.
     """
 
     testsets: List[TestsetDataInput]
 
 
-class LearnsetsDataDTO(MongoId):
+class LearnsetsDataDTO(BaseModel):
     """
     AI learns output.
 
     Attributes:
+
         learnsets: list of learnsets object.
     """
 
     learnsets: List[LearnsetDataInput]
 
 
-class ModelsDataDTO(MongoId):
+class ModelsDataDTO(BaseModel):
     """
     AI models output.
+
     Attributes:
+
         models: list of models object.
     """
 
@@ -1996,8 +1998,8 @@ class EmailConverterResponse(BaseModel):
         email_tags: segmented email by tags
     """
 
-    content_attachments: List[SDUAttachment]
-    embedding_attachments: List[SDUAttachment]
+    content_attachments: Optional[List[SDUAttachment]]
+    embedding_attachments: Optional[List[SDUAttachment]]
     txt_content: SDUText
     msg: SDUEmail
     content_unzipped_files: Optional[List[HTMLConverterResponse]]
@@ -2005,8 +2007,8 @@ class EmailConverterResponse(BaseModel):
 
 
 class EmailConverterWithoutAttachmentsResponse(EmailConverterResponse):
-    content_attachments: Optional[List[SDUAttachment]]
-    embedding_attachments: Optional[List[SDUAttachment]]
+    content_attachments: Optional[List[SDUAttachment]] = None
+    embedding_attachments: Optional[List[SDUAttachment]] = None
 
 
 class FieldName(str, Enum):
@@ -2211,7 +2213,7 @@ class EntityExtractorInput(DocumentLangInput):
         regex to extract data.
     """
 
-    patterns: Optional[Dict]
+    patterns: Optional[Dict] = None
 
 
 class EntityExtractorDocumentInput(BaseDocumentInput):
@@ -2224,7 +2226,19 @@ class EntityExtractorDocumentInput(BaseDocumentInput):
         result_output: Type of output format.
     """
 
-    patterns: Optional[Dict]
+    patterns: Optional[Dict] = None
+    result_output: ResultType = ResultType.sentences
+
+
+class ExtractorDocumentStatisticsInput(BaseDocumentInput):
+    """
+    Model that contains input data for Statistics.
+
+    Attributes:
+
+        result_output: Type of output format.
+    """
+
     result_output: ResultType = ResultType.sentences
 
 
@@ -2264,7 +2278,7 @@ class ExtractionNLP(BaseModel):
     text: str
     upos: str
     xpos: str
-    feats: Optional[str]
+    feats: Optional[str] = None
     s: int
     e: int
 
@@ -4045,7 +4059,7 @@ class DocClassifierTextInput(BaseModel):
         learnset_lang: lang of learnset.
     """
 
-    document_id: Optional[str]
+    document_id: Optional[str] = None
     input_text: Union[str, List[str], Dict[Any, str]]
     language: SDULanguage = SDULanguage(code="de")
     algorithm: AlgorithmType = AlgorithmType.multi_label
@@ -5895,7 +5909,7 @@ class BaseSenderConfig(BaseModel):
 
     email_to: str
     subject: str = "Subject"
-    file_paths: Optional[List[str]]
+    file_paths: Optional[List[str]] = None
     body: str
 
 
@@ -6075,7 +6089,7 @@ class HTMLToPDFInputModel(BaseModel):
     """
 
     str_html: str
-    path_to_save: str = None
+    path_to_save: Optional[str] = None
 
 
 class OCRConfig(BaseModel):
@@ -6240,7 +6254,7 @@ class TemplateInput(BaseModel):
     template_version: str = "v1"
     tenant_id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     document_id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
-    template_content: Optional[TemplateContent] = {}
+    template_content: Optional[TemplateContent] = None
 
 
 class PublishInputModel(BaseModel):

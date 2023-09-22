@@ -619,7 +619,7 @@ class WDCMLDocument(BaseModel):
     nentries: int = 0
     targetsList: List = []
     trainList: List = []
-    entries: List[WDCMLEntry] = []  #
+    entries: List[WDCMLEntry] = []
     raw_json: List[Dict] = []
     df_data: List = []
     profile_html: str = ""
@@ -685,7 +685,7 @@ class WDCDocument(BaseModel):
     ntriples: int = 0
     nmeanings: int = 0
 
-    pages: List[WDCPage] = []  #
+    pages: List[WDCPage] = []
     entities: List[WDCSpan] = []
     meanings: List[WDCMeaning] = []
 
