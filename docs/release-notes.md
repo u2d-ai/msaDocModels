@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.102
+
+- add models for ConvertorSeparation and models for document Taxonomy 
+
 # 0.0.100
 
 - add Input and DTO models for Spellcheck 

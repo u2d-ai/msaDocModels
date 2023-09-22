@@ -51,6 +51,20 @@ def get_cr_paragraph() -> str:
     return ret
 
 
+class FileTypes(str, Enum):
+    """Enumeration class for file types"""
+
+    pdf = ".pdf"
+    pkl = ".pkl"
+
+
+class SeparationAlgorithmTypes(str, Enum):
+    """Enumeration class for learning algorithms."""
+
+    deep_learning = "dl"
+    machine_learning = "ml"
+
+
 class ResultType(str, Enum):
     document = "document"
     pages = "pages"
@@ -1540,14 +1554,6 @@ class TaxonomyCompaniesDTO(BaseModel):
 
     companies: List[Company]
     companies_winner: Optional[Company]
-
-
-class TaxonomyDTO(TaxonomyCountriesDTO, TaxonomyCompaniesDTO, TaxonomyCitiesDTO):
-    """DTO, representing the result of service ExtractorTaxonomy."""
-
-
-class TaxonomyInput(DocumentInput):
-    """Data input model for Taxonomy."""
 
 
 class AutoMLStatus(BaseModel):
@@ -6259,7 +6265,39 @@ class PublishInputModel(BaseModel):
     service_name: Optional[str] = None
 
 
-class BarcodeInput(BaseModel):
+class BarcodeCompaniesInput(BaseModel):
+    """
+    Input model
+
+    Attributes:
+
+        client_id: collection name(user identifier)
+        subdomain: tenant identifier
+        document_id: document identifier
+    """
+
+    document_id: str
+    subdomain: str
+    client_id: str
+
+
+class BarcodeCountiesInput(BaseModel):
+    """
+    Input model
+
+    Attributes:
+
+        client_id: collection name(user identifier)
+        subdomain: tenant identifier
+        document_id: document identifier
+    """
+
+    document_id: str
+    subdomain: str
+    client_id: str
+
+
+class BarcodeCitiesInput(BaseModel):
     """
     Input model
 
@@ -6286,6 +6324,7 @@ class BarcodeDTO(BaseModel):
 
     result: Union[Dict, List]
 
+
 class SpellCheckDocumentInput(BaseDocumentInput):
     """
     Data input model for processing the document.
@@ -6295,6 +6334,7 @@ class SpellCheckDocumentInput(BaseDocumentInput):
         document_id: optional uuid for document.
         language: The document Language
     """
+
     language: SDULanguage = SDULanguage(code="de")
 
 
@@ -6307,6 +6347,7 @@ class SpellCheckDocumentDTO(BaseDocumentInput):
         document_id: optional uuid for document.
 
     """
+
     pass
 
 
@@ -6318,6 +6359,7 @@ class Corrections(BaseModel):
         incoming_text: Input text or list of words from the given text.
         corrected_text: Corrected text or list of words which was corrected.
     """
+
     incoming_text: Union[str, List]
     corrected_text: Union[str, List]
 
@@ -6331,7 +6373,8 @@ class SpellCheckTextEntity(BaseModel):
        corrections: The corrections.
        result_string: text with no typos
 
-   """
+    """
+
     hit: bool = True
     corrections: Corrections
     result_string: str
@@ -6345,6 +6388,7 @@ class SpellCheckTextDTO(BaseModel):
            result: result of processing of the model..
 
     """
+
     result: Union[SpellCheckTextEntity, List[SpellCheckTextEntity], Dict[Any, SpellCheckTextEntity]]
 
 
@@ -6357,5 +6401,944 @@ class SpellCheckTextInput(BaseModel):
        language: The text Language
 
     """
+
     input_text: Union[str, List, Dict]
     language: SDULanguage = SDULanguage(code="de")
+
+
+class SeparationDLInference(BaseModel):
+    """Output model for deep learning algorithm inference"""
+
+    dl_inference: dict
+
+
+class SeparationMLInference(BaseModel):
+    """Output model for machine  algorithm inference"""
+
+    ml_inference: dict
+
+
+class TrainInputModel(BaseModel):
+    """
+    Input model for training model by the given algorithm.
+
+    Attributes:
+        learnset_path: optional path to trainset
+        learnset_data: optional learnset data
+        model_algorithm: deep_learning or machine_learning algorithm
+    """
+
+    learnset_path: Optional[str] = None
+    learnset_data: Optional[List[Dict[str, Any]]] = None
+    model_algorithm: SeparationAlgorithmTypes = SeparationAlgorithmTypes.deep_learning
+
+
+class BuildTrainset(BaseModel):
+    """
+    Input model for building a trainset from PDF file.
+
+    Attributes:
+        path to the folder where the pdf files are stored
+    """
+
+    dir_path: str
+
+
+class SeparationInferenceInput(BaseModel):
+    """
+    Input model for get separation inference.
+
+    Attributes:
+        document_id: optional document uuid
+        path_to_pdf: path to pdf file
+        path_to_model: path to model
+    """
+
+    document_id: Optional[str] =  None
+    path_to_pdf: str
+    path_to_model: str
+
+
+class SeparationFont(BaseModel):
+    """
+    Defines the properties of a font used in the document.
+
+    Attributes:
+
+        flags: Integer that defines font attributes.
+        bold: Boolean indicating whether the font is bold.
+        italic: Boolean indicating whether the font is italic.
+        mono: Boolean indicating whether the font is monospaced.
+        serifed: Boolean indicating whether the font is serifed.
+        scripted: Boolean indicating whether the font is scripted.
+        font: The font family name.
+        fontsize: Size of the font.
+        color: Integer representing the color of the font.
+        identifier: Identifier of the font.
+    """
+
+    flags: int = 0
+    bold: bool = False
+    italic: bool = False
+    mono: bool = False
+    serifed: bool = False
+    scripted: bool = False
+    font: str = ""
+    fontsize: float = 0.0
+    color: int = 0
+    identifier: str = ""
+
+
+class LearnsetTrainModel(BaseModel):
+    """
+    Defines the keys for trainsets.
+
+    Attributes:
+
+        index: Page index.
+        cut: Integer indicating cut level.
+        above: Float indicating above level.
+        below: Float indicating below level.
+        gap: Float indicating gap size.
+        size_page: Size of the page.
+        footer_asc_number: Float indicating footer ascending number.
+        rotation: Rotation of the page.
+        size_content: Size of the content.
+        size_text: Size of the text.
+        line_direction: Direction of the lines.
+        top_most: Topmost limit.
+        bottom_most: Bottommost limit.
+        margin_left: Left margin size.
+        margin_right: Right margin size.
+        header: Header size.
+        footer: Footer size.
+        language: Float indicating language level.
+        color: Color level.
+        size_font: Font size.
+        fonts: Float indicating fonts level.
+        font_styles: Float indicating font styles level.
+        font_lines: Float indicating font lines level.
+        font_counts: Float indicating font counts level.
+        block_count: Number of blocks.
+        line_height: Line height.
+        line_gap: Gap between lines.
+        line_left: Left line level.
+        images: Float indicating images level.
+        drawing: Float indicating drawing level.
+        line_width: Width of lines.
+        line_count: Number of lines.
+        block_height: Block height.
+        block_gap: Gap between blocks.
+        block_width: Block width.
+        density: Density of the page content.
+        header_right: Right header size.
+        header_left: Left header size.
+        footer_right: Right footer size.
+        footer_left: Left footer size.
+    """
+
+    index: int
+    cut: int
+    above: float
+    below: float
+    gap: float
+    size_page: float
+    footer_asc_number: float
+    rotation: float
+    size_content: float
+    size_text: float
+    line_direction: float
+    top_most: float
+    bottom_most: float
+    margin_left: float
+    margin_right: float
+    header: float
+    footer: float
+    language: float
+    color: float
+    size_font: float
+    fonts: float
+    font_styles: float
+    font_lines: float
+    font_counts: float
+    block_count: float
+    line_height: float
+    line_gap: float
+    line_left: float
+    images: float
+    drawing: float
+    line_width: float
+    line_count: float
+    block_height: float
+    block_gap: float
+    block_width: float
+    density: float
+    header_right: float
+    header_left: float
+    footer_right: float
+    footer_left: float
+
+
+class SeparationPageRegions(BaseModel):
+    """
+    Defines the regions in a page of the document for separation purposes.
+
+    Attributes:
+
+        index: Page index in the document.
+        header_size: Size of the header in the page.
+        footer_size: Size of the footer in the page.
+        margin_left_size: Size of the left margin in the page.
+        margin_right_size: Size of the right margin in the page.
+        middle_width: Width of the middle region of the page.
+        middle_height: Height of the middle region of the page.
+        left_margin: Left margin of the page.
+        right_margin: Right margin of the page.
+        region_header: Tuple describing the header region.
+        region_body: Tuple describing the body region.
+        region_footer: Tuple describing the footer region.
+        region_header_left: Tuple describing the left part of the header region.
+        region_footer_left: Tuple describing the left part of the footer region.
+        region_header_right: Tuple describing the right part of the header region.
+        region_footer_right: Tuple describing the right part of the footer region.
+        region_margin_left: Tuple describing the left margin region.
+        region_margin_right: Tuple describing the right margin region.
+    """
+
+    index: int = -1
+    header_size: int = -1
+    footer_size: int = -1
+    margin_left_size: int = -1
+    margin_right_size: int = -1
+    middle_width: int = -1
+    middle_height: int = -1
+    left_margin: int = -1
+    right_margin: int = -1
+    region_header: tuple = (0, 0, 0, 0)
+    region_body: tuple = (0, 0, 0, 0)
+    region_footer: tuple = (0, 0, 0, 0)
+    region_header_left: tuple = (0, 0, 0, 0)
+    region_footer_left: tuple = (0, 0, 0, 0)
+    region_header_right: tuple = (0, 0, 0, 0)
+    region_footer_right: tuple = (0, 0, 0, 0)
+    region_margin_left: tuple = (0, 0, 0, 0)
+    region_margin_right: tuple = (0, 0, 0, 0)
+
+
+class SeparationPageTexts(BaseModel):
+    """
+    Defines the properties of the page texts in a document.
+
+    Attributes:
+
+        index: Integer representing the page index.
+        language: Optional dictionary containing language properties.
+        density: Float indicating the density of the page text.
+        header: String containing the header text.
+        header_left: String containing the left header text.
+        header_right: String containing the right header text.
+        footer: String containing the footer text.
+        footer_left: String containing the left footer text.
+        footer_right: String containing the right footer text.
+        margin_left: String indicating the left margin.
+        margin_right: String indicating the right margin.
+    """
+
+    index: int = -1
+    language: Optional[dict] = None
+    density: float = 0.0
+    header: str = ""
+    header_left: str = ""
+    header_right: str = ""
+    footer: str = ""
+    footer_left: str = ""
+    footer_right: str = ""
+    margin_left: str = ""
+    margin_right: str = ""
+
+
+class SeparationPage(BaseModel):
+    """
+    Contains the layout properties of a page in the document.
+
+    Attributes:
+
+        index: Page index in the document.
+        width: Width of the page.
+        height: Height of the page.
+        rotation: Rotation of the page.
+        content_box: Tuple describing the bounding box of the content.
+        text_box: Tuple describing the bounding box of the text.
+        clusters: List of clusters in the page.
+        drawings: List of drawings in the page.
+        images: List of images in the page.
+        fonts: List of fonts used in the page.
+        block_count: Number of blocks in the page.
+        block_height: Dictionary containing block heights in the page.
+        block_gap: Dictionary containing block gaps in the page.
+        block_width: Dictionary containing block widths in the page.
+        line_count: Number of lines in the page.
+        line_direction: Dictionary containing line directions in the page.
+        line_height: Dictionary containing line heights in the page.
+        line_gap: Dictionary containing line gaps in the page.
+        line_left: Dictionary containing left margins of the lines in the page.
+        line_width: Dictionary containing line widths in the page.
+        line_topmost: The topmost position of a line in the page.
+        line_bottommost: The bottommost position of a line in the page.
+        fonts_lines: List of SeparationFont instances for the page.
+        font_styles: Dictionary containing font styles used in the page.
+        font_counts: Dictionary containing font counts in the page.
+        font_sizes: Dictionary containing font sizes used in the page.
+        font_colors: Dictionary containing font colors used in the page.
+        font_sizes_flags: Dictionary containing font size flags in the page.
+    """
+
+    index: int = -1
+    width: int = 0
+    height: int = 0
+    rotation: int
+    content_box: tuple = (0, 0, 0, 0)
+    text_box: tuple = (0, 0, 0, 0)
+    clusters: List = []
+    drawings: List = []
+    images: List = []
+    fonts: List = []
+    block_count: int = 0
+    block_height: Dict = {}
+    block_gap: Dict = {}
+    block_width: Dict = {}
+    line_count: int = 0
+    line_direction: Dict = {}
+    line_height: Dict = {}
+    line_gap: Dict = {}
+    line_left: Dict = {}
+    line_width: Dict = {}
+    line_topmost: int = 10000
+    line_bottommost: int = 0
+    fonts_lines: List[SeparationFont] = []
+    font_styles: Dict = {}
+    font_counts: Dict = {}
+    font_sizes: Dict = {}
+    font_colors: Dict = {}
+    font_sizes_flags: Dict = {}
+
+
+class SeparationContext(BaseModel):
+    """
+    Defines the context of the separation of pages in a document.
+
+    Attributes:
+
+        data: Dictionary mapping page indices to their SeparationPage objects.
+        regions: Dictionary mapping page indices to their SeparationPageRegions objects.
+        texts: Dictionary mapping page indices to their SeparationPageTexts objects.
+        pattern: Dictionary mapping page indices to their SeparationPagePattern objects.
+        metadata: Dictionary containing metadata about the document.
+        page_count: Integer representing the count of pages in the document.
+        full_file_path: Full file path of the document.
+        document_id: Optional unique identifier for the document.
+    """
+
+    data: Dict[int, SeparationPage] = {}
+    regions: Dict[int, SeparationPageRegions] = {}
+    texts: Dict[int, SeparationPageTexts] = {}
+    pattern: Dict[int, LearnsetTrainModel] = {}
+    metadata: dict = {}
+    page_count: int = -1
+    full_file_path: str = None
+    document_id: Optional[str] = None
+
+
+class PDFSeparationResult(BaseModel):
+    """
+    A class to represent the result of a PDF conversion operation.
+
+    Attributes:
+
+        page_count: amount/number of pages.
+        full_file_path: amount/number of pages.
+        metadata: amount/number per page.
+        pages: features and statistics per page.
+        texts: texts and language per page.
+        regions: defined regions per page.
+        patterns: identified patterns for page separation.
+
+    """
+
+    page_count: int = -1
+    full_file_path: str = ""
+    metadata: dict = {}
+    pages: dict = {}
+    texts: dict = {}
+    regions: dict = {}
+    patterns: dict = {}
+
+
+class TaxonomyDTO(TaxonomyCountriesDTO, TaxonomyCompaniesDTO, TaxonomyCitiesDTO):
+    """DTO, representing the result of service ExtractorTaxonomy."""
+
+
+class TaxonomyCustomDTO(BaseModel):
+    """
+    DTO, representing the result of service ExtractorTaxonomy custom.
+
+    Attributes:
+
+        results: List of Custom data.
+        results_winner: winner object.
+    """
+
+    results: List[Dict]
+    results_winner: Optional[Dict]
+
+
+# Cities models
+class TaxonomyCitiesSentenceResult(NestingId):
+    """
+    Model that represents the result of cities analysis on a document for sentence.
+
+    Attributes:
+
+        result: list of cities and winner object.
+    """
+
+    result: TaxonomyCitiesDTO
+
+
+class TaxonomyCitiesParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences with result of cities analysis on a document.
+
+    Attributes:
+
+        sentences: list of sentences with result of cities analysis extractions.
+    """
+
+    sentences: List[TaxonomyCitiesSentenceResult]
+
+
+class TaxonomyCitiesParagraphResult(NestingId):
+    """
+    Model that represents the result of cities analysis on a document for paragraph.
+
+    Attributes:
+
+        result: list of cities and winner object.
+    """
+
+    result: TaxonomyCitiesDTO
+
+
+class TaxonomyCitiesPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs with result of cities analysis on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with result of cities analysis extractions.
+    """
+
+    paragraphs: Union[List[TaxonomyCitiesParagraphResult], List[TaxonomyCitiesParagraphSentences]]
+
+
+class TaxonomyCitiesPageResult(NestingId):
+    """
+    Model that represents the result of cities analysis on a document for page.
+
+    Attributes:
+
+        result: list of cities and winner object.
+    """
+
+    result: TaxonomyCitiesDTO
+
+
+class TaxonomyCitiesPages(BaseModel):
+    """
+    Model that represents the list of pages with result of cities analysis on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with result of cities analysis extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TaxonomyCitiesPageResult], List[TaxonomyCitiesPageParagraphs]]
+
+
+class TaxonomyCitiesDocument(BaseModel):
+    """
+    Model that contains result of cities analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            version: version of the text extraction service used.
+            result: list of cities and winner object.
+
+    """
+
+    version: str
+    result: TaxonomyCitiesDTO
+
+
+class TaxonomyCitiesDocumentDTO(BaseModel):
+    """
+    Model that contains result of cities analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            taxonomy: The same structure with document.
+
+    """
+
+    taxonomy: Union[TaxonomyCitiesDocument, TaxonomyCitiesPages]
+
+
+# Countries Models
+class TaxonomyCountriesSentenceResult(NestingId):
+    """
+    Model that represents the result of countries analysis on a document for sentence.
+
+    Attributes:
+
+        result: list of custom analysis and winner object.
+    """
+
+    result: TaxonomyCountriesDTO
+
+
+class TaxonomyCustomSentenceResult(NestingId):
+    """
+    Model that represents the result of custom analysis on a document for sentence.
+
+    Attributes:
+
+        result: list of countries and winner object.
+    """
+
+    result: TaxonomyCustomDTO
+
+
+class TaxonomyCountriesParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences with result of countries analysis on a document.
+
+    Attributes:
+
+        sentences: list of sentences with result of custom analysis extractions.
+    """
+
+    sentences: List[TaxonomyCountriesSentenceResult]
+
+
+class TaxonomyCustomParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences with result of custom analysis on a document.
+
+    Attributes:
+
+        sentences: list of sentences with result of countries analysis extractions.
+    """
+
+    sentences: List[TaxonomyCustomSentenceResult]
+
+
+class TaxonomyCountriesParagraphResult(NestingId):
+    """
+    Model that represents the result of countries analysis on a document for paragraph.
+
+    Attributes:
+
+        result: list of countries and winner object.
+    """
+
+    result: TaxonomyCountriesDTO
+
+
+class TaxonomyCustomParagraphResult(NestingId):
+    """
+    Model that represents the result of custom analysis on a document for paragraph.
+
+    Attributes:
+
+        result: list of custom analysis and winner object.
+    """
+
+    result: TaxonomyCustomDTO
+
+
+class TaxonomyCountriesPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs with result of countries analysis on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with result of countries analysis extractions.
+    """
+
+    paragraphs: Union[List[TaxonomyCountriesParagraphResult], List[TaxonomyCountriesParagraphSentences]]
+
+
+class TaxonomyCustomPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs with result of custom analysis on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with result of custom analysis extractions.
+    """
+
+    paragraphs: Union[List[TaxonomyCustomParagraphResult], List[TaxonomyCustomParagraphSentences]]
+
+
+class TaxonomyCountriesPageResult(NestingId):
+    """
+    Model that represents the result of countries analysis on a document for page.
+
+    Attributes:
+
+        result: list of countries and winner object.
+    """
+
+    result: TaxonomyCountriesDTO
+
+
+class TaxonomyCustomPageResult(NestingId):
+    """
+    Model that represents the result of custom analysis on a document for page.
+
+    Attributes:
+
+        result: list of custom and winner object.
+    """
+
+    result: TaxonomyCustomDTO
+
+
+class TaxonomyCountriesPages(BaseModel):
+    """
+    Model that represents the list of pages with result of countries analysis on a document.
+
+    Attributes:
+        version: version of the text extraction service used.
+        pages_text: list of pages with result of countries analysis extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TaxonomyCountriesPageResult], List[TaxonomyCountriesPageParagraphs]]
+
+
+class TaxonomyCustomPages(BaseModel):
+    """
+    Model that represents the list of pages with result of countries analysis on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with result of countries analysis extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TaxonomyCustomPageResult], List[TaxonomyCustomPageParagraphs]]
+
+
+class TaxonomyCountriesDocument(BaseModel):
+    """
+    Model that contains result of countries analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            version: version of the text extraction service used.
+            result: list of countries and winner object.
+
+    """
+
+    version: str
+    result: TaxonomyCountriesDTO
+
+
+class TaxonomyCustomDocument(BaseModel):
+    """
+    Model that contains result of custom analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            version: version of the text extraction service used.
+            result: list of custom analysis and winner object.
+
+    """
+
+    version: str
+    result: TaxonomyCustomDTO
+
+
+class TaxonomyCountriesDocumentDTO(BaseModel):
+    """
+    Model that contains result of countries analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            taxonomy: The same structure with document.
+
+    """
+
+    taxonomy: Union[TaxonomyCountriesDocument, TaxonomyCountriesPages]
+
+
+class TaxonomyCustomDocumentDTO(BaseModel):
+    """
+    Model that contains result of countries analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            taxonomy: The same structure with document.
+
+    """
+
+    taxonomy: Union[TaxonomyCustomDocument, TaxonomyCustomPages]
+
+
+# Companies Models
+class TaxonomyCompaniesSentenceResult(NestingId):
+    """
+    Model that represents the result of companies analysis on a document for sentence.
+
+    Attributes:
+
+        result: list of companies and winner object.
+    """
+
+    result: TaxonomyCompaniesDTO
+
+
+class TaxonomyCompaniesParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences with result of companies analysis on a document.
+
+    Attributes:
+
+        sentences: list of sentences with result of companies analysis extractions.
+    """
+
+    sentences: List[TaxonomyCompaniesSentenceResult]
+
+
+class TaxonomyCompaniesParagraphResult(NestingId):
+    """
+    Model that represents the result of companies analysis on a document for paragraph.
+
+    Attributes:
+
+        result: list of companies and winner object.
+    """
+
+    result: TaxonomyCompaniesDTO
+
+
+class TaxonomyCompaniesPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs with result of companies analysis on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with result of companies analysis extractions.
+    """
+
+    paragraphs: Union[List[TaxonomyCompaniesParagraphResult], List[TaxonomyCompaniesParagraphSentences]]
+
+
+class TaxonomyCompaniesPageResult(NestingId):
+    """
+    Model that represents the result of companies analysis on a document for page.
+
+    Attributes:
+
+        result: list of companies and winner object.
+    """
+
+    result: TaxonomyCompaniesDTO
+
+
+class TaxonomyCompaniesPages(BaseModel):
+    """
+    Model that represents the list of pages with result of companies analysis on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with result of companies analysis extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TaxonomyCompaniesPageResult], List[TaxonomyCompaniesPageParagraphs]]
+
+
+class TaxonomyCompaniesDocument(BaseModel):
+    """
+    Model that contains result of companies analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            version: version of the text extraction service used.
+            result: list of companies and winner object.
+
+    """
+
+    version: str
+    result: TaxonomyCompaniesDTO
+
+
+class TaxonomyCompaniesDocumentDTO(BaseModel):
+    """
+    Model that contains result of companies analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            taxonomy: The same structure with document.
+
+    """
+
+    taxonomy: Union[TaxonomyCompaniesDocument, TaxonomyCompaniesPages]
+
+
+class TaxonomySentenceResult(NestingId):
+    """
+    Model that represents the result of taxonomy analysis on a document for sentence.
+
+    Attributes:
+
+        result: list of taxonomy and winner objects.
+    """
+
+    result: TaxonomyDTO
+
+
+class TaxonomyParagraphSentences(NestingId):
+    """
+    Model that represents the list of sentences with result of taxonomy analysis on a document.
+
+    Attributes:
+
+        sentences: list of sentences with result of taxonomy analysis extractions.
+    """
+
+    sentences: List[TaxonomySentenceResult]
+
+
+class TaxonomyParagraphResult(NestingId):
+    """
+    Model that represents the result of taxonomy analysis on a document for paragraph.
+
+    Attributes:
+
+        result: list of taxonomy and winner objects.
+    """
+
+    result: TaxonomyDTO
+
+
+class TaxonomyPageParagraphs(NestingId):
+    """
+    Model that represents the list of paragraphs with result of taxonomy analysis on a document.
+
+    Attributes:
+
+        paragraphs: list of paragraphs with result of taxonomy analysis extractions.
+    """
+
+    paragraphs: Union[List[TaxonomyParagraphResult], List[TaxonomyParagraphSentences]]
+
+
+class TaxonomyPageResult(NestingId):
+    """
+    Model that represents the result of taxonomy analysis on a document for page.
+
+    Attributes:
+
+        result: list of taxonomy and winner objects.
+    """
+
+    result: TaxonomyDTO
+
+
+class TaxonomyPages(BaseModel):
+    """
+    Model that represents the list of pages with result of taxonomy analysis on a document.
+
+    Attributes:
+
+        version: version of the text extraction service used.
+        pages_text: list of pages with result of taxonomy analysis extractions.
+    """
+
+    version: str
+    pages_text: Union[List[TaxonomyPageResult], List[TaxonomyPageParagraphs]]
+
+
+class TaxonomyDocument(BaseModel):
+    """
+    Model that contains result of taxonomy analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            version: version of the text extraction service used.
+            result: list of taxonomy and winner object.
+
+    """
+
+    version: str
+    result: TaxonomyDTO
+
+
+class TaxonomyDocumentDTO(BaseModel):
+    """
+    Model that contains result of taxonomy analysis implemented in sentence/paragraph/page/doc data.
+
+    Attributes:
+
+            taxonomy: The same structure with document.
+
+    """
+
+    taxonomy: Union[TaxonomyDocument, TaxonomyPages]
+
+
+class ExtractorType(str, Enum):
+    """Types of data extraction"""
+
+    cities = "cities"
+    companies = "companies"
+    countries = "countries"
+    full_taxonomy = "full_taxonomy"
+    custom_taxonomy = "custom_taxonomy"
+
+
+class TaxonomyInput(DocumentInput):
+    """
+    Data input model for Taxonomy.
+
+    Attributes:
+
+        taxonomy_data: custom data for extracting taxonomy
+        extract_type: data type for extraction
+    """
+
+    taxonomy_data: Dict[str, List[Dict[str, Any]]] = {}
+    extract_type: ExtractorType = ExtractorType.full_taxonomy
+
+
+class TaxonomyDocumentInput(BaseDocumentInput):
+    """
+    Data input model for ExtractorTaxonomy.
+
+    Attributes:
+
+        taxonomy_data: custom data for extracting taxonomy
+        extract_type: data type for extraction
+        result_output: Type of output format.
+    """
+
+    taxonomy_data: Dict[str, List[Dict[str, Any]]] = {}
+    extract_type: ExtractorType = ExtractorType.full_taxonomy
+    result_output: ResultType = ResultType.sentences
