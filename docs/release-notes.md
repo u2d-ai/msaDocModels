@@ -1,7 +1,7 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
-# 0.0.101
+# 0.0.102
 
 - add models for ConvertorSeparation and models for document Taxonomy 
 
