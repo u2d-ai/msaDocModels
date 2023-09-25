@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.103
+
+- fix Barcode model
+
 # 0.0.102
 
 - add models for ConvertorSeparation and models for document Taxonomy 

@@ -6265,39 +6265,7 @@ class PublishInputModel(BaseModel):
     service_name: Optional[str] = None
 
 
-class BarcodeCompaniesInput(BaseModel):
-    """
-    Input model
-
-    Attributes:
-
-        client_id: collection name(user identifier)
-        subdomain: tenant identifier
-        document_id: document identifier
-    """
-
-    document_id: str
-    subdomain: str
-    client_id: str
-
-
-class BarcodeCountiesInput(BaseModel):
-    """
-    Input model
-
-    Attributes:
-
-        client_id: collection name(user identifier)
-        subdomain: tenant identifier
-        document_id: document identifier
-    """
-
-    document_id: str
-    subdomain: str
-    client_id: str
-
-
-class BarcodeCitiesInput(BaseModel):
+class BarcodeInput(BaseModel):
     """
     Input model
 
