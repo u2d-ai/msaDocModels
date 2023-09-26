@@ -1,6 +1,11 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.104
+
+- change SeparationInferenceDTO
+- add patterns to ConverterEmail
+
 # 0.0.103
 
 - fix Barcode model

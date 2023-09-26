@@ -6052,9 +6052,11 @@ class ConverterEmailInputModel(BaseModel):
     Attributes:
 
         full_file_path: the path to the file to be converted
+        patterns: regex
     """
 
     full_file_path: str
+    patterns: Optional[Dict[str, List[str]]]
 
 
 class ConvertToTextInputModel(BaseModel):
@@ -6374,16 +6376,123 @@ class SpellCheckTextInput(BaseModel):
     language: SDULanguage = SDULanguage(code="de")
 
 
-class SeparationDLInference(BaseModel):
-    """Output model for deep learning algorithm inference"""
+class SeparationInferenceResultData(BaseModel):
+    """
+    Model that provides additional information about the output of the inference.
 
-    dl_inference: dict
+    Attributes:
+        above: above float value.
+        below: below float value.
+        gap: gap float value.
+        size_page: size_page float value.
+        footer_asc_number: footer_asc_number float value.
+        rotation: rotation float value.
+        size_content: size_content float value.
+        size_text: size_text float value.
+        line_direction: line_direction float value.
+        top_most: top_most float value.
+        bottom_most: bottom_most float value.
+        margin_left: margin_left float value.
+        margin_right: margin_right float value.
+        header: header float value.
+        footer: footer float value.
+        language: language float value.
+        color: color float value.
+        size_font: size_font float value.
+        fonts: fonts float value.
+        font_styles: font_styles float value.
+        font_lines: font_lines float value.
+        font_counts: font_counts float value.
+        block_count: block_count float value.
+        line_height: line_height float value.
+        line_gap: line_gap float value.
+        line_left: line_left float value.
+        images: images float value.
+        drawing: drawing float value.
+        line_width: line_width float value.
+        line_count: line_count float value.
+        block_height: block_height float value.
+        block_gap: block_gap float value.
+        block_width: block_width float value.
+        density: density float value.
+        header_right: header_right float value.
+        header_left: header_left float value.
+        footer_right: footer_right float value.
+        footer_left: footer_left float value.
+        cut: cut float value.
+        prediction_label: prediction_label float value.
+        prediction_score: prediction_score float value.
+
+    """
+    above: float
+    below: float
+    gap: float
+    size_page: float
+    footer_asc_number: float
+    rotation: float
+    size_content: float
+    size_text: float
+    line_direction: float
+    top_most: float
+    bottom_most: float
+    margin_left: float
+    margin_right: float
+    header: float
+    footer: float
+    language: float
+    color: float
+    size_font: float
+    fonts: float
+    font_styles: float
+    font_lines: float
+    font_counts: float
+    block_count: float
+    line_height: float
+    line_gap: float
+    line_left: float
+    images: float
+    drawing: float
+    line_width: float
+    line_count: float
+    block_height: float
+    block_gap: float
+    block_width: float
+    density: float
+    header_right: float
+    header_left: float
+    footer_right: float
+    footer_left: float
+    cut: float
+    prediction_label: float
+    prediction_score: float
 
 
-class SeparationMLInference(BaseModel):
-    """Output model for machine  algorithm inference"""
+class SeparationInferenceEntity(BaseModel):
+    """
+    Model that represent founded Entities.
 
-    ml_inference: dict
+    Attributes:
+
+        cut: The cut value.
+        confidence: The confidence value.
+        result: Teh result value
+
+    """
+    cut: int
+    confidence: float
+    result: Union[SeparationInferenceResultData, float]
+
+
+class SeparationInferenceDTO(BaseModel):
+    """
+    Model that represent inference in needed structure.
+
+   Attributes:
+
+     inference: List of SeparationInferenceEntity objects.
+
+   """
+    inference: List[SeparationInferenceEntity]
 
 
 class TrainInputModel(BaseModel):
@@ -6422,7 +6531,7 @@ class SeparationInferenceInput(BaseModel):
         path_to_model: path to model
     """
 
-    document_id: Optional[str] =  None
+    document_id: Optional[str] = None
     path_to_pdf: str
     path_to_model: str
 
