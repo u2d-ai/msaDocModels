@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.105
+
+- migrate to poetry
+
 # 0.0.104
 
 - change SeparationInferenceDTO
