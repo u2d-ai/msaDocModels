@@ -8,12 +8,12 @@ packages = [{include = "msaDocModels"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-loguru = "~0.6.0"
-multidict = "~6.0.4"
-pydantic = "~1.9.2"
-genson = "~1.2.2"
-lxml = "~4.9.2"
-bson = "~0.5.10"
+loguru = "0.6.0"
+multidict = "6.0.4"
+pydantic = "1.9.2"
+genson = "1.2.2"
+lxml = "4.9.2"
+bson = "0.5.10"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "~1.6.1"
@@ -23,8 +23,6 @@ isort = "~5.10.1"
 mypy = "~0.981"
 setuptools = "~65.3.0"
 twine = "~4.0.1"
-
-[tool.poetry.group.docs.dependencies]
 mkdocs = "~1.3.1"
 mkdocstrings = "~0.23.0"
 mkdocstrings-python = "~1.7.0"
