@@ -33,7 +33,9 @@ class DatabaseUpdateMessageDTO(BaseModel):
         available_types = [attr.value for attr in UpdateStatusTypes]
         if _type in available_types:
             return _type
-        raise ValueError("Notification type must be a str type and be available in UpdateMessageTypes enum class")
+        raise ValueError(
+            "Notification type must be a str type and be available in UpdateMessageTypes enum class"
+        )
 
 
 class DatabaseUpdateInput(BaseModel):
