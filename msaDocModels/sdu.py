@@ -5,8 +5,9 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from bson.objectid import ObjectId
-from msaDocModels import wdc
 from pydantic import UUID4, BaseModel, Field
+
+from msaDocModels import wdc
 
 
 def to_camel(string: str) -> str:
@@ -6576,6 +6577,31 @@ class SeparationInferenceDTO(BaseModel):
     """
 
     inference: List[SeparationInferenceEntity]
+
+
+class SeparationProcessDocumentDTO(BaseModel):
+    """
+    Model that represent results for the document in needed structure.
+
+    Attributes:
+       paths_to_files: List of paths to pdf files.
+
+    """
+
+    paths_to_files: List[str]
+
+
+class SeparationProcessDocumentInput(BaseModel):
+    """
+    Input model for training model by the given algorithm.
+
+    Attributes:
+       path_to_file: path to pdf document.
+       inference_result: SeparationInferenceDTO object with inference results for the given document.
+    """
+
+    path_to_file: str
+    inference_result: SeparationInferenceDTO
 
 
 class TrainInputModel(BaseModel):
