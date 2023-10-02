@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.106
+
+- add svcConverterSeparation models for processing documents
+
 # 0.0.105
 
 - migrate to poetry
