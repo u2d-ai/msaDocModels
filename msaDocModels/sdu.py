@@ -2005,25 +2005,16 @@ class EmailConverterResponse(BaseModel):
 
     Attributes:
 
-        content_attachments: list of SDUAttachments.
-        embedding_attachments: list of inline SDUAttachments.
         txt_content: SDUText.
         msg: SDUEmail.
-        content_unzipped_files: object of unzipped files.
         email_tags: segmented email by tags
+        attachment_paths: paths for attachments
     """
 
-    content_attachments: List[SDUAttachment]
-    embedding_attachments: List[SDUAttachment]
     txt_content: SDUText
     msg: SDUEmail
-    content_unzipped_files: Optional[List[HTMLConverterResponse]]
     email_tags: Dict = {}
-
-
-class EmailConverterWithoutAttachmentsResponse(EmailConverterResponse):
-    content_attachments: Optional[List[SDUAttachment]]
-    embedding_attachments: Optional[List[SDUAttachment]]
+    attachment_paths: Optional[List] =[]
 
 
 class FieldName(str, Enum):

@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.107
+
+- changed EmailConverterResponse model
+
 # 0.0.106
 
 - add svcConverterSeparation models for processing documents
@@ -20,19 +24,19 @@
 
 # 0.0.102
 
-- add models for ConvertorSeparation and models for document Taxonomy 
+- add models for ConvertorSeparation and models for document Taxonomy
 
 # 0.0.100
 
-- add Input and DTO models for Spellcheck 
+- add Input and DTO models for Spellcheck
 
 # 0.0.98
 
-- fix algorithm to DocClassifier Input 
+- fix algorithm to DocClassifier Input
 
 # 0.0.97
 
-- add algorithm to DocClassifier Input 
+- add algorithm to DocClassifier Input
 - change dto model for DocClassifier
 
 # 0.0.96
