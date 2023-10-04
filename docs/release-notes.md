@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.108
+
+- fix dependencies
+
 # 0.0.107
 
 - changed EmailConverterResponse model
