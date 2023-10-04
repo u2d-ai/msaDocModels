@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "msaDocModels"
-version = "0.0.108"
+version = "0.0.109"
 description = "MSA Document Pydantic Models and Schemas, used to store Parser, NLP, NLU and AI results for processed documents"
 authors = ["Stefan Welcker"]
 readme = "README.md"
 packages = [{include = "msaDocModels"}]
 
 [tool.poetry.dependencies]
-python = "~3.9"
+python = ">=3.9.0,<3.11"
 loguru = "0.6.0"
 multidict = "6.0.4"
 pydantic = "1.9.2"
