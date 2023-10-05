@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.111
+
+- add svcEngineUtils models
+
 # 0.0.110
 
 - add svcEngineUtils models, update pyproject.toml
