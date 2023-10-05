@@ -3641,6 +3641,85 @@ class StatisticsDocumentDTO(BaseModel):
     text_extraction_statistics: Union[StatisticsDocument, StatisticsPages]
 
 
+class UtilsNFSWriterDTO(BaseModel):
+    """
+    Represents the output data for nfs writer.
+
+    Attributes:
+       full_json_file_path: full file path to json.
+    """
+    full_json_file_path: str
+
+
+class UtilsOcrInputData(BaseModel):
+    """
+    Represents the input data for ocr process.
+
+    Attributes:
+        file_path: location of the document in the NFS
+        save_file_path: location in which to save the result document
+        color_threshold: integer to set a color threshold
+    """
+    file_path: str
+    save_file_path: str
+    color_threshold: int
+
+
+class UtilsOcrDTO(BaseModel):
+    """
+    Represents the output data for ocr process.
+
+    Attributes:
+       full_file_path:  file path of saved result file with removed color/handwriting
+    """
+    full_file_path: str
+
+
+class UtilsPostalDTO(BaseModel):
+    """
+    Represents the output data for postal process.
+
+    Attributes:
+       result_map: a dictionary with retrieved address entities
+    """
+    result_map: Dict[Union[str, int, float], Union[str, int, float]]
+
+
+class UtilsRegexEntity(BaseModel):
+    """
+    Represents the entity regex data.
+
+    Attributes:
+       key: regex key
+       pattern: regex pattern
+    """
+    key: str
+    pattern: str
+
+
+class UtilsRegexDTO(BaseModel):
+    """
+    Represents the output regex data.
+
+    Attributes:
+       result: a list of UtilsRegexEntity objects
+    """
+    result: List[UtilsRegexEntity]
+
+
+class UtilsPatternByKeyInputModel(BaseModel):
+    """
+    Represents the input regex data for searching by a key.
+
+    Attributes:
+      language_code: the language_code
+      country_hint: Optional: ISO 3166 compatible country code in case if country is using foreign language,
+        like German in Austria
+    """
+    language_code: str
+    country_hint: Optional[str] = ""
+
+
 class UtilsRunEmbeddedPythonCodeInput(BaseModel):
     """
     Represents the input data for running embedded Python code within a document.
