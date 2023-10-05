@@ -22,7 +22,8 @@ setup_info = dict(
         "Source": "https://github.com/swelcker/msaDocModels",
         "Tracker": "https://github.com/swelcker/msaDocModels/issues",
     },
-    description="msaDocModels - MSA Document Pydantic Models and Schemas, used to store Parser, NLP, NLU and AI results for processed documents",
+    description="msaDocModels - MSA Document Pydantic Models and Schemas, used to store Parser, "
+    "NLP, NLU and AI results for processed documents",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     license="MIT",
@@ -47,8 +48,7 @@ setup_info = dict(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     # Package info
-    packages=["msaDocModels"]
-    + ["msaDocModels." + pkg for pkg in find_packages("msaDocModels")],
+    packages=["msaDocModels"] + ["msaDocModels." + pkg for pkg in find_packages("msaDocModels")],
     # Add _ prefix to the names of temporary build dirs
     options={
         "build": {"build_base": "_build"},

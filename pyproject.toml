@@ -1,10 +1,38 @@
 [tool.poetry]
 name = "msaDocModels"
-version = "0.0.106"
+version = "0.0.107"
 description = "MSA Document Pydantic Models and Schemas, used to store Parser, NLP, NLU and AI results for processed documents"
 authors = ["Stefan Welcker"]
 readme = "README.md"
 packages = [{include = "msaDocModels"}]
+
+[tool.black]
+line-length = 119
+
+
+[tool.isort]
+profile = "black"
+line_length = 119
+src_paths = ["isort", "test"]
+skip = ["venv/", "dit/"]
+
+[tool.flake8]
+ignore = ['E266','W503','E203','E722']
+exclude ="""
+    __pycache__,
+    venv,
+    .env,
+    docs,
+    tests,
+    dist_docs,
+    dit,
+    """
+per-file-ignores = [
+    '__init__.py:F401',
+]
+max-line-length = 119
+count = true
+
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -14,6 +42,7 @@ pydantic = "1.9.2"
 genson = "1.2.2"
 lxml = "4.9.2"
 bson = "0.5.10"
+fastapi = "^0.103.2"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "~1.6.1"

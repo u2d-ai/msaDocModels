@@ -146,9 +146,7 @@ class WDCMeaning(BaseModel):  # Used for entity
         self.sees = [entry.name() for entry in lst]
         # domains
         lst = syn.topic_domains()
-        self.domains = [
-            entry.name() for entry in lst if entry.name() not in self.domains
-        ]
+        self.domains = [entry.name() for entry in lst if entry.name() not in self.domains]
         # root
         rn = syn.root_hypernyms()
         if len(rn) > 0:
@@ -201,48 +199,28 @@ class WDCMeaning(BaseModel):  # Used for entity
 
             # hypernyms
             lst = syn.get_related("hypernym")
-            self.hypernyms.extend(
-                [nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0]
-            )
-            self.hypernyms.extend(
-                [nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0]
-            )
+            self.hypernyms.extend([nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0])
+            self.hypernyms.extend([nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0])
 
             # hyponyms
             lst = syn.get_related("hyponym")
-            self.hyponyms.extend(
-                [nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0]
-            )
-            self.hyponyms.extend(
-                [nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0]
-            )
+            self.hyponyms.extend([nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0])
+            self.hyponyms.extend([nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0])
 
             # holonyms
             lst = syn.get_related("holo_member")
-            self.holonyms.extend(
-                [nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0]
-            )
-            self.holonyms.extend(
-                [nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0]
-            )
+            self.holonyms.extend([nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0])
+            self.holonyms.extend([nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0])
 
             # meronyms
             lst = syn.get_related("mero_member")
-            self.meronyms.extend(
-                [nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0]
-            )
-            self.meronyms.extend(
-                [nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0]
-            )
+            self.meronyms.extend([nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0])
+            self.meronyms.extend([nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0])
 
             # entailments
             lst = syn.get_related("entails")
-            self.entailments.extend(
-                [nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0]
-            )
-            self.entailments.extend(
-                [nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0]
-            )
+            self.entailments.extend([nentry.lemmas()[0] for nentry in lst if len(nentry.lemmas()) > 0])
+            self.entailments.extend([nentry.words()[0].lemma() for nentry in lst if len(nentry.words()) > 0])
 
             # root
             rn = syn.hypernyms()
@@ -395,9 +373,7 @@ class WDCMeaning(BaseModel):  # Used for entity
         )
         # ret += "<hr>"
         ret += (
-            "<span><i><small><strong>Node</strong></small></i><hr><h6>"
-            + html.escape(self.get_tree())
-            + "</h6></span>"
+            "<span><i><small><strong>Node</strong></small></i><hr><h6>" + html.escape(self.get_tree()) + "</h6></span>"
         )
         ret += (
             "<span><i><small><strong>Tree</strong></small></i><hr><h6>"

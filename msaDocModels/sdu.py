@@ -5,9 +5,8 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from bson.objectid import ObjectId
-from pydantic import UUID4, BaseModel, Field
-
 from msaDocModels import wdc
+from pydantic import UUID4, BaseModel, Field
 
 
 def to_camel(string: str) -> str:
@@ -189,9 +188,7 @@ class TextExtractionFormats(BaseModel):
     """
 
     recognizer: List[RecognizerDefaultResult] = []
-    result: Dict[
-        str, List[Union[ExtractionExtendedDefaultResult, ExtractionDefaultResult]]
-    ] = {}
+    result: Dict[str, List[Union[ExtractionExtendedDefaultResult, ExtractionDefaultResult]]] = {}
 
 
 class TextExtractionFormatsStrDTO(BaseModel):
@@ -737,9 +734,7 @@ class SDUPage(BaseModel):
                 ret += txt + get_crlf()
             else:
                 txt = par.get_text()
-                if par.semantic_type.__contains__(
-                    "head"
-                ) or par.semantic_type.__contains__("title"):
+                if par.semantic_type.__contains__("head") or par.semantic_type.__contains__("title"):
                     ret += get_crlf() + txt + get_crlf()
                 elif len(par.sentences) > 1:
                     ret += txt + get_cr_paragraph()
@@ -1233,9 +1228,7 @@ class PhrasesKeyTermsDTO(BaseModel):
         phrases: List of key terms
     """
 
-    phrases: Union[
-        List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]
-    ]
+    phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
 
 
 class PhrasesContribDTO(BaseModel):
@@ -1246,9 +1239,7 @@ class PhrasesContribDTO(BaseModel):
         phrases: List of phrases contribution
     """
 
-    phrases: Union[
-        List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]
-    ]
+    phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
 
 
 class PhrasesRakeDTO(BaseModel):
@@ -1259,9 +1250,7 @@ class PhrasesRakeDTO(BaseModel):
         phrases: List of most common words
     """
 
-    phrases: Union[
-        List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]
-    ]
+    phrases: Union[List[PhraseKeyword], List[List[PhraseKeyword]], Dict[Any, List[PhraseKeyword]]]
 
 
 class PhraseMiningDTO(BaseModel):
@@ -2295,9 +2284,7 @@ class TextExtractionNLPDTO(BaseModel):
         extractions: List of ExtractionNLP.
     """
 
-    extractions: Union[
-        List[ExtractionNLP], List[List[ExtractionNLP]], Dict[Any, List[ExtractionNLP]]
-    ]
+    extractions: Union[List[ExtractionNLP], List[List[ExtractionNLP]], Dict[Any, List[ExtractionNLP]]]
 
 
 class TextExtractionDocumentFormatsDTO(BaseModel):
@@ -2450,9 +2437,7 @@ class TextExtractionNERDTO(BaseModel):
                     representing document ids and values representing lists of extractions.
     """
 
-    result: Union[
-        List[ExtractionNER], List[List[ExtractionNER]], Dict[Any, List[ExtractionNER]]
-    ]
+    result: Union[List[ExtractionNER], List[List[ExtractionNER]], Dict[Any, List[ExtractionNER]]]
 
 
 class TextExtractionDocumentNERDTO(BaseModel):
@@ -2684,9 +2669,7 @@ class PageAnswerInformationDTO(NestingId):
         paragraphs: list of paragraphs.
     """
 
-    paragraphs: Union[
-        List[ParagraphAnswerInformationResult], List[ParagraphAnswerInformationDTO]
-    ]
+    paragraphs: Union[List[ParagraphAnswerInformationResult], List[ParagraphAnswerInformationDTO]]
 
 
 class PageAnswerInformationResult(NestingId):
@@ -2735,9 +2718,7 @@ class InformationExtractionAnswerDocumentDTO(BaseModel):
         information_extraction_answer: The same structure with document.
     """
 
-    information_extraction_answer: Union[
-        InformationExtractionAnswerDocument, InformationExtractionAnswerDocumentPage
-    ]
+    information_extraction_answer: Union[InformationExtractionAnswerDocument, InformationExtractionAnswerDocumentPage]
 
 
 class InformationExtractionAnswerPageDocumentPage(BaseModel):
@@ -2804,9 +2785,7 @@ class PageQuestionInformationDTO(NestingId):
         paragraphs: list of paragraphs.
     """
 
-    paragraphs: Union[
-        List[ParagraphQuestionInformationResult], List[ParagraphQuestionInformationDTO]
-    ]
+    paragraphs: Union[List[ParagraphQuestionInformationResult], List[ParagraphQuestionInformationDTO]]
 
 
 class PageQuestionInformationResult(NestingId):
@@ -2829,9 +2808,7 @@ class InformationExtractionQuestionDocumentPage(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[PageQuestionInformationResult], List[PageQuestionInformationDTO]
-    ]
+    pages_text: Union[List[PageQuestionInformationResult], List[PageQuestionInformationDTO]]
 
 
 class InformationExtractionQuestionDocument(BaseModel):
@@ -3068,6 +3045,48 @@ class EntityInfo(BaseModel):
     high: float
 
 
+class RunEmbeddedPythonCodeInput(BaseModel):
+    """
+    Represents the input data for running embedded Python code within a document.
+
+    Attributes:
+        document_id: optional uuid for document.
+        code: The Python code to be executed.
+        vars: A dictionary representing variables for code execution.
+        return_vars: A list of keys from local variables which need to return back.
+    """
+
+    document_id: Optional[UUID4] = None
+    code: str
+    vars: Dict[str, Any] = {}
+    return_vars: List[str] = []
+
+
+class RunEmbeddedPythonCodeDTO(BaseModel):
+    """
+    Represents the output data of the run_code function.
+
+    Attributes:
+        vars: A dictionary containing the modified provided variables after code execution.
+    """
+
+    vars: Dict[str, Any]
+
+
+class EngineUtilsJsonProps(BaseModel):
+    """
+    Represents the input data for nfs_writer.
+
+    Attributes:
+       file_path: path to file.
+       json_payload: json payload.
+
+    """
+
+    file_path: str
+    json_payload: str
+
+
 class TextDomainsInput(BaseModel):
     """
     Model that represents an input for named entity recognition text extraction.
@@ -3189,9 +3208,7 @@ class PageParagraphsConciseDTO(NestingId):
         paragraphs: list of paragraphs with concise concept extractions.
     """
 
-    paragraphs: Union[
-        List[ParagraphResultConciseDTO], List[ParagraphSentencesConciseDTO]
-    ]
+    paragraphs: Union[List[ParagraphResultConciseDTO], List[ParagraphSentencesConciseDTO]]
 
 
 class TextExtractionConciseDocumentPage(BaseModel):
@@ -3233,9 +3250,7 @@ class TextExtractionConciseDocumentDTO(BaseModel):
         text_extraction_concise: TextExtractionConciseDocumentPage object
     """
 
-    text_extraction_concise: Union[
-        TextExtractionConciseDocumentPage, TextExtractionConciseDocument
-    ]
+    text_extraction_concise: Union[TextExtractionConciseDocumentPage, TextExtractionConciseDocument]
 
 
 class TextExtractionDocumentConciseConceptsInput(BaseDocumentInput):
@@ -3515,9 +3530,7 @@ class TextLanguagePageParagraphs(NestingId):
         paragraphs: list of paragraphs with result of detected language extractions.
     """
 
-    paragraphs: Union[
-        List[TextLanguageParagraphResult], List[TextLanguageParagraphSentences]
-    ]
+    paragraphs: Union[List[TextLanguageParagraphResult], List[TextLanguageParagraphSentences]]
 
 
 class TextLanguagePages(BaseModel):
@@ -3618,9 +3631,7 @@ class StatisticsPageParagraphs(NestingId):
         paragraphs: list of paragraphs with ExtractorStatistics extractions.
     """
 
-    paragraphs: Union[
-        List[StatisticsParagraphResult], List[StatisticsParagraphSentences]
-    ]
+    paragraphs: Union[List[StatisticsParagraphResult], List[StatisticsParagraphSentences]]
 
 
 class StatisticsPages(BaseModel):
@@ -3886,9 +3897,7 @@ class TranslationPageParagraphs(NestingId):
         paragraphs: list of paragraphs with EngineTranslation extractions.
     """
 
-    paragraphs: Union[
-        List[TranslationParagraphResult], List[TranslationParagraphSentences]
-    ]
+    paragraphs: Union[List[TranslationParagraphResult], List[TranslationParagraphSentences]]
 
 
 class PageTranslation(BaseModel):
@@ -4043,9 +4052,7 @@ class TextExtractionNotaryDocumentDTO(BaseModel):
 
     """
 
-    text_extraction_notary: Union[
-        TextExtractionNotaryDocumentPage, TextExtractionNotaryDocument
-    ]
+    text_extraction_notary: Union[TextExtractionNotaryDocumentPage, TextExtractionNotaryDocument]
 
 
 class PredictionFieldNames(str, Enum):
@@ -4191,9 +4198,7 @@ class ClassifierPageParagraphs(NestingId):
         paragraphs: list of paragraphs with Classifier extractions.
     """
 
-    paragraphs: Union[
-        List[ClassifierParagraphResult], List[ClassifierParagraphSentences]
-    ]
+    paragraphs: Union[List[ClassifierParagraphResult], List[ClassifierParagraphSentences]]
 
 
 class DocClassifierPage(BaseModel):
@@ -4259,9 +4264,7 @@ class TextDomainsDTO(BaseModel):
         extractions: List of ExtractionDomains.
     """
 
-    extractions: Union[
-        List[DomainEntity], List[List[DomainEntity]], Dict[Any, List[DomainEntity]]
-    ]
+    extractions: Union[List[DomainEntity], List[List[DomainEntity]], Dict[Any, List[DomainEntity]]]
 
 
 class SentenceDomainsDTO(NestingId):
@@ -4338,9 +4341,7 @@ class TextExtractionDomainsPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[TextExtractionDomainsPageResult], List[TextExtractionDomainsPageParagraphs]
-    ]
+    pages_text: Union[List[TextExtractionDomainsPageResult], List[TextExtractionDomainsPageParagraphs]]
 
 
 class TextExtractionDomainsDocument(BaseModel):
@@ -4367,9 +4368,7 @@ class TextDomainsDocumentDTO(BaseModel):
 
     """
 
-    text_extraction_domains: Union[
-        TextExtractionDomainsDocument, TextExtractionDomainsPages
-    ]
+    text_extraction_domains: Union[TextExtractionDomainsDocument, TextExtractionDomainsPages]
 
 
 class DomainsData(BaseModel):
@@ -4553,9 +4552,7 @@ class PageParagraphsTextKnowledgeDTO(NestingId):
         paragraphs: list of paragraphs with Knowledge extractions.
     """
 
-    paragraphs: Union[
-        List[ParagraphResultTextKnowledgeDTO], List[ParagraphSentencesTextKnowledgeDTO]
-    ]
+    paragraphs: Union[List[ParagraphResultTextKnowledgeDTO], List[ParagraphSentencesTextKnowledgeDTO]]
 
 
 class TextExtractionKnowledgeDocumentPage(BaseModel):
@@ -4569,9 +4566,7 @@ class TextExtractionKnowledgeDocumentPage(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[PageResultTextKnowledgeDTO], List[PageParagraphsTextKnowledgeDTO]
-    ]
+    pages_text: Union[List[PageResultTextKnowledgeDTO], List[PageParagraphsTextKnowledgeDTO]]
 
 
 class TextKnowledgeDocument(BaseModel):
@@ -4598,9 +4593,7 @@ class TextKnowledgeDocumentDTO(BaseModel):
 
     """
 
-    text_extraction_knowledge: Union[
-        TextExtractionKnowledgeDocumentPage, TextKnowledgeDocument
-    ]
+    text_extraction_knowledge: Union[TextExtractionKnowledgeDocumentPage, TextKnowledgeDocument]
 
 
 class TextExtractionDocumentKnowledgeInput(BaseDocumentInput):
@@ -4788,9 +4781,7 @@ class TextExtractionNLPPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[TextExtractionNLPPageResult], List[TextExtractionNLPPageParagraphs]
-    ]
+    pages_text: Union[List[TextExtractionNLPPageResult], List[TextExtractionNLPPageParagraphs]]
 
 
 class TextExtractionNERDocument(BaseModel):
@@ -4881,9 +4872,7 @@ class TextExtractionNERPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[TextExtractionNERPageResult], List[TextExtractionNERPageParagraphs]
-    ]
+    pages_text: Union[List[TextExtractionNERPageResult], List[TextExtractionNERPageParagraphs]]
 
 
 class TextExtractionNERDocumentDTO(BaseModel):
@@ -4987,9 +4976,7 @@ class TextExtractionFormatsPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[TextExtractionFormatsPageResult], List[TextExtractionFormatsPageParagraphs]
-    ]
+    pages_text: Union[List[TextExtractionFormatsPageResult], List[TextExtractionFormatsPageParagraphs]]
 
 
 class TextExtractionFormatsDocumentDTO(BaseModel):
@@ -5002,9 +4989,7 @@ class TextExtractionFormatsDocumentDTO(BaseModel):
 
     """
 
-    text_extraction_formats: Union[
-        TextExtractionFormatsDocument, TextExtractionFormatsPages
-    ]
+    text_extraction_formats: Union[TextExtractionFormatsDocument, TextExtractionFormatsPages]
 
 
 class TextExtractionNLPDocumentDTO(BaseModel):
@@ -5121,9 +5106,7 @@ class EngineSummaryEmbeddedPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[EngineSummaryEmbeddedPageResult], List[EngineSummaryEmbeddedPageParagraphs]
-    ]
+    pages_text: Union[List[EngineSummaryEmbeddedPageResult], List[EngineSummaryEmbeddedPageParagraphs]]
 
 
 class EngineSummaryEmbeddedDocumentDTO(BaseModel):
@@ -5136,9 +5119,7 @@ class EngineSummaryEmbeddedDocumentDTO(BaseModel):
 
     """
 
-    engine_summary_embedded: Union[
-        EngineSummaryEmbeddedDocument, EngineSummaryEmbeddedPages
-    ]
+    engine_summary_embedded: Union[EngineSummaryEmbeddedDocument, EngineSummaryEmbeddedPages]
 
 
 class SummaryDocumentInput(BaseDocumentInput):
@@ -5237,9 +5218,7 @@ class EngineSummaryPageParagraphs(NestingId):
         paragraphs: list of paragraphs with EngineSummary extractions.
     """
 
-    paragraphs: Union[
-        List[EngineSummaryParagraphResult], List[EngineSummaryParagraphSentences]
-    ]
+    paragraphs: Union[List[EngineSummaryParagraphResult], List[EngineSummaryParagraphSentences]]
 
 
 class EngineSummaryPages(BaseModel):
@@ -5373,9 +5352,7 @@ class EngineSummaryTopicsPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[EngineSummaryTopicsPageResult], List[EngineSummaryTopicsPageParagraphs]
-    ]
+    pages_text: Union[List[EngineSummaryTopicsPageResult], List[EngineSummaryTopicsPageParagraphs]]
 
 
 class EngineSummaryTopicsDocumentDTO(BaseModel):
@@ -5489,9 +5466,7 @@ class PhrasesContribPageParagraphs(NestingId):
         paragraphs: list of paragraphs with PhrasesContrib extractions.
     """
 
-    paragraphs: Union[
-        List[PhrasesContribParagraphResult], List[PhrasesContribParagraphSentences]
-    ]
+    paragraphs: Union[List[PhrasesContribParagraphResult], List[PhrasesContribParagraphSentences]]
 
 
 class PhrasesContribPages(BaseModel):
@@ -5505,9 +5480,7 @@ class PhrasesContribPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[PhrasesContribPageResult], List[PhrasesContribPageParagraphs]
-    ]
+    pages_text: Union[List[PhrasesContribPageResult], List[PhrasesContribPageParagraphs]]
 
 
 class PhrasesContribDocumentDTO(BaseModel):
@@ -5608,9 +5581,7 @@ class PhrasesRakePageParagraphs(NestingId):
         paragraphs: list of paragraphs with PhrasesRake extractions.
     """
 
-    paragraphs: Union[
-        List[PhrasesRakeParagraphResult], List[PhrasesRakeParagraphSentences]
-    ]
+    paragraphs: Union[List[PhrasesRakeParagraphResult], List[PhrasesRakeParagraphSentences]]
 
 
 class PhrasesRakePages(BaseModel):
@@ -5725,9 +5696,7 @@ class PhrasesTermsPageParagraphs(NestingId):
         paragraphs: list of paragraphs with PhrasesTerms extractions.
     """
 
-    paragraphs: Union[
-        List[PhrasesTermsParagraphResult], List[PhrasesTermsParagraphSentences]
-    ]
+    paragraphs: Union[List[PhrasesTermsParagraphResult], List[PhrasesTermsParagraphSentences]]
 
 
 class PhrasesTermsPages(BaseModel):
@@ -5842,9 +5811,7 @@ class PhrasesWordbagPageParagraphs(NestingId):
         paragraphs: list of paragraphs with PhrasesWordbag extractions.
     """
 
-    paragraphs: Union[
-        List[PhrasesWordbagParagraphResult], List[PhrasesWordbagParagraphSentences]
-    ]
+    paragraphs: Union[List[PhrasesWordbagParagraphResult], List[PhrasesWordbagParagraphSentences]]
 
 
 class PhrasesWordbagPages(BaseModel):
@@ -5858,9 +5825,7 @@ class PhrasesWordbagPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[PhrasesWordbagPageResult], List[PhrasesWordbagPageParagraphs]
-    ]
+    pages_text: Union[List[PhrasesWordbagPageResult], List[PhrasesWordbagPageParagraphs]]
 
 
 class PhrasesWordbagDocumentDTO(BaseModel):
@@ -7024,9 +6989,7 @@ class TaxonomyCitiesPageParagraphs(NestingId):
         paragraphs: list of paragraphs with result of cities analysis extractions.
     """
 
-    paragraphs: Union[
-        List[TaxonomyCitiesParagraphResult], List[TaxonomyCitiesParagraphSentences]
-    ]
+    paragraphs: Union[List[TaxonomyCitiesParagraphResult], List[TaxonomyCitiesParagraphSentences]]
 
 
 class TaxonomyCitiesPageResult(NestingId):
@@ -7052,9 +7015,7 @@ class TaxonomyCitiesPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[TaxonomyCitiesPageResult], List[TaxonomyCitiesPageParagraphs]
-    ]
+    pages_text: Union[List[TaxonomyCitiesPageResult], List[TaxonomyCitiesPageParagraphs]]
 
 
 class TaxonomyCitiesDocument(BaseModel):
@@ -7182,9 +7143,7 @@ class TaxonomyCustomPageParagraphs(NestingId):
         paragraphs: list of paragraphs with result of custom analysis extractions.
     """
 
-    paragraphs: Union[
-        List[TaxonomyCustomParagraphResult], List[TaxonomyCustomParagraphSentences]
-    ]
+    paragraphs: Union[List[TaxonomyCustomParagraphResult], List[TaxonomyCustomParagraphSentences]]
 
 
 class TaxonomyCountriesPageResult(NestingId):
@@ -7221,9 +7180,7 @@ class TaxonomyCountriesPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[TaxonomyCountriesPageResult], List[TaxonomyCountriesPageParagraphs]
-    ]
+    pages_text: Union[List[TaxonomyCountriesPageResult], List[TaxonomyCountriesPageParagraphs]]
 
 
 class TaxonomyCustomPages(BaseModel):
@@ -7237,9 +7194,7 @@ class TaxonomyCustomPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[TaxonomyCustomPageResult], List[TaxonomyCustomPageParagraphs]
-    ]
+    pages_text: Union[List[TaxonomyCustomPageResult], List[TaxonomyCustomPageParagraphs]]
 
 
 class TaxonomyCountriesDocument(BaseModel):
@@ -7373,9 +7328,7 @@ class TaxonomyCompaniesPages(BaseModel):
     """
 
     version: str
-    pages_text: Union[
-        List[TaxonomyCompaniesPageResult], List[TaxonomyCompaniesPageParagraphs]
-    ]
+    pages_text: Union[List[TaxonomyCompaniesPageResult], List[TaxonomyCompaniesPageParagraphs]]
 
 
 class TaxonomyCompaniesDocument(BaseModel):

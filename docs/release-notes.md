@@ -1,5 +1,8 @@
 # msaDocModels Release Notes
 ## Possible future features:
+# 0.0.107
+
+- add svcEngineUtils models
 
 # 0.0.106
 
