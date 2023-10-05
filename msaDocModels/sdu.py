@@ -3641,6 +3641,48 @@ class StatisticsDocumentDTO(BaseModel):
     text_extraction_statistics: Union[StatisticsDocument, StatisticsPages]
 
 
+class UtilsRunEmbeddedPythonCodeInput(BaseModel):
+    """
+    Represents the input data for running embedded Python code within a document.
+
+    Attributes:
+        document_id: optional uuid for document.
+        code: The Python code to be executed.
+        vars: A dictionary representing variables for code execution.
+        return_vars: A list of keys from local variables which need to return back.
+    """
+
+    document_id: Optional[UUID4] = None
+    code: str
+    vars: Dict[str, Any] = {}
+    return_vars: List[str] = []
+
+
+class UtilsRunEmbeddedPythonCodeDTO(BaseModel):
+    """
+    Represents the output data of the run_code function.
+
+    Attributes:
+        vars: A dictionary containing the modified provided variables after code execution.
+    """
+
+    vars: Dict[str, Any]
+
+
+class UtilsJsonProps(BaseModel):
+    """
+    Represents the input data for nfs_writer.
+
+    Attributes:
+       file_path: path to file.
+       json_payload: json payload.
+
+    """
+
+    file_path: str
+    json_payload: str
+
+
 class CleanDocumentInput(BaseDocumentInput):
     """
     Model that contains input data to clean text from document.
