@@ -2014,7 +2014,7 @@ class EmailConverterResponse(BaseModel):
     txt_content: SDUText
     msg: SDUEmail
     email_tags: Dict = {}
-    attachment_paths: Optional[List] =[]
+    attachment_paths: Optional[List] = []
 
 
 class FieldName(str, Enum):
@@ -3648,6 +3648,7 @@ class UtilsNFSWriterDTO(BaseModel):
     Attributes:
        full_json_file_path: full file path to json.
     """
+
     full_json_file_path: str
 
 
@@ -3660,6 +3661,7 @@ class UtilsOcrInputData(BaseModel):
         save_file_path: location in which to save the result document
         color_threshold: integer to set a color threshold
     """
+
     file_path: str
     save_file_path: str
     color_threshold: int
@@ -3672,6 +3674,7 @@ class UtilsOcrDTO(BaseModel):
     Attributes:
        full_file_path:  file path of saved result file with removed color/handwriting
     """
+
     full_file_path: str
 
 
@@ -3682,6 +3685,7 @@ class UtilsPostalDTO(BaseModel):
     Attributes:
        result_map: a dictionary with retrieved address entities
     """
+
     result_map: Dict[Union[str, int, float], Union[str, int, float]]
 
 
@@ -3693,6 +3697,7 @@ class UtilsRegexEntity(BaseModel):
        key: regex key
        pattern: regex pattern
     """
+
     key: str
     pattern: str
 
@@ -3704,6 +3709,7 @@ class UtilsRegexDTO(BaseModel):
     Attributes:
        result: a list of UtilsRegexEntity objects
     """
+
     result: List[UtilsRegexEntity]
 
 
@@ -3716,6 +3722,7 @@ class UtilsPatternByKeyInputModel(BaseModel):
       country_hint: Optional: ISO 3166 compatible country code in case if country is using foreign language,
         like German in Austria
     """
+
     language_code: str
     country_hint: Optional[str] = ""
 
@@ -7658,3 +7665,17 @@ class TaxonomyDocumentInput(BaseDocumentInput):
     taxonomy_data: Dict[str, List[Dict[str, Any]]] = {}
     extract_type: ExtractorType = ExtractorType.full_taxonomy
     result_output: ResultType = ResultType.sentences
+
+
+class UnzipInputModel(BaseModel):
+    """
+    Input model for unzip endpoint.
+
+    Attributes:
+
+        archive_path: Path to the primary archive to unpack.
+        unpack_nested: If True, also unpacks nested archives.
+    """
+
+    archive_path: str
+    unpack_nested: Optional[bool] = False
