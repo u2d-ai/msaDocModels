@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.112
+
+- add UnzipInputModel models
+
 # 0.0.111
 
 - add svcEngineUtils models
