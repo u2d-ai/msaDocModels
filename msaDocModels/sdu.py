@@ -94,6 +94,24 @@ class TenantIdInput(BaseModel):
     tenant_id: UUID4
 
 
+class ProcessingDocumentsInput(BaseModel):
+    """
+    ProcessingDocumentsInput: Represents the key elements for operating
+    on registered steps.
+
+    Attributes:
+        subdomain : The subdomain in the registered steps.
+        project : The project within the subdomain.
+        stage : The stage within the project.
+        document_uid : The unique identifier for the document.
+    """
+
+    subdomain: Optional[str] = None
+    project: Optional[str] = None
+    stage: Optional[str] = None
+    document_uid: Optional[str] = None
+
+
 class TextInput(BaseModel):
     """
     Input model with input_text
