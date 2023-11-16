@@ -7697,3 +7697,154 @@ class UnzipInputModel(BaseModel):
 
     archive_path: str
     unpack_nested: Optional[bool] = False
+
+
+class ExtractorUniversalBaseInput(BaseModel):
+    """
+    Base input model for the universal entity extraction.
+
+    Attributes:
+
+        entity_type: A dictionary specifying entity types and their values.
+        max_new_tokens : The maximum number of new tokens to generate. Defaults to 256.
+    """
+
+    entity_type: Dict[str, List[str]]
+    max_new_tokens: int = 256
+
+
+class ExtractorUniversalDocumentInput(ExtractorUniversalBaseInput, BaseDocumentInput):
+    """
+    Input model for document-level entity extraction.
+
+    Attributes:
+
+        result_output: The type of result to output (e.g., 'document', 'pages', 'paragraphs', 'sentences').
+            Defaults to ResultType.document.
+    """
+
+    result_output: ResultType = ResultType.document
+
+
+class ExtractorUniversalTextInput(ExtractorUniversalBaseInput):
+    """
+    Input model for text-level entity extraction.
+
+    Attributes:
+
+        input_text: The input text or texts to extract entities from.
+    """
+
+    input_text: Union[str, List[str], Dict[Any, str]]
+
+
+class ExtractorUniversalEntity(BaseModel):
+    """
+    Model representing an extracted entity.
+
+    Attributes:
+
+        result: The extracted entity text.
+        positions: The positions of the extracted entity in the input text.
+    """
+
+    result: str
+    positions: List[Dict[str, int]]
+
+
+class ExtractorUniversalDTO(BaseModel):
+    """
+    Model that represents the result from universal entity extraction.
+
+    Attributes:
+
+        prediction:
+
+            The extracted entities organized by entity type.
+    """
+
+    prediction: Union[
+        Dict[str, List[ExtractorUniversalEntity]],
+        List[Dict[str, List[ExtractorUniversalEntity]]],
+        Dict[str, Dict[str, List[ExtractorUniversalEntity]]],
+    ]
+
+
+class ExtractorUniversalPageResult(NestingId):
+    """
+    Model representing the result of entity extraction for a page.
+
+    Attributes:
+
+        result: The extracted entities organized by entity type.
+    """
+
+    result: Dict[str, List[ExtractorUniversalEntity]]
+
+
+class ExtractorUniversalSentenceResult(NestingId):
+    """
+    Model representing the result of entity extraction for a sentence.
+
+    Attributes:
+
+        result: The extracted entities organized by entity type.
+    """
+
+    result: Dict[str, List[ExtractorUniversalEntity]]
+
+
+class ExtractorUniversalParagraphSentences(NestingId):
+    """
+    Model representing the result of entity extraction for paragraphs with sentences.
+
+    Attributes:
+
+        sentences: List of sentence-level extraction results.
+    """
+
+    sentences: List[ExtractorUniversalSentenceResult]
+
+
+class ExtractorUniversalParagraphResult(NestingId):
+    """
+    Model representing the result of entity extraction for a paragraph.
+
+    Attributes:
+
+        result: The extracted entities organized by entity type.
+    """
+
+    result: Dict[str, List[ExtractorUniversalEntity]]
+
+
+class ExtractorUniversalPageParagraphs(NestingId):
+    """
+    Model representing the result of entity extraction for pages with paragraphs.
+
+    Attributes:
+
+        paragraphs: List of paragraph-level extraction results.
+    """
+
+    paragraphs: Union[
+        List[ExtractorUniversalParagraphResult],
+        List[ExtractorUniversalParagraphSentences],
+    ]
+
+
+class ExtractorUniversalDocumentDTO(BaseModel):
+    """
+    Model representing the result of universal entity extraction for a document.
+
+    Attributes:
+
+        extractor_universal: The extracted entities organized by entity type at various levels
+                            (document, page, paragraph, sentence).
+    """
+
+    extractor_universal: Union[
+        Dict[str, List[ExtractorUniversalEntity]],
+        List[ExtractorUniversalPageResult],
+        List[ExtractorUniversalPageParagraphs],
+    ]

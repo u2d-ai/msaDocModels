@@ -1,6 +1,10 @@
 # msaDocModels Release Notes
 ## Possible future features:
 
+# 0.0.114
+
+- add models for ExtractorUniversal
+
 # 0.0.113
 
 - add ProcessingDocumentsInput model
